@@ -1,4 +1,4 @@
-
+<!--Andrew was here-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -21,7 +21,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+        <netbeans.hint.deploy.server>Tomcat70</netbeans.hint.deploy.server>
         <logback.version>0.9.26</logback.version>
     </properties>
     
@@ -37,7 +37,7 @@
         </license>
     </licenses>
 
-    <repositories>
+<!--    <repositories>
         <repository>
             <id>cida-gdp-thirdparty</id>
             <name>CIDA GDP Third-party</name>
@@ -53,7 +53,7 @@
             <name>CIDA GDP Development</name>
             <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/groups/cida-gdp-development</url>
         </repository>
-    </repositories>
+    </repositories>-->
     
     <scm>
         <connection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/dcpt/trunk</connection>
@@ -233,6 +233,12 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.5</version>
+        </dependency>
+        <dependency>
+            <artifactId>netcdf</artifactId>
+            <groupId>edu.ucar</groupId>
+            <type>jar</type>
+            <version>4.2.20</version>
         </dependency>
     </dependencies>
     
