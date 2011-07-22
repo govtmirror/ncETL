@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 import org.joda.time.DateTime;
 
 import org.json.simple.JSONObject;
@@ -81,6 +82,11 @@ public final class FTPIngestTask extends TimerTask {
             client.connect(ftpLocation.getHost(), port);
             client.login(username, password);
             String status = client.getStatus();
+            int reply = client.getReplyCode();
+            if(!FTPReply.isPositiveCompletion(reply)) {
+                client.disconnect();
+                LOG.info("FTP server refused connection.");
+            }
             LOG.info(status);
             client.changeWorkingDirectory(ftpLocation.getPath());
             everythingIsGood = ingestDirectory(".");
@@ -94,8 +100,13 @@ public final class FTPIngestTask extends TimerTask {
 
         if (everythingIsGood) {
             lastSuccessfulRun = new DateTime();
-//    TODO        IngestControlSpec spec = new IngestControlSpec();
-//            Spec.updateRow(spec, con);
+//            try {
+//                IngestControlSpec spec = new IngestControlSpec();
+//                Connection con = DatabaseUtil.getConnection();
+//                Spec.updateRow(spec, con);
+//            } catch (Exception ex) { //throws SQLException, NamingException, ClassNotFoundException 
+//                LOG.error(ex.getMessage());
+//            }
         }
     }
 
