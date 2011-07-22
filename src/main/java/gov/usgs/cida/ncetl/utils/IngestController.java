@@ -22,9 +22,8 @@ public class IngestController {
     private static final Logger LOG = LoggerFactory.getLogger(
             IngestController.class);
     private static final String TIMER_NAME = "ncETL Ingestor";
-    private static Timer timer = new Timer(TIMER_NAME);
+    private static Timer timer = new Timer(TIMER_NAME, true);
     private static Map<String, TimerTask> runningTasks = Maps.newTreeMap();
-    private static final int TIMER_LENGTH = 60000;
     private static final long serialVersionUID = 1L;
     
     public static void setupIngestors() throws SQLException, NamingException,
