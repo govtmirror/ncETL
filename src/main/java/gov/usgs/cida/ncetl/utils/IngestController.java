@@ -9,6 +9,7 @@ import java.util.List;
 import javax.naming.NamingException;
 import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,9 @@ public class IngestController {
     
     private static final Logger LOG = LoggerFactory.getLogger(
             IngestController.class);
-    private static Map<String, Timer> runningTasks = Maps.newTreeMap();
+    private static final String TIMER_NAME = "ncETL Ingestor";
+    private static Timer timer = new Timer(TIMER_NAME);
+    private static Map<String, TimerTask> runningTasks = Maps.newTreeMap();
     private static final int TIMER_LENGTH = 60000;
     private static final long serialVersionUID = 1L;
     
@@ -43,15 +46,14 @@ public class IngestController {
     
     protected static void startIngestTimer(FTPIngestTask task) {
         String name = task.getName();
-        Timer t = runningTasks.get(name);
-        if (t != null) {
-            t.cancel();
+        if (task != null) {
+            task.cancel();
         }
+        timer.purge();
         runningTasks.remove(name);
-        Timer timer = new Timer(name);
         timer.scheduleAtFixedRate(task, 0L, task.getRescanEvery());
-        LOG.debug("timer started for ingest: " + name);
-        runningTasks.put(name, timer);
+        LOG.debug("timerTask started for ingest: " + name);
+        runningTasks.put(name, task);
     }
     
     public static void restartIngestTimer(String taskName) {
@@ -76,6 +78,10 @@ public class IngestController {
         finally {
             DatabaseUtil.closeConnection(con);
         }
-        
+    }
+    
+    public static void shutdownTimer() {
+        timer.cancel();
+        timer = null;
     }
 }

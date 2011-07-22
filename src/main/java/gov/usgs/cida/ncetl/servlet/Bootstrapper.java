@@ -91,6 +91,14 @@ public class Bootstrapper implements ServletContextListener {
         catch (ClassNotFoundException ex) {
             log.debug("Couldn't shut down", ex);
         }
+        
+        try {
+            IngestController.shutdownTimer();
+        }
+        catch (Exception ex) {
+            // shutdown doesn't actually throw exception, but maybe runtime exception?
+            log.debug("Couldn't shut down", ex);
+        }
         log.info("*************** ncETL is shutting down.\n");
     }
 }
