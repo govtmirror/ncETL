@@ -14,6 +14,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author jwalker
@@ -32,6 +35,8 @@ public class IngestControlSpec extends AbstractNcetlSpec {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String ACTIVE = "active";
+    
+    private static Logger log = LoggerFactory.getLogger(IngestControlSpec.class);
 
     @Override
     public String setupTableName() {
@@ -130,15 +135,24 @@ public class IngestControlSpec extends AbstractNcetlSpec {
         while (rs.next()) {
             String name = rs.getString(NAME);
             String location = rs.getString(FTP_LOCATION);
-            task = new FTPIngestTask.Builder(name, location)
-                .active(rs.getBoolean(ACTIVE))
-                .fileRegex(rs.getString(FILE_REGEX))
-                .username(rs.getString(USERNAME))
-                .password(rs.getString(PASSWORD))
-                .rescanEvery(rs.getLong(RESCAN_EVERY))
-                .build();
-            taskList.add(task);
+//            log.info("unmarshalling ds from catID: "+rs.getInt(CATALOG_ID));
+            String datasetName = DatasetSpec.lookupNameByCatalogId(rs.getInt(CATALOG_ID), con);
+            try {                
+                task = new FTPIngestTask.Builder(name, location)
+                    .datasetName(datasetName)
+                    .active(rs.getBoolean(ACTIVE))
+                    .fileRegex(rs.getString(FILE_REGEX))
+                    .username(rs.getString(USERNAME))
+                    .password(rs.getString(PASSWORD))
+                    .rescanEvery(rs.getLong(RESCAN_EVERY))
+                    .build();
+                taskList.add(task);
+            } catch (MalformedURLException ex) {
+                log.error(
+                    "*************** Application could not initialize an ingestor. ("+location+") Error follows.",
+                    ex);
+            }
         }
         return taskList;
-    }
+    }  
 }

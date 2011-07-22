@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.catalog.CollectionType;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogModifier;
@@ -38,6 +40,8 @@ public class DatasetSpec extends AbstractNcetlSpec {
     public static final String NCID = "ncid";
     public static final String AUTHORITY = "authority";
     public static final String NAME = "name";
+    
+    private static Logger log = LoggerFactory.getLogger(DatasetSpec.class);
 
     @Override
     public String setupTableName() {
@@ -162,4 +166,15 @@ public class DatasetSpec extends AbstractNcetlSpec {
         // search for children
         // recurse!
     }
+    
+    public static String lookupNameByCatalogId(int catalogId, Connection con) throws SQLException {
+//        log.info("looking up dataset name");
+        Spec spec = new DatasetSpec();
+        Map<String, String[]> params = Maps.newHashMap();
+        params.put(DatasetSpec.CATALOG_ID, new String[] {"" + catalogId});
+        spec.loadParameters(spec, params);
+        ResultSet rs = Spec.getResultSet(spec, con);
+//        log.info("returning dataset name: "+rs.getString(DatasetSpec.NAME));
+        return rs.getString(DatasetSpec.NAME);
+    }    
 }

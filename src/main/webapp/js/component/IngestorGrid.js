@@ -20,7 +20,8 @@ Ext.define('ncETL.grid.Ingestor', {
 		editor : {
 			xtype : 'textfield',
 			allowBlank : false,
-			vtype : 'url'
+//			vtype : 'url'
+//                      removed b/c wouldn't accept directory location
 		}
 	}, {
 		header : 'Rescan (ms)',

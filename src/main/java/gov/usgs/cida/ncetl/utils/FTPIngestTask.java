@@ -117,14 +117,14 @@ public final class FTPIngestTask extends TimerTask {
         for (FTPFile file : files) {
             LOG.debug("ingesting file named " + file.getName());
             if (file.isDirectory()) {
-                if (!ingestDirectory(dir + File.separator + file.getName())) {
+                if (!ingestDirectory(dir + File.separator  + datasetName + File.separator + file.getName())) {
                     completedSuccessfully = false;
                 }
             } else {
                 Matcher matcher = fileRegex.matcher(file.getName());
                 if (matcher.matches() && !client.retrieveFile(file.getName(),
                         new FileOutputStream(
-                        FileHelper.getDatasetsDirectory() + File.separator + file.getName()))) {
+                        FileHelper.getDatasetsDirectory() + File.separator + datasetName + File.separator + file.getName()))) {
                     // TODO keep a list of files that failed to try to correct next time
                     completedSuccessfully = false;
                 }
@@ -148,6 +148,7 @@ public final class FTPIngestTask extends TimerTask {
     }
     
     private String ingestName;
+    private String datasetName; //dataset
     private URL ftpLocation;
     private long rescanEvery;
     private FTPClient client;
@@ -166,6 +167,11 @@ public final class FTPIngestTask extends TimerTask {
         
         public Builder name(String name) {
             this.ingestName = name;
+            return this;
+        }
+        
+        public Builder datasetName(String name) {
+            this.datasetName = name;
             return this;
         }
 
@@ -200,6 +206,7 @@ public final class FTPIngestTask extends TimerTask {
         }
         
         private String ingestName;
+        private String datasetName;
         private URL ftpLocation;
         private long rescanEvery;
         private FTPClient client;
@@ -224,6 +231,7 @@ public final class FTPIngestTask extends TimerTask {
         public FTPIngestTask build() {
             FTPIngestTask ingest = new FTPIngestTask();
             ingest.ingestName = ingestName;
+            ingest.datasetName = datasetName;
             ingest.ftpLocation = ftpLocation;
             ingest.rescanEvery = rescanEvery;
             ingest.fileRegex = fileRegex;

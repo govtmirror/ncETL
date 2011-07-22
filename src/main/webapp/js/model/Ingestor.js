@@ -25,7 +25,8 @@ Ext.define('Ingestor', {
 			fieldLabel : 'Location',
 			name : 'ftpLocation',
 			allowBlank : false,
-			vtype : 'url'
+//			vtype : 'url'
+//                      removed b/c wouldn't accept directory location
 		}
 	}, {
 		name : 'rescanEvery',
