@@ -135,8 +135,7 @@ public class IngestControlSpec extends AbstractNcetlSpec {
         while (rs.next()) {
             String name = rs.getString(NAME);
             String location = rs.getString(FTP_LOCATION);
-//            log.info("unmarshalling ds from catID: "+rs.getInt(CATALOG_ID));
-            String datasetName = DatasetSpec.lookupNameByCatalogId(rs.getInt(CATALOG_ID), con);
+            String datasetName = CatalogSpec.lookupName(rs.getInt(CATALOG_ID), con); 
             try {                
                 task = new FTPIngestTask.Builder(name, location)
                     .datasetName(datasetName)

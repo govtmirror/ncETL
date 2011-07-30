@@ -22,7 +22,7 @@ public class IngestController {
     private static final Logger LOG = LoggerFactory.getLogger(
             IngestController.class);
     private static final String TIMER_NAME = "ncETL Ingestor";
-    private static Timer timer = new Timer(TIMER_NAME, true);
+    private static Timer timer = new Timer(TIMER_NAME, true); //daemon
     private static Map<String, TimerTask> runningTasks = Maps.newTreeMap();
     private static final long serialVersionUID = 1L;
     
@@ -45,16 +45,29 @@ public class IngestController {
     
     protected static void startIngestTimer(FTPIngestTask task) {
         String name = task.getName();
-        if (task != null) {
+        /* Was previously clearing out the timer and creating a new one
+         * But cancelling a timertask means it can't be scheduled later
+        if (task != null) { //cancel the task
             task.cancel();
         }
-        timer.purge();
-        runningTasks.remove(name);
-        timer.scheduleAtFixedRate(task, 0L, task.getRescanEvery());
-        LOG.debug("timerTask started for ingest: " + name);
-        runningTasks.put(name, task);
+        timer.purge(); //remove the cancelled task from timer
+        runningTasks.remove(name); //remove the task from runningTasks map
+        */
+        /*So instead use the runningTasks map to prevent duplicates*/
+        if(!runningTasks.containsKey(name)) {
+            try{// if task was already scheduled or cancelled, timer was cancelled, or timer thread terminated.
+                timer.scheduleAtFixedRate(task, 0L, task.getRescanEvery()); 
+                LOG.debug("timerTask started for ingest: " + name);
+                runningTasks.put(name, task);
+            } catch (IllegalStateException ex) {
+                LOG.debug("Error scheduling timerTask "+name+": IllegalStateException");
+            }
+        }
     }
     
+    /*
+     * no usages now, but startIngestTimer may not work if the task is already in runningTasks
+     */
     public static void restartIngestTimer(String taskName) {
         Connection con = null;
         try {
@@ -81,6 +94,7 @@ public class IngestController {
     
     public static void shutdownTimer() {
         timer.cancel();
+        LOG.debug("static timer terminated");
         timer = null;
     }
 }

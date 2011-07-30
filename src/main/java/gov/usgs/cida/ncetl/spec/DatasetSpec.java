@@ -166,15 +166,4 @@ public class DatasetSpec extends AbstractNcetlSpec {
         // search for children
         // recurse!
     }
-    
-    public static String lookupNameByCatalogId(int catalogId, Connection con) throws SQLException {
-//        log.info("looking up dataset name");
-        Spec spec = new DatasetSpec();
-        Map<String, String[]> params = Maps.newHashMap();
-        params.put(DatasetSpec.CATALOG_ID, new String[] {"" + catalogId});
-        spec.loadParameters(spec, params);
-        ResultSet rs = Spec.getResultSet(spec, con);
-//        log.info("returning dataset name: "+rs.getString(DatasetSpec.NAME));
-        return rs.getString(DatasetSpec.NAME);
-    }    
 }

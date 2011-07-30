@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +73,7 @@ public final class FTPIngestTask extends TimerTask {
 
     @Override
     public void run() {
-        if (!active) {
+            if (!active) {
             return;
         }
         boolean everythingIsGood = false;
@@ -100,13 +103,21 @@ public final class FTPIngestTask extends TimerTask {
 
         if (everythingIsGood) {
             lastSuccessfulRun = new DateTime();
-//            try {
-//                IngestControlSpec spec = new IngestControlSpec();
-//                Connection con = DatabaseUtil.getConnection();
-//                Spec.updateRow(spec, con);
-//            } catch (Exception ex) { //throws SQLException, NamingException, ClassNotFoundException 
-//                LOG.error(ex.getMessage());
-//            }
+            java.sql.Date newSuccessDate = new java.sql.Date(new java.util.Date().getTime());
+            java.sql.Time newSuccessTime = new java.sql.Time(new java.util.Date().getTime());
+            LOG.debug("SUCCESSFUL INGEST");
+            try {
+                IngestControlSpec spec = new IngestControlSpec();
+                Map<String, String[]> params = new HashMap<String, String[]>(1);
+                params.put("s_" + IngestControlSpec.NAME, new String[] {ingestName});
+                params.put(IngestControlSpec.SUCCESS_DATE, new String[] {newSuccessDate.toString()});
+                params.put(IngestControlSpec.SUCCESS_TIME, new String[] {newSuccessTime.toString()});
+                Spec.loadParameters(spec, params);
+                Connection con = DatabaseUtil.getConnection();
+                Spec.updateRow(spec, con);
+            } catch (Exception ex) { //throws SQLException, NamingException, ClassNotFoundException 
+                LOG.error(ex.getMessage());
+            }
         }
     }
 
@@ -117,6 +128,7 @@ public final class FTPIngestTask extends TimerTask {
         for (FTPFile file : files) {
             LOG.debug("ingesting file named " + file.getName());
             if (file.isDirectory()) {
+                //because datasetName is actually catalog that folder already exists in /datasets
                 if (!ingestDirectory(dir + File.separator  + datasetName + File.separator + file.getName())) {
                     completedSuccessfully = false;
                 }
@@ -148,7 +160,7 @@ public final class FTPIngestTask extends TimerTask {
     }
     
     private String ingestName;
-    private String datasetName; //dataset
+    private String datasetName; //actually catalog name
     private URL ftpLocation;
     private long rescanEvery;
     private FTPClient client;
@@ -206,7 +218,7 @@ public final class FTPIngestTask extends TimerTask {
         }
         
         private String ingestName;
-        private String datasetName;
+        private String datasetName; //actually catalog name
         private URL ftpLocation;
         private long rescanEvery;
         private FTPClient client;
