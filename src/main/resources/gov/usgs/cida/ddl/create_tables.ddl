@@ -60,7 +60,7 @@ CREATE TABLE catalog
 CREATE TABLE ingest 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    catalog_id INT CONSTRAINT CATALOG2_FK REFERENCES catalog, 
+    catalog_id INT CONSTRAINT CATALOG2_FK REFERENCES catalog ON DELETE CASCADE, 
     name varchar(128), 
     ftpLocation varchar(512), 
     rescanEvery bigint, 
@@ -75,7 +75,7 @@ CREATE TABLE ingest
 CREATE TABLE dataset 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    catalog_id INT CONSTRAINT CATALOG3_FK REFERENCES catalog, 
+    catalog_id INT CONSTRAINT CATALOG3_FK REFERENCES catalog ON DELETE CASCADE, 
     collection_type_id INT CONSTRAINT COLLECTION1_FK REFERENCES collection_type, 
     data_type_id INT CONSTRAINT DATATYPE_FK REFERENCES data_type, 
     name varchar(64), 
@@ -86,8 +86,8 @@ CREATE TABLE dataset
 CREATE TABLE service 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    catalog_id INT CONSTRAINT CATALOG4_FK REFERENCES catalog, 
-    service_id INT CONSTRAINT SERVICE1_FK REFERENCES service,  
+    catalog_id INT CONSTRAINT CATALOG4_FK REFERENCES catalog ON DELETE CASCADE, 
+    service_id INT CONSTRAINT SERVICE1_FK REFERENCES service ON DELETE CASCADE,  
     service_type_id INT CONSTRAINT SERVICETYPE_FK REFERENCES service_type, 
     name varchar(64), 
     base varchar(32),  
@@ -98,8 +98,8 @@ CREATE TABLE service
 CREATE TABLE access 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    dataset_id INT CONSTRAINT DATASET1_FK REFERENCES dataset, 
-    service_id INT CONSTRAINT SERVICE2_FK REFERENCES service, 
+    dataset_id INT CONSTRAINT DATASET1_FK REFERENCES dataset ON DELETE CASCADE, 
+    service_id INT CONSTRAINT SERVICE2_FK REFERENCES service ON DELETE CASCADE, 
     dataformat_id INT CONSTRAINT DATAFORMAT_FK REFERENCES data_format, 
     url_path varchar(512), 
     inserted boolean DEFAULT false, updated boolean DEFAULT false, PRIMARY KEY (id));
@@ -107,7 +107,7 @@ CREATE TABLE access
 CREATE TABLE documentation 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    dataset_id INT CONSTRAINT DATASET2_FK REFERENCES dataset, 
+    dataset_id INT CONSTRAINT DATASET2_FK REFERENCES dataset ON DELETE CASCADE, 
     documentation_type_id INT CONSTRAINT DOCTYPE_FK REFERENCES documentation_type, 
     xlink_href varchar(256), 
     xlink_title varchar(256), 
@@ -117,7 +117,7 @@ CREATE TABLE documentation
 CREATE TABLE property 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    dataset_id INT CONSTRAINT DATASET3_FK REFERENCES dataset, 
+    dataset_id INT CONSTRAINT DATASET3_FK REFERENCES dataset ON DELETE CASCADE, 
     name varchar(128), 
     value varchar(512), 
     inserted boolean DEFAULT false, updated boolean DEFAULT false, PRIMARY KEY (id));
@@ -182,7 +182,7 @@ CREATE TABLE publisher
 CREATE TABLE geospatial_coverage
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    dataset_id INT CONSTRAINT DATASET10_FK REFERENCES dataset, 
+    dataset_id INT CONSTRAINT DATASET10_FK REFERENCES dataset ON DELETE CASCADE, 
     controlled_vocabulary_id INT CONSTRAINT VOCAB5_FK REFERENCES controlled_vocabulary, 
     name varchar(128), 
     zpositive_id INT CONSTRAINT UPDOWN_FK REFERENCES up_down_type, 
@@ -191,7 +191,7 @@ CREATE TABLE geospatial_coverage
 CREATE TABLE spatial_range
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    geospatial_coverage_id INT CONSTRAINT GSCOVER1_FK REFERENCES geospatial_coverage, 
+    geospatial_coverage_id INT CONSTRAINT GSCOVER1_FK REFERENCES geospatial_coverage ON DELETE CASCADE, 
     spatial_range_type_id INT CONSTRAINT SRTYPE1_FK REFERENCES spatial_range_type, 
     start DOUBLE, 
     size DOUBLE, 
@@ -202,7 +202,7 @@ CREATE TABLE spatial_range
 CREATE TABLE time_coverage
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    dataset_id INT CONSTRAINT DATASET11_FK REFERENCES dataset, 
+    dataset_id INT CONSTRAINT DATASET11_FK REFERENCES dataset ON DELETE CASCADE, 
     start_id INT CONSTRAINT DTF2_FK REFERENCES date_type_formatted, 
     end_id INT CONSTRAINT DTF3_FK REFERENCES date_type_formatted, 
     duration varchar(32), 
@@ -227,4 +227,3 @@ CREATE TABLE publisher_join
 
 CREATE TABLE date_join
     (dataset_id INT CONSTRAINT DATASET12_FK REFERENCES dataset, date_type_formatted_id INT CONSTRAINT DTF1_FK REFERENCES date_type_formatted, inserted boolean DEFAULT false, updated boolean DEFAULT false);
-
