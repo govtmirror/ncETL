@@ -1,5 +1,8 @@
 package gov.usgs.cida.ncetl.servlet;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import gov.usgs.cida.ncetl.utils.FileHelper;
 import gov.usgs.cida.ncetl.utils.NcMLUtil;
 import java.io.BufferedWriter;
@@ -8,6 +11,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -15,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.WrapperNetcdfFile;
 
@@ -56,13 +62,20 @@ public class GlobalAttributeDeaggregationServlet extends HttpServlet {
         };
 
         WrapperNetcdfFile globals = new WrapperNetcdfFile();
+        Map<String, Set<String>> attrMap = Maps.newHashMap();
         Group rootGroup = new Group(globals, null,
                                     "Aggregated global attributes");
         globals.addGroup(null, rootGroup);
         try {
 
             File file = new File(directory);
-            addDirectoryContents(file, globals, rootGroup, recurse, filter);
+            addDirectoryContents(file, globals, rootGroup, recurse, filter, attrMap);
+            for (String name : attrMap.keySet()) {
+                Joiner joiner = Joiner.on(";" + IOUtils.LINE_SEPARATOR).skipNulls();
+                String joinedStr = joiner.join(attrMap.get(name));
+                Attribute attr = new Attribute(name, joinedStr);
+                rootGroup.addAttribute(attr);
+            }
             globals.writeNcML(out, null);
         }
         catch (Exception ex) {
@@ -75,7 +88,7 @@ public class GlobalAttributeDeaggregationServlet extends HttpServlet {
 
     private void addDirectoryContents(File fileOrDir, WrapperNetcdfFile ncml,
                                       Group metaGroup, boolean recurse,
-                                      FileFilter filter) throws
+                                      FileFilter filter, Map<String, Set<String>> map) throws
             IOException {
         if (fileOrDir.isDirectory()) {
             for (File file : fileOrDir.listFiles()) {
@@ -83,15 +96,17 @@ public class GlobalAttributeDeaggregationServlet extends HttpServlet {
                 if (file.isDirectory() && recurse) {
                     File recurseDir = new File(FileHelper.dirAppend(fileOrDir.getPath(), file.getName()));
                     addDirectoryContents(recurseDir, ncml, metaGroup, recurse,
-                                         filter);
+                                         filter, map);
                 }
                 else {
-                    addFileContents(file, filter, ncml, metaGroup);
+                    //addFileContents(file, filter, ncml, metaGroup);
+                    addFileContents(file, filter, map);
                 }
             }
         }
         else {
-            addFileContents(fileOrDir, filter, ncml, metaGroup);
+            //addFileContents(fileOrDir, filter, ncml, metaGroup);
+            addFileContents(fileOrDir, filter, map);
         }
     }
 
@@ -103,6 +118,11 @@ public class GlobalAttributeDeaggregationServlet extends HttpServlet {
         }
     }
     
+    private void addFileContents(File file, FileFilter filter, Map<String,Set<String>> buffs) throws IOException {
+        if (filter.accept(file)) {
+            NcMLUtil.globalAttributesToMeta(file, buffs);
+        }
+    }
     private void printError(OutputStream out, String message) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
         writer.write("<?xml version='1.0' encoding='UTF-8'?>\n");
