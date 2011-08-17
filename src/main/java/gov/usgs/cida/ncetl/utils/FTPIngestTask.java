@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 import org.joda.time.DateTime;
 
 import org.json.simple.JSONObject;
@@ -69,7 +73,7 @@ public final class FTPIngestTask extends TimerTask {
 
     @Override
     public void run() {
-        if (!active) {
+            if (!active) {
             return;
         }
         boolean everythingIsGood = false;
@@ -81,6 +85,11 @@ public final class FTPIngestTask extends TimerTask {
             client.connect(ftpLocation.getHost(), port);
             client.login(username, password);
             String status = client.getStatus();
+            int reply = client.getReplyCode();
+            if(!FTPReply.isPositiveCompletion(reply)) {
+                client.disconnect();
+                LOG.info("FTP server refused connection.");
+            }
             LOG.info(status);
             client.changeWorkingDirectory(ftpLocation.getPath());
             everythingIsGood = ingestDirectory(".");
@@ -94,8 +103,21 @@ public final class FTPIngestTask extends TimerTask {
 
         if (everythingIsGood) {
             lastSuccessfulRun = new DateTime();
-//    TODO        IngestControlSpec spec = new IngestControlSpec();
-//            Spec.updateRow(spec, con);
+            java.sql.Date newSuccessDate = new java.sql.Date(new java.util.Date().getTime());
+            java.sql.Time newSuccessTime = new java.sql.Time(new java.util.Date().getTime());
+            LOG.debug("SUCCESSFUL INGEST");
+            try {
+                IngestControlSpec spec = new IngestControlSpec();
+                Map<String, String[]> params = new HashMap<String, String[]>(1);
+                params.put("s_" + IngestControlSpec.NAME, new String[] {ingestName});
+                params.put(IngestControlSpec.SUCCESS_DATE, new String[] {newSuccessDate.toString()});
+                params.put(IngestControlSpec.SUCCESS_TIME, new String[] {newSuccessTime.toString()});
+                Spec.loadParameters(spec, params);
+                Connection con = DatabaseUtil.getConnection();
+                Spec.updateRow(spec, con);
+            } catch (Exception ex) { //throws SQLException, NamingException, ClassNotFoundException 
+                LOG.error(ex.getMessage());
+            }
         }
     }
 
@@ -106,14 +128,15 @@ public final class FTPIngestTask extends TimerTask {
         for (FTPFile file : files) {
             LOG.debug("ingesting file named " + file.getName());
             if (file.isDirectory()) {
-                if (!ingestDirectory(dir + File.separator + file.getName())) {
+                //because datasetName is actually catalog that folder already exists in /datasets
+                if (!ingestDirectory(dir + File.separator  + datasetName + File.separator + file.getName())) {
                     completedSuccessfully = false;
                 }
             } else {
                 Matcher matcher = fileRegex.matcher(file.getName());
                 if (matcher.matches() && !client.retrieveFile(file.getName(),
                         new FileOutputStream(
-                        FileHelper.getDatasetsDirectory() + File.separator + file.getName()))) {
+                        FileHelper.getDatasetsDirectory() + File.separator + datasetName + File.separator + file.getName()))) {
                     // TODO keep a list of files that failed to try to correct next time
                     completedSuccessfully = false;
                 }
@@ -137,6 +160,7 @@ public final class FTPIngestTask extends TimerTask {
     }
     
     private String ingestName;
+    private String datasetName; //actually catalog name
     private URL ftpLocation;
     private long rescanEvery;
     private FTPClient client;
@@ -155,6 +179,11 @@ public final class FTPIngestTask extends TimerTask {
         
         public Builder name(String name) {
             this.ingestName = name;
+            return this;
+        }
+        
+        public Builder datasetName(String name) {
+            this.datasetName = name;
             return this;
         }
 
@@ -189,6 +218,7 @@ public final class FTPIngestTask extends TimerTask {
         }
         
         private String ingestName;
+        private String datasetName; //actually catalog name
         private URL ftpLocation;
         private long rescanEvery;
         private FTPClient client;
@@ -213,6 +243,7 @@ public final class FTPIngestTask extends TimerTask {
         public FTPIngestTask build() {
             FTPIngestTask ingest = new FTPIngestTask();
             ingest.ingestName = ingestName;
+            ingest.datasetName = datasetName;
             ingest.ftpLocation = ftpLocation;
             ingest.rescanEvery = rescanEvery;
             ingest.fileRegex = fileRegex;

@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.naming.NamingException;
@@ -130,5 +131,22 @@ public class CatalogSpec extends AbstractNcetlSpec {
         DatasetSpec.unmarshal(catalog_id, cat, con);
         
         return cat;
+    }
+    
+    /**
+     * index.jsp lists "Datasets" but they are really Catalogs
+     */
+    public static String lookupName(int id, Connection con) throws SQLException {
+        Spec spec = new CatalogSpec();
+        Map<String, String[]> params = new HashMap<String, String[]>(1);
+        params.put(ID, new String[] { "" + id });
+        Spec.loadParameters(spec, params);
+        ResultSet rs = Spec.getResultSet(spec, con);
+
+        String name = "unknown";
+        if (rs.next()) {
+            name = rs.getString(NAME);
+        }
+        return name;
     }
 }

@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.catalog.CollectionType;
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvCatalogModifier;
@@ -38,6 +40,8 @@ public class DatasetSpec extends AbstractNcetlSpec {
     public static final String NCID = "ncid";
     public static final String AUTHORITY = "authority";
     public static final String NAME = "name";
+    
+    private static Logger log = LoggerFactory.getLogger(DatasetSpec.class);
 
     @Override
     public String setupTableName() {
