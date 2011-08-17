@@ -1,16 +1,17 @@
 package gov.usgs.cida.ncetl.utils;
+import com.google.common.collect.Sets;
 import org.jdom.JDOMException;
 import thredds.server.metadata.bean.Extent;
 import thredds.server.metadata.exception.ThreddsUtilitiesException;
 import thredds.server.metadata.util.ThreddsTranslatorUtil;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -77,6 +78,19 @@ public final class NcMLUtil {
             group.addAttribute(att);
         }
         return group;
+    }
+    
+    public static void globalAttributesToMeta(File inFile, Map<String, Set<String>> attrMap) throws IOException {
+        NetcdfFile ncf = NetcdfFile.open(inFile.getPath());
+        List<Attribute> globalAttributes = ncf.getGlobalAttributes();
+        for (Attribute att : globalAttributes) {
+            Set<String> attrVals = attrMap.get(att.getName());
+            if (attrVals == null) {
+                attrVals = Sets.newLinkedHashSet();
+                attrMap.put(att.getName(), attrVals);
+            }
+            attrVals.add(att.getStringValue());
+        }
     }
 
     /**
