@@ -21,13 +21,13 @@ Ext.define("ncETL.panel.ModelFormGroup", {
 					}
 				});
 				this.store.add(record);
-                this.reload(this.store);
+                this.reload();
 			},
             scope : this
         }));
         
 		config = Ext.apply({
-		items : _items	
+		items : _items
 		}, config);
 		ncETL.panel.ModelFormGroup.superclass.constructor.call(this, config);
 	},
@@ -40,14 +40,14 @@ Ext.define("ncETL.panel.ModelFormGroup", {
 	},
     reload : function() {
         this.store.each(function(record) {
-				var form = new ncETL.form.Model({
-					model : record.self.getName(),
-					defaults : {
-						anchor : '100%'
-					}
-				});
-				form.loadRecord(record);
-				this.add(form);
-			}, this);
+            var form = new ncETL.form.Model({
+                model : record.self.getName(),
+                defaults : {
+                    anchor : '100%'
+                }
+            });
+            form.loadRecord(record);
+            this.add(form);
+        }, this);
     }
 });
