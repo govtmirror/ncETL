@@ -2,14 +2,23 @@ package gov.usgs.cida.ncetl.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.Days;
+import org.joda.time.Hours;
+import org.joda.time.Minutes;
+import org.joda.time.Months;
 import org.joda.time.Partial;
 import org.joda.time.MutableDateTime;
+import org.joda.time.ReadablePeriod;
+import org.joda.time.Seconds;
+import org.joda.time.Weeks;
+import org.joda.time.Years;
 
 /**
  *
@@ -20,6 +29,33 @@ public class DateIndexer extends HttpServlet {
 	public static final String USAGE = "java DateIndexer \"${StartDate}\" \"${EndDate}\"";
     private static final long serialVersionUID = 1L;
     private static final int[] LEAP_DAY =  {2, 29};
+    
+    enum lengths {
+        SECOND(Seconds.ONE, "second", "sec", "s"),
+        MINUTE(Minutes.ONE, "minute", "min"), // Don't allow "m" that could mean month
+        HOUR(Hours.ONE, "hour", "hr", "h"),
+        DAY(Days.ONE, "day", "d"),
+        WEEK(Weeks.ONE, "week"),
+        MONTH(Months.ONE, "month"),
+        QUARTER(Months.FOUR, "quarter", "qtr"),
+        YEAR(Years.ONE, "year", "yr", "y"),
+        DECADE(Years.years(10), "decade"),
+        CENTURY(Years.years(100), "century");
+        
+        ReadablePeriod per;
+        Map<String, lengths> descMap;
+        
+        lengths(ReadablePeriod base, String... descriptions) {
+            this.per = base;
+            for(String desc : descriptions) {
+                this.descMap.put(desc, this);
+            }
+        }
+        
+        lengths getLength(String desc) {
+            return SECOND;
+        }
+    }
 
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -28,6 +64,7 @@ public class DateIndexer extends HttpServlet {
 		String origin = request.getParameter("origin");
 		String end = request.getParameter("end");
 		String steps = request.getParameter("steps");
+        String stepLength = request.getParameter("stepLength");
 		if (null != origin && null != end) {
 			DateMidnight startDate = new DateMidnight(origin);
 			DateMidnight endDate = new DateMidnight(end);
