@@ -80,8 +80,10 @@ public class DateIndexer extends HttpServlet {
                 Partial leapDay = new Partial(fields, LEAP_DAY);
                 skipMe.add(leapDay);
             }
-            for (String interval : skipIntervals) {
-                skipUs.add(new Interval(interval));
+            if (null != skipIntervals) {
+                for (String interval : skipIntervals) {
+                    skipUs.add(new Interval(interval));
+                }
             }
             printSuccess(response, getTimesNoStride(startDate, endDate, stepPeriod, skipMe, skipUs));
         } else {
@@ -120,21 +122,23 @@ public class DateIndexer extends HttpServlet {
         StringBuilder strBuild = new StringBuilder();
         MutableDateTime current = new MutableDateTime(origin);
         int index = 0;
-        date:
         while (current.isBefore(end)) {
-            index++;
-            current.add(period);
+            boolean skipThisTimestep = false;
             for (Partial skip : skippedPartials) {
                 if (skip.isMatch(current)) {
-                    continue date; //skip this timestep
+                    skipThisTimestep = true;
                 }
             }
             for (ReadableInterval skipInt : skippedIntervals) {
                 if (skipInt.contains(current)) {
-                    continue date; //skip this timestep
+                    skipThisTimestep = true;
                 }
             }
-            strBuild.append(Integer.toString(index)).append(" ");
+            if (!skipThisTimestep) {
+                strBuild.append(Integer.toString(index)).append(" ");
+            }
+            index++;
+            current.add(period);
         }
         return strBuild.toString();
     }
