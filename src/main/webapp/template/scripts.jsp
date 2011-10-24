@@ -15,6 +15,9 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 <%-- Global ncETL script --%>
 <script type="text/javascript" src="js/ui/ncetl.js"></script>
 
+<%-- Lookup Models --%>
+<script type="text/javascript" src="js/model/Datatype.js"></script>
+
 <%-- Models --%>
 <script type="text/javascript" src="js/model/Access.js"></script>
 <script type="text/javascript" src="js/model/Catalog.js"></script>
