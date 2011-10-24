@@ -104,7 +104,6 @@ public class MockPreparedStatement implements PreparedStatement {
 
     @Override
     public void setString(int i, String string) throws SQLException {
-        System.out.println(string);
         this.id = Integer.parseInt(string);
     }
 
