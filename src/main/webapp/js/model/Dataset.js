@@ -36,19 +36,52 @@ Ext.define('Dataset', {
 		type : 'int'
 	}, {
 		name : 'name',
-		type : 'string'
+		type : 'string',
+        editor : {
+			xtype: 'textfield',
+			fieldLabel : 'Name',
+			allowBlank : false,
+			name : 'name'
+		}
 	}, {
 		name : 'catalog_id',
 		type : 'int'
 	}, {
 		name : 'data_type_id',
-		type : 'int'
+		type : 'int',
+        editor : {
+			xtype: 'combo',
+			fieldLabel : 'Datatype',
+            store : new Ext.data.Store({
+                model : 'Datatype',
+                autoLoad : true
+            }),
+            queryMode: 'local',
+            displayField: 'type',
+            valueField: 'id',
+			name : 'data_type_id',
+            triggerAction : 'all',
+            typeAhead : true,
+            forceSelection : true
+		}
 	}, {
 		name : 'ncid',
-		type : 'string'
+		type : 'string',
+        editor : {
+			xtype: 'textfield',
+			fieldLabel : 'ID',
+			allowBlank : false,
+			name : 'ncid'
+		}
 	}, {
 		name : 'authority',
-		type : 'string'
+		type : 'string',
+        editor : {
+			xtype: 'textfield',
+			fieldLabel : 'Authority',
+			allowBlank : false,
+			name : 'authority'
+		}
 	}],
 	belongsTo: 'Catalog',
 	proxy: {
