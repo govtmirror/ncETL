@@ -68,7 +68,7 @@ public class DocumentationSpec  extends AbstractNcetlSpec {
         Spec.loadParameters(spec, params);
         ResultSet rs = Spec.getResultSet(spec, con);
         
-        while (rs.next()) {
+        while (rs.next()) {            
             String type = DocumentationTypeSpec.lookup(rs.getInt(DOCUMENTATION_TYPE_ID), con);
             String href = rs.getString(XLINK_HREF);
             String title = rs.getString(XLINK_TITLE);
@@ -77,6 +77,7 @@ public class DocumentationSpec  extends AbstractNcetlSpec {
             InvDocumentation doc = new InvDocumentation(href, null, title, type, text);
             docs.add(doc);
         }
+
         return docs;
     }
 }
