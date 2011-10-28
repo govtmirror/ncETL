@@ -52,7 +52,6 @@ class MockResultSet implements ResultSet {
         boolean hasResult = !results.isEmpty();
         if(hasResult)
             result = results.pop();
-        System.out.println(hasResult);
         return hasResult;
     }
     
