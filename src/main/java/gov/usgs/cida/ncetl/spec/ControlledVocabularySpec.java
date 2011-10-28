@@ -58,6 +58,7 @@ public class ControlledVocabularySpec extends AbstractNcetlSpec {
         Spec.loadParameters(spec, params);
         ResultSet rs = Spec.getResultSet(spec, con);
 
+        
         if (rs.next()) {
             String vocab = rs.getString(VOCAB);
             return new Vocab(text, vocab);
