@@ -1,5 +1,5 @@
 <%-- 
-    Document   : dateindexer_form
+    Document   : dateindexer
     Created on : Oct 24, 2011, 3:47:45 PM
     Author     : M. Herold
 --%>
@@ -28,11 +28,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Date Indexer</title>
         <!-- // TODO: localize these googleapis -->
-        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+        <link href="css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="js/ui/jquery.min.js"></script>
+        <script type="text/javascript" src="js/ui/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/ui/jquery-ui-timepicker-addon.js"></script>
-        <script type="text/javascript" src="js/ui/date.js"></script>
         <script type="text/javascript">
         $(document).ready(function() {
             // Date-Time Picker
