@@ -70,6 +70,8 @@ public class DateIndexer extends HttpServlet {
         boolean skipLeapDays = (null != request.getParameter("leapSkip"));
 
         if (null != origin && null != end) {
+            origin = origin.replace(" ", "T") + ":00Z"; // adjust date format
+            end = end.replace(" ", "T") + ":01Z";       // adjust date format
             DateTime startDate = new DateTime(origin);
             DateTime endDate = new DateTime(end);
             ReadablePeriod stepPeriod = descriptionMap.get(stepLength);
@@ -80,8 +82,12 @@ public class DateIndexer extends HttpServlet {
                 Partial leapDay = new Partial(fields, LEAP_DAY);
                 skipMe.add(leapDay);
             }
+            System.out.println("INTERVALS: ");
             if (null != skipIntervals) {
                 for (String interval : skipIntervals) {
+                    interval = interval.replace(" ", "T");      // adjust date format
+                    interval = interval.replace("/", ":00Z/");  // adjust date format
+                    interval = interval + ":01Z";               // adjust date format
                     skipUs.add(new Interval(interval));
                 }
             }
