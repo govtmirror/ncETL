@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.usgs.cida.ncetl.mocks;
 
 import java.io.InputStream;
@@ -24,6 +20,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -31,11 +28,11 @@ import java.util.Stack;
  *
  * @author M. Herold
  */
-class MockResultSet implements ResultSet { 
-    
+class MockResultSet implements ResultSet {
+
     private Stack<Map<String, Object>> results;
     private Map<String, Object> result;
-    
+
     public MockResultSet() {
         this.results = new Stack<Map<String, Object>>();
     }
@@ -48,26 +45,27 @@ class MockResultSet implements ResultSet {
      * Increments the cursor which initially points before the dataset. 
      */
     @Override
-    public boolean next() throws SQLException { 
+    public boolean next() throws SQLException {
         boolean hasResult = !results.isEmpty();
-        if(hasResult)
+        if (hasResult) {
             result = results.pop();
+        }
         return hasResult;
     }
-    
+
     @Override
     public boolean isBeforeFirst() throws SQLException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean isClosed() throws SQLException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean isFirst() throws SQLException {
-            throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -197,7 +195,7 @@ class MockResultSet implements ResultSet {
 
     @Override
     public double getDouble(String string) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return (Double) result.get(string);
     }
 
     @Override
@@ -299,7 +297,7 @@ class MockResultSet implements ResultSet {
     public boolean isAfterLast() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     @Override
     public boolean isLast() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -1022,5 +1020,4 @@ class MockResultSet implements ResultSet {
     public void setResult(Map<String, Object> result) {
         this.result = result;
     }
-    
 }
