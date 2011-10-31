@@ -82,7 +82,7 @@ public class SpatialRangeSpecTest {
 
         assertEquals(expResult, result);
     }
-    
+
     /**
      * Test of unmarshal method, of class SpatialRangeSpec.
      */
@@ -140,7 +140,7 @@ public class SpatialRangeSpecTest {
 
         assertEquals(expResult, result);
     }
-    
+
     /**
      * Test of unmarshal method, of class SpatialRangeSpec.
      */
