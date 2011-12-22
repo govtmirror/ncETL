@@ -82,4 +82,46 @@ public class ASCIIGridDataFile {
         return varName;
     }
     
+    private BufferedReader buffer = null;
+    private String[] currentLine = null;
+    private int marker = 1;
+    private int strideLength = -1;
+    
+    public void openForReading(int strideLength) throws FileNotFoundException, IOException {
+        buffer = new BufferedReader(new FileReader(underlyingFile));
+        // First line has number with how many lines follow it
+        buffer.readLine();
+        this.strideLength = strideLength;
+    }
+
+    public boolean hasMoreStrides() {
+        return (marker + strideLength < currentLine.length);
+    }
+    
+    public boolean readNextLine() throws IOException {
+        String line = null;
+        if ((line = buffer.readLine()) != null) {
+            currentLine = line.split("\\s+");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Please do not try to run this in any concurrent fashion
+     * it will break badly.
+     * @return 
+     */
+    public float[] readTimestepByStride() {
+        float[] strideVals = new float[strideLength];
+        for (int i=0; i<strideLength; i++) {
+            strideVals[i] = Float.parseFloat(currentLine[marker]);
+            marker++;
+        }
+        return strideVals;
+    }
+    
+    public void closeForReading() {
+        IOUtils.closeQuietly(buffer);
+    }
 }
