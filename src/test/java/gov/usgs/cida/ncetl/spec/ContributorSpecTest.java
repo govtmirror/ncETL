@@ -1,10 +1,6 @@
 package gov.usgs.cida.ncetl.spec;
 
-import com.sun.j3d.utils.geometry.Text2D;
 import gov.usgs.cida.ncetl.mocks.MockConnection;
-import gov.usgs.webservices.jdbc.spec.mapping.ColumnMapping;
-import gov.usgs.webservices.jdbc.spec.mapping.SearchMapping;
-import java.sql.Connection;
 import java.util.HashMap;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
