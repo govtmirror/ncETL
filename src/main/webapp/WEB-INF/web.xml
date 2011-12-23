@@ -101,6 +101,10 @@
         <servlet-name>GlobalAttributeDeaggregationServlet</servlet-name>
         <url-pattern>/globalattrs</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ASCIIConverterServlet</servlet-name>
+        <url-pattern>/ascii2nc</url-pattern>
+    </servlet-mapping>
     <!-- #################### JSL SERVICES CONFIGURATION #################### -->
     <servlet>
         <servlet-name>AccessService</servlet-name>
@@ -221,9 +225,5 @@
     <servlet-mapping>
         <servlet-name>ServiceService</servlet-name>
         <url-pattern>/service/srvc/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ASCIIConverterServlet</servlet-name>
-        <url-pattern>/ascii2nc</url-pattern>
     </servlet-mapping>
 </web-app>
