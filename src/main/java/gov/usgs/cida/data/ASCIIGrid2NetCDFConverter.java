@@ -1,8 +1,10 @@
 package gov.usgs.cida.data;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import ucar.nc2.Variable;
  * @author jwalker
  */
 public class ASCIIGrid2NetCDFConverter {
+    public static final String ALB = "albers_conical_equal_area";
     
     private static final Logger LOG = LoggerFactory.getLogger(ASCIIGrid2NetCDFConverter.class);
     private static final String X = "x";
@@ -62,13 +65,30 @@ public class ASCIIGrid2NetCDFConverter {
             Variable tvar = nc.addVariable(T, DataType.INT, new Dimension[]{tdim});
             Variable idvar = nc.addVariable(ID, DataType.INT, new Dimension[]{ydim, xdim});
             Variable datavar = nc.addVariable(VAR, DataType.FLOAT, new Dimension[]{tdim, ydim, xdim});
+            // Also have to do grid mapping
+            Variable albvar = nc.addVariable(ALB, DataType.INT, new Dimension[0]);
+            
 
             // Define attributes
             // TODO allow users to define some extra attributes (std name, units, etc)
+            nc.addGlobalAttribute(new Attribute("Conventions", "CF-1.6"));
             xvar.addAttribute(new Attribute("units", "m"));
+            xvar.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
             yvar.addAttribute(new Attribute("units", "m"));
+            yvar.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
             zvar.addAttribute(new Attribute("units", "m"));
             tvar.addAttribute(new Attribute("units", gridDataFile.getTimeUnits()));
+            datavar.addAttribute(new Attribute("coordinates", "y x"));
+            datavar.addAttribute(new Attribute("grid_mapping", ALB));
+            datavar.addAttribute(new Attribute("coordsys", "Albers Conical Equal Area"));
+            albvar.addAttribute(new Attribute("grid_mapping_name", ALB));
+            List<Float> stdParallels = Lists.newArrayList(29.5f, 45.5f);
+            albvar.addAttribute(new Attribute("standard_parallel", stdParallels));
+            albvar.addAttribute(new Attribute("longitude_of_central_meridian", -96.0));
+            albvar.addAttribute(new Attribute("latitude_of_projection_origin", 23.0));
+            albvar.addAttribute(new Attribute("units", "m"));
+            albvar.addAttribute(new Attribute("false_easting", 0));
+            albvar.addAttribute(new Attribute("false_northing", 0));
 
             nc.create();
 
@@ -104,8 +124,9 @@ public class ASCIIGrid2NetCDFConverter {
             }
             nc.write(T, dataT);
 
-            i = j = 0;
+            i = 0;
             for(float[] valArr : gridHeaderInfoFile.getZGrid()) {
+                j = 0;
                 for (float val : valArr) {
                     dataZ.set(i, j, val);
                     j++;
@@ -114,8 +135,9 @@ public class ASCIIGrid2NetCDFConverter {
             }
             nc.write(Z, new int[2], dataZ);
 
-            i = j = 0;
+            i = 0;
             for (int[] valArr : gridHeaderInfoFile.getGridIds()) {
+                j = 0;
                 for (int val : valArr) {
                     dataID.set(i, j, val);
                     j++;
@@ -127,17 +149,18 @@ public class ASCIIGrid2NetCDFConverter {
             int[] origins = new int[3];
             gridDataFile.openForReading(gridHeaderInfoFile.getXLength());
             // i is the time dim, don't need to keep track I think
-            j = k = 0;
             while (gridDataFile.readNextLine()) {
-                while (j < gridHeaderInfoFile.getYLength()) {
-                    while (gridDataFile.hasMoreStrides()) {
-                        float[] stride = gridDataFile.readTimestepByStride();
-                        for (float val : stride) {
-                            dataData.set(0, j, k, val);
-                        }
+                j = 0;
+                while (gridDataFile.hasMoreStrides()) {
+                    float[] stride = gridDataFile.readTimestepByStride();
+                    k = 0;
+                    for (float val : stride) {
+                        dataData.set(0, j, k, val);
+                        k++;
                     }
                     j++;
                 }
+
                 nc.write(VAR, origins, dataData);
                 origins[0]++;
             }

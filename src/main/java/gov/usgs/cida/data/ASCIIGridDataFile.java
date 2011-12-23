@@ -50,7 +50,7 @@ public class ASCIIGridDataFile {
                 timesteps = Integer.parseInt(line.trim());
             }
             if ((line = buf.readLine()) != null) {
-                String yyyymmdd = line.substring(0, 7);
+                String yyyymmdd = line.substring(0, 8);
                 startDate = Instant.parse(yyyymmdd, DateTimeFormat.forPattern("yyyyMMdd"));
             }
             
@@ -95,7 +95,9 @@ public class ASCIIGridDataFile {
     }
 
     public boolean hasMoreStrides() {
-        return (marker + strideLength < currentLine.length);
+        // marker is at next place to read, has another stride if it ends
+        // up after the last index
+        return (marker + strideLength <= currentLine.length);
     }
     
     public boolean readNextLine() throws IOException {

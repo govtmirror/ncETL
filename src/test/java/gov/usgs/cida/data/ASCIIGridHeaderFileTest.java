@@ -19,10 +19,10 @@ public class ASCIIGridHeaderFileTest {
     @Test
     public void testReadExtents() throws Exception {
         System.out.println("readExtents");
-        URL resource = ASCIIGridHeaderFileTest.class.getClassLoader().getResource("GRID_HEADERinfo");
+        URL resource = ASCIIGridHeaderFileTest.class.getClassLoader().getResource("ASCII_HEADER");
         ASCIIGridHeaderFile instance = new ASCIIGridHeaderFile(new File(resource.getFile()));
         instance.readExtents();
-        assertThat(666, equalTo(instance.getXLength()));
-        assertThat(886, equalTo(instance.getYLength()));
+        assertThat(4, equalTo(instance.getXLength()));
+        assertThat(4, equalTo(instance.getYLength()));
     }
 }
