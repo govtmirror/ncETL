@@ -27,11 +27,11 @@ public class ASCIIConverterServlet extends HttpServlet {
         
         String header = request.getParameter("header");
         String data = request.getParameter("data");
-        String netcdf = request.getParameter("netcdf");
+        String netcdf = request.getParameter("outputDir");
         
         if (header == null || data == null || netcdf == null) {
             response.sendError(400, "Must specify 'header' for GRID_HEADERinfo file,"
-                    + " 'data' for grid data file, and 'netcdf' for NetCDF output file");
+                    + " 'data' for grid data file, and 'outputDir' for output directory");
             return;
         }
         

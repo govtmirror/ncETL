@@ -4,6 +4,11 @@
  */
 package gov.usgs.cida.data;
 
+import java.util.Map;
+import org.joda.time.Duration;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import java.io.BufferedReader;
@@ -26,8 +31,9 @@ public class ASCIIGridDataFile {
     
     private File underlyingFile;
     private Instant startDate = null;
-    private int timesteps = -1;
+    private int columns = -1;
     private String varName = null;
+    private Map<Integer, List<Long>> dateIndices;
     
     public ASCIIGridDataFile(File infile) {
         this.underlyingFile = infile;
@@ -35,6 +41,7 @@ public class ASCIIGridDataFile {
         // ASSUMING VAR.TIMESTEP.grid
         String filename = infile.getName();
         this.varName = filename.split("\\.")[0].toLowerCase();
+        this.dateIndices = Maps.newLinkedHashMap();
     }
     
     /*
@@ -45,16 +52,37 @@ public class ASCIIGridDataFile {
     public void inspectFile() throws FileNotFoundException, IOException {
         BufferedReader buf = new BufferedReader(new FileReader(underlyingFile));
         String line = null;
+        int year = -1;
+        List<Long> indices = Lists.newArrayList();
         try {
             if ((line = buf.readLine()) != null) {
-                timesteps = Integer.parseInt(line.trim());
+                columns = Integer.parseInt(line.trim());
             }
-            if ((line = buf.readLine()) != null) {
+            while ((line = buf.readLine()) != null) {
                 String yyyymmdd = line.substring(0, 8);
-                startDate = Instant.parse(yyyymmdd, DateTimeFormat.forPattern("yyyyMMdd"));
+                if (startDate == null) {
+                    startDate = Instant.parse(yyyymmdd, DateTimeFormat.forPattern("yyyyMMdd"));
+                    year = startDate.get(year());
+                    dateIndices.put(year, indices);
+                    indices.add(0l);
+                }
+                else {
+                    Instant thisDate = Instant.parse(yyyymmdd, DateTimeFormat.forPattern("yyyyMMdd"));
+                    int thisYear = thisDate.get(year());
+                    Duration daysSince = new Duration(startDate, thisDate);
+                    if (thisYear == year) {
+                        indices.add(daysSince.getStandardDays());
+                    }
+                    else {
+                        year = thisYear;
+                        indices = Lists.newArrayList();
+                        dateIndices.put(year, indices);
+                        indices.add(daysSince.getStandardDays());
+                    }
+                }
             }
             
-            if (timesteps == -1 || startDate == null) {
+            if (columns == -1 || startDate == null) {
                 LOG.error("File doesn't look like it should, unable to pull date out of file");
                 throw ASCIIGrid2NetCDFConverter.rtex;
             }
@@ -71,11 +99,18 @@ public class ASCIIGridDataFile {
      */
     public String getTimeUnits() {
         return "days since " + startDate.get(year()) + "-" +
-                startDate.get(monthOfYear()) + "-" + startDate.get(dayOfMonth());
+                pad(startDate.get(monthOfYear())) + "-" + 
+                pad(startDate.get(dayOfMonth()));
+    }
+    private String pad(int monthOrDay) {
+        if (monthOrDay < 10) {
+            return "0" + monthOrDay;
+        }
+        return "" + monthOrDay;
     }
     
-    public int getTimestepCount() {
-        return timesteps;
+    public Map<Integer, List<Long>> getTimestepIndices() {
+        return dateIndices;
     }
     
     public String getVariableName() {
