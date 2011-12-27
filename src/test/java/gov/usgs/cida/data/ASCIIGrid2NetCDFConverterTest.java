@@ -19,7 +19,7 @@ public class ASCIIGrid2NetCDFConverterTest {
         System.out.println("convert");
         File header = new File(ASCIIGrid2NetCDFConverterTest.class.getClassLoader().getResource("ASCII_HEADER").getFile());
         File data = new File(ASCIIGrid2NetCDFConverterTest.class.getClassLoader().getResource("PPT.DAY.grid").getFile());
-        File output = new File("/tmp/ncout");
+        File output = new File("/tmp/ncout/");
         ASCIIGrid2NetCDFConverter instance = new ASCIIGrid2NetCDFConverter(header, data, output);
         instance.convert();
     }

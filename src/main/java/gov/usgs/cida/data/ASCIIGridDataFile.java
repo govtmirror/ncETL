@@ -139,6 +139,7 @@ public class ASCIIGridDataFile {
         String line = null;
         if ((line = buffer.readLine()) != null) {
             currentLine = line.split("\\s+");
+            marker = 1;
             return true;
         }
         return false;

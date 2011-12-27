@@ -56,6 +56,7 @@ public class ASCIIGrid2NetCDFConverter {
 
         gridHeaderInfoFile.readExtents();
         gridDataFile.inspectFile();
+        gridDataFile.openForReading(gridHeaderInfoFile.getXLength());
 
         Map<Integer, List<Long>> timestepIndices = gridDataFile.getTimestepIndices();
 
@@ -79,7 +80,7 @@ public class ASCIIGrid2NetCDFConverter {
                 Variable yvar = nc.addVariable(Y, DataType.FLOAT, new Dimension[]{ydim});
                 // is this the right order?
                 Variable zvar = nc.addVariable(Z, DataType.FLOAT, new Dimension[]{ydim, xdim});
-                Variable tvar = nc.addVariable(T, DataType.LONG, new Dimension[]{tdim});
+                Variable tvar = nc.addVariable(T, DataType.INT, new Dimension[]{tdim});
                 Variable idvar = nc.addVariable(ID, DataType.INT, new Dimension[]{ydim, xdim});
                 Variable datavar = nc.addVariable(VAR, DataType.FLOAT, new Dimension[]{tdim, ydim, xdim});
                 // Also have to do grid mapping
@@ -110,7 +111,7 @@ public class ASCIIGrid2NetCDFConverter {
 
                 ArrayFloat.D1 dataX = new ArrayFloat.D1(xdim.getLength());
                 ArrayFloat.D1 dataY = new ArrayFloat.D1(ydim.getLength());
-                ArrayLong.D1 dataT = new ArrayLong.D1(tdim.getLength());
+                ArrayInt.D1 dataT = new ArrayInt.D1(tdim.getLength());
 
                 ArrayFloat.D2 dataZ = new ArrayFloat.D2(ydim.getLength(), xdim.getLength());
                 ArrayInt.D2 dataID = new ArrayInt.D2(ydim.getLength(), xdim.getLength());
@@ -135,7 +136,8 @@ public class ASCIIGrid2NetCDFConverter {
 
                 i = 0;
                 for (long val : timesteps) {
-                    dataT.set(i, val);
+                    // casting dates to int (dangerous!!)
+                    dataT.set(i, (int)val);
                     i++;
                 }
                 nc.write(T, dataT);
@@ -163,9 +165,10 @@ public class ASCIIGrid2NetCDFConverter {
                 nc.write(ID, new int[2], dataID);
 
                 int[] origins = new int[3];
-                gridDataFile.openForReading(gridHeaderInfoFile.getXLength());
+                
                 // i is the time dim, don't need to keep track I think
-                while (gridDataFile.readNextLine()) {
+                for (long day : timesteps) {
+                    gridDataFile.readNextLine();
                     j = 0;
                     while (gridDataFile.hasMoreStrides()) {
                         float[] stride = gridDataFile.readTimestepByStride();
@@ -190,9 +193,9 @@ public class ASCIIGrid2NetCDFConverter {
                 throw rtex;
             }
             finally {
-                gridDataFile.closeForReading();
                 nc.close();
             }
         }
+        gridDataFile.closeForReading();
     }
 }
