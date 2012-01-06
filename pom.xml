@@ -8,7 +8,7 @@
     <name>ncETL</name>
     <description>
         Owner: JW
-        Coders: JW, IS, DS, AW
+        Coders: JW, IS, DS, AW, MH
     </description>
     <url>http://cida.usgs.gov</url>
     <inceptionYear>2011</inceptionYear>
@@ -36,33 +36,33 @@
         </license>
     </licenses>
 
-<!--    <repositories>
+<repositories>
         <repository>
             <id>cida-gdp-thirdparty</id>
             <name>CIDA GDP Third-party</name>
-            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/repositories/cida-gdp-thirdparty</url>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-gdp-thirdparty</url>
         </repository>
         <repository>
             <id>cida-snapshots</id>
             <name>CIDA Snapshots</name>
-            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/repositories/cida-snapshots</url>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
         </repository>
         <repository>
             <id>cida-gdp-development</id>
             <name>CIDA GDP Development</name>
-            <url>http://igsarmewfsbbl.er.usgs.gov:8081/nexus/content/groups/cida-gdp-development</url>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/cida-gdp-development</url>
         </repository>
-    </repositories>-->
+    </repositories>
     
     <scm>
-        <connection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/dcpt/trunk</connection>
-        <developerConnection>scm:svn:https://cida-svn.er.usgs.gov/repos/dev/usgs/dcpt/trunk</developerConnection>
-        <url>https://cida-svn.er.usgs.gov/repos/dev/usgs/dcpt</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:http://gitub.com/USGS-CIDA/ncETL.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:USGS-CIDA/ncETL.git</developerConnection>
+        <url>https://github.com/USGS-CIDA/ncETL</url>
     </scm>
     
     <ciManagement>
-        <system>Hudson</system>
+        <!-- This jenkins instance is only accessible within CIDA, sorry -->
+        <system>Jenkins</system>
         <url>http://igsarm-cida-hudson1.er.usgs.gov:8080/hudson/job/ncETL</url>
         <notifiers>
             <notifier>
@@ -227,7 +227,7 @@
         <dependency>
             <groupId>gov.usgs.cida</groupId>
             <artifactId>jdbc-spec-library</artifactId>
-            <version>0.5.7</version>
+            <version>0.5.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
