@@ -57,6 +57,10 @@
         <servlet-name>GlobalAttributeDeaggregationServlet</servlet-name>
         <servlet-class>gov.usgs.cida.ncetl.servlet.GlobalAttributeDeaggregationServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ASCIIConverterServlet</servlet-name>
+        <servlet-class>gov.usgs.cida.ncetl.servlet.ASCIIConverterServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>IngestControlServlet</servlet-name>
         <url-pattern>/ingestors</url-pattern>
@@ -96,6 +100,10 @@
     <servlet-mapping>
         <servlet-name>GlobalAttributeDeaggregationServlet</servlet-name>
         <url-pattern>/globalattrs</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ASCIIConverterServlet</servlet-name>
+        <url-pattern>/ascii2nc</url-pattern>
     </servlet-mapping>
     <!-- #################### JSL SERVICES CONFIGURATION #################### -->
     <servlet>
