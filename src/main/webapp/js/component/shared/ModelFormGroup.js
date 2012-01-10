@@ -1,43 +1,55 @@
 Ext.define("ncETL.panel.ModelFormGroup", {
-	extend: 'Ext.panel.Panel',
-	constructor: function(config) {
-		if (!config) config = {};
+    extend: 'Ext.panel.Panel',
+    constructor: function(config) {
+        if (!config) config = {};
 		
-		var _store = config.store;
+        //var _store = config.store;
+        
+        var _model = config.model;
+        var _store = _model.store;
 		
-		var _items = [];
-		
-		_store.on('load', function(store, records, successful, operation, options) {
-			this.reload();
-		}, this);
+        var _items = [];
+//		
+//        _store.on('load', function(store, records, successful, operation, options) {
+//            this.reload();
+//        }, this);
 		
         _items.push(new Ext.button.Button({
-            text : "Add " + _store.model.getName(), // TODO is this kosher Sibley?
+            text : "Add " + _model.modelName,
             handler : function(record) {
-				var form = new ncETL.form.Model({
-					model : this.store.model.getName(),
-					defaults : {
-						anchor : '100%'
-					}
-				});
-				this.store.add(record);
+                var form = new ncETL.form.Model({
+                    model : this.store.model.getName(),
+                    defaults : {
+                        anchor : '100%'
+                    }
+                });
+                this.store.add(record);
                 this.reload();
-			},
+            },
             scope : this
         }));
         
-		config = Ext.apply({
-		items : _items
-		}, config);
-		ncETL.panel.ModelFormGroup.superclass.constructor.call(this, config);
-	},
-	saveRecords : function() {
-		this.items.each(function(item){
+        _model.associations.each(function(item) {
+            if (item.type === 'hasMany') {
+                var _assoc_model = Ext.ModelManager.getModel(item.model).create();
+                _items.push(new ncETL.panel.ModelForm({
+                    model : _assoc_model
+                }));
+            }
+        }, this);
+        
+        config = Ext.apply({
+            items : _items
+        }, config);
+        ncETL.panel.ModelFormGroup.superclass.constructor.call(this, config);
+    },
+    saveRecords : function() {
+        this.items.each(function(item){
             if (item.saveRecord) {
                 item.saveRecord();
             }
-		}, this);
-	},
+        }, this);
+    },
     reload : function() {
         this.store.each(function(record) {
             var form = new ncETL.form.Model({
@@ -49,5 +61,6 @@ Ext.define("ncETL.panel.ModelFormGroup", {
             form.loadRecord(record);
             this.add(form);
         }, this);
-    }
+    },
+    scope : this
 });
