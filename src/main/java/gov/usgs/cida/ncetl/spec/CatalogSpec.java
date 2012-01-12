@@ -79,12 +79,12 @@ public class CatalogSpec extends AbstractNcetlSpec {
                     params.put(CatalogSpec.LOCATION,
                                new String[] { catURI.toString() });
                     Spec.loadParameters(spec, params);
-                    try {
-                        Spec.insertRow(spec, con);
-                    }
-                    catch (SQLException ex) {
-                        LOG.debug("update failed: " + ex);
-                    }
+//                    try {
+//                        Spec.insertRow(spec, con);
+//                    }
+//                    catch (SQLException ex) {
+//                        LOG.debug("update failed: " + ex);
+//                    }
                     return null;
                 }
             }),

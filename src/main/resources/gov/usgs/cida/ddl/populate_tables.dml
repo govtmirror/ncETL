@@ -1,7 +1,9 @@
 INSERT INTO collection_type (type)
     VALUES  ('TimeSeries'),
             ('Stations'),
-            ('ForecastModelRuns');
+            ('ForecastModelRuns')
+    WHERE not exists 
+        (SELECT type FROM collection_type);
 
 INSERT INTO data_type (type)
     VALUES  ('Grid'),
@@ -10,7 +12,9 @@ INSERT INTO data_type (type)
             ('Radial'),
             ('Station'),
             ('Swath'),
-            ('Trajectory');
+            ('Trajectory')
+    WHERE not exists 
+        (SELECT type FROM data_type);
 
 INSERT INTO data_format (type)
     VALUES  ('BUFR'),
@@ -33,15 +37,19 @@ INSERT INTO data_format (type)
             ('text/xml'),
             ('video/mpeg'),
             ('video/quicktime'),
-            ('video/realtime');
+            ('video/realtime')
+    WHERE not exists 
+        (SELECT type FROM data_format);
 
--- not exclusive, next iteration maybe look into not dropping table;
+-- not exhaustive list;
 INSERT INTO documentation_type (type)
     VALUES  ('funding'),
             ('history'),
             ('processing_level'),
             ('rights'),
-            ('summary');
+            ('summary')
+    WHERE not exists 
+        (SELECT type FROM documentation_type);
 
 INSERT INTO service_type (type)
     VALUES  ('ADDE'),
@@ -61,7 +69,9 @@ INSERT INTO service_type (type)
             ('Catalog'),
             ('QueryCapability'),
             ('Resolver'),
-            ('Compound');
+            ('Compound')
+    WHERE not exists 
+        (SELECT type FROM service_type);
 
 -- not exclusive, should allow user to add and not drop these;
 INSERT INTO date_type_enum (type)
@@ -70,13 +80,19 @@ INSERT INTO date_type_enum (type)
             ('valid'),
             ('issued'),
             ('available'),
-            ('metadataCreated');
+            ('metadataCreated')
+    WHERE not exists 
+        (SELECT type FROM date_type_type);
 
 INSERT INTO spatial_range_type (type)
     VALUES  ('northsouth'),
             ('eastwest'),
-            ('updown');
+            ('updown')
+    WHERE not exists 
+        (SELECT type FROM spatial_range_type);
             
 INSERT INTO up_down_type (type)
     VALUES  ('up'),
-            ('down');
+            ('down')
+    WHERE not exists 
+        (SELECT type FROM up_down_type);
