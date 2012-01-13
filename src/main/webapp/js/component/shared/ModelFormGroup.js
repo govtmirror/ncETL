@@ -1,66 +1,58 @@
 Ext.define("ncETL.panel.ModelFormGroup", {
-    extend: 'Ext.panel.Panel',
-    constructor: function(config) {
-        if (!config) config = {};
+	extend: 'Ext.panel.Panel',
+	constructor: function(config) {
+		if (!config) config = {};
 		
-        //var _store = config.store;
-        
-        var _model = config.model;
-        var _store = _model.store;
+		var _editable = !config.isRootNode;
+		var _store = config.store;
+		var _modelName = config.modelName;
 		
-        var _items = [];
-//		
-//        _store.on('load', function(store, records, successful, operation, options) {
-//            this.reload();
-//        }, this);
+		var _items = [];
 		
-        _items.push(new Ext.button.Button({
-            text : "Add " + _model.modelName,
-            handler : function(record) {
-                var form = new ncETL.form.Model({
-                    model : this.store.model.getName(),
-                    defaults : {
-                        anchor : '100%'
-                    }
-                });
-                this.store.add(record);
-                this.reload();
-            },
-            scope : this
-        }));
+		if (_editable) {
+			_items.push(new Ext.button.Button({
+				text : "Add " + _modelName,
+				handler : function(btn) {
+					this.store.add(Ext.ModelMgr.getModel(this.modelName).create());
+					this.that.reload();
+				},
+				scope : {that : this, store : _store, modelName : _modelName}
+			}));
+		}
+		
+		_store.data.each(function(item) {
+			this.items.push(new ncETL.form.Model({
+				model : item,
+				defaults : {
+					anchor : '100%'
+				}
+			}));
+		}, {
+			items : _items
+		});
         
-        _model.associations.each(function(item) {
-            if (item.type === 'hasMany') {
-                var _assoc_model = Ext.ModelManager.getModel(item.model).create();
-                _items.push(new ncETL.panel.ModelForm({
-                    model : _assoc_model
-                }));
-            }
-        }, this);
-        
-        config = Ext.apply({
-            items : _items
-        }, config);
-        ncETL.panel.ModelFormGroup.superclass.constructor.call(this, config);
-    },
-    saveRecords : function() {
-        this.items.each(function(item){
-            if (item.saveRecord) {
-                item.saveRecord();
-            }
-        }, this);
-    },
-    reload : function() {
-        this.store.each(function(record) {
-            var form = new ncETL.form.Model({
-                model : record.self.getName(),
-                defaults : {
-                    anchor : '100%'
-                }
-            });
-            form.loadRecord(record);
-            this.add(form);
-        }, this);
-    },
-    scope : this
+		config = Ext.apply({
+			items : _items
+		}, config);
+		ncETL.panel.ModelFormGroup.superclass.constructor.call(this, config);
+	},
+	saveRecords : function() {
+		this.items.each(function(item){
+			if (item.saveRecord) {
+				item.saveRecord();
+			}
+		}, this);
+	},
+	reload : function() {
+		this.store.each(function(record) {
+			var form = new ncETL.form.Model({
+				model : record,
+				defaults : {
+					anchor : '100%'
+				}
+			});
+			this.add(form);
+		}, this);
+	},
+	scope : this
 });

@@ -1,4 +1,4 @@
-Ext.define('access', {
+Ext.define('Access', {
     extend: 'Ext.data.Model',
     fields: [{
             name : 'id',
