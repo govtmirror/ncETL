@@ -82,7 +82,7 @@ INSERT INTO date_type_enum (type)
             ('available'),
             ('metadataCreated')
     WHERE not exists 
-        (SELECT type FROM date_type_type);
+        (SELECT type FROM date_type_enum);
 
 INSERT INTO spatial_range_type (type)
     VALUES  ('northsouth'),
