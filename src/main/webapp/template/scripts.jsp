@@ -37,6 +37,9 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 <script type="text/javascript" src="js/model/SpatialRange.js"></script>
 <script type="text/javascript" src="js/model/TimeCoverage.js"></script>
 
+<%-- Additional UI scripts --%>
+<script type="text/javascript" src="js/ui/nciso.js"></script>
+
 <%-- Added UI Components --%>
 <script type="text/javascript" src="js/component/IngestorGrid.js"></script>
 

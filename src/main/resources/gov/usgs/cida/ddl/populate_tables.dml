@@ -1,98 +1,82 @@
-INSERT INTO collection_type (type)
-    VALUES  ('TimeSeries'),
-            ('Stations'),
-            ('ForecastModelRuns')
-    WHERE not exists 
-        (SELECT type FROM collection_type);
+INSERT INTO collection_type (id, type)
+    VALUES  (1, 'TimeSeries'),
+            (2, 'Stations'),
+            (3, 'ForecastModelRuns');
 
-INSERT INTO data_type (type)
-    VALUES  ('Grid'),
-            ('Image'),
-            ('Point'),
-            ('Radial'),
-            ('Station'),
-            ('Swath'),
-            ('Trajectory')
-    WHERE not exists 
-        (SELECT type FROM data_type);
+INSERT INTO data_type (id, type)
+    VALUES  (1, 'Grid'),
+            (2, 'Image'),
+            (3, 'Point'),
+            (4, 'Radial'),
+            (5, 'Station'),
+            (6, 'Swath'),
+            (7, 'Trajectory');
 
-INSERT INTO data_format (type)
-    VALUES  ('BUFR'),
-            ('ESML'),
-            ('GEMPAK'),
-            ('GINI'),
-            ('GRIB-1'),
-            ('GRIB-2'),
-            ('HDF4'),
-            ('HDF5'),
-            ('NcML'),
-            ('NetCDF'),
-            ('NEXRAD2'),
-            ('NIDS'),
-            ('image/gif'),
-            ('image/jpeg'),
-            ('image/tiff'),
-            ('text/plain'),
-            ('text/tab-separated-values'),
-            ('text/xml'),
-            ('video/mpeg'),
-            ('video/quicktime'),
-            ('video/realtime')
-    WHERE not exists 
-        (SELECT type FROM data_format);
+INSERT INTO data_format (id, type)
+    VALUES  (1, 'BUFR'),
+            (2, 'ESML'),
+            (3, 'GEMPAK'),
+            (4, 'GINI'),
+            (5, 'GRIB-1'),
+            (6, 'GRIB-2'),
+            (7, 'HDF4'),
+            (8, 'HDF5'),
+            (9, 'NcML'),
+            (10, 'NetCDF'),
+            (11, 'NEXRAD2'),
+            (12, 'NIDS'),
+            (13, 'image/gif'),
+            (14, 'image/jpeg'),
+            (15, 'image/tiff'),
+            (16, 'text/plain'),
+            (17, 'text/tab-separated-values'),
+            (18, 'text/xml'),
+            (19, 'video/mpeg'),
+            (20, 'video/quicktime'),
+            (21, 'video/realtime');
 
 -- not exhaustive list;
-INSERT INTO documentation_type (type)
-    VALUES  ('funding'),
-            ('history'),
-            ('processing_level'),
-            ('rights'),
-            ('summary')
-    WHERE not exists 
-        (SELECT type FROM documentation_type);
+INSERT INTO documentation_type (id, type)
+    VALUES  (1, 'funding'),
+            (2, 'history'),
+            (3, 'processing_level'),
+            (4, 'rights'),
+            (5, 'summary');
 
-INSERT INTO service_type (type)
-    VALUES  ('ADDE'),
-            ('OpenDAP'),
-            ('OpenDAP-G'),
-            ('HTTPServer'),
-            ('FTP'),
-            ('GridFTP'),
-            ('File'),
-            ('NetcdfServer'),
-            ('LAS'),
-            ('WMS'),
-            ('WFS'),
-            ('WCS'),
-            ('WSDL'),
-            ('WebForm'),
-            ('Catalog'),
-            ('QueryCapability'),
-            ('Resolver'),
-            ('Compound')
-    WHERE not exists 
-        (SELECT type FROM service_type);
+INSERT INTO service_type (id, type)
+    VALUES  (1, 'ADDE'),
+            (2, 'OpenDAP'),
+            (3, 'OpenDAP-G'),
+            (4, 'HTTPServer'),
+            (5, 'FTP'),
+            (6, 'GridFTP'),
+            (7, 'File'),
+            (8, 'NetcdfServer'),
+            (9, 'LAS'),
+            (10, 'WMS'),
+            (11, 'WFS'),
+            (12, 'WCS'),
+            (13, 'WSDL'),
+            (14, 'WebForm'),
+            (15, 'Catalog'),
+            (16, 'QueryCapability'),
+            (17, 'Resolver'),
+            (18, 'Compound');
 
 -- not exclusive, should allow user to add and not drop these;
-INSERT INTO date_type_enum (type)
-    VALUES  ('created'),
-            ('modified'),
-            ('valid'),
-            ('issued'),
-            ('available'),
-            ('metadataCreated')
-    WHERE not exists 
-        (SELECT type FROM date_type_type);
+INSERT INTO date_type_enum (id, type)
+    VALUES  (1, 'created'),
+            (2, 'modified'),
+            (3, 'valid'),
+            (4, 'issued'),
+            (5, 'available'),
+            (6, 'metadataCreated');
 
-INSERT INTO spatial_range_type (type)
-    VALUES  ('northsouth'),
-            ('eastwest'),
-            ('updown')
-    WHERE not exists 
-        (SELECT type FROM spatial_range_type);
+INSERT INTO spatial_range_type (id, type)
+    VALUES  (1, 'northsouth'),
+            (2, 'eastwest'),
+            (3, 'updown');
             
-INSERT INTO up_down_type (type)
-    VALUES  ('up'),
-            ('down')
-    WHERE not exists 
-        (SELECT type FROM up_down_type);
+INSERT INTO up_down_type (id, type)
+    VALUES  (1, 'up'),
+            (2, 'down');

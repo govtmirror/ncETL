@@ -101,14 +101,15 @@ public final class NcMLUtil {
      * @return ncml file created
      * @throws ThreddsUtilitiesException 
      */
-    public static synchronized File createNcML(String filename) throws
+    public static synchronized File createNcML(String catalogLocation) throws
             ThreddsUtilitiesException {
-        String ncmlName = filename + ".ncml";
+        File catalog = new File(catalogLocation);
+        String ncmlName = catalog.getParent() + File.separator + "waf/nciso.ncml";
         File ncmlFile = new File(ncmlName);
         if (!ncmlFile.exists()) {
             try {
                 String ncmlPath = ncmlFile.getCanonicalPath();
-                ncmlFile = ThreddsTranslatorUtil.getNcml(filename, ncmlPath);
+                ncmlFile = ThreddsTranslatorUtil.getNcml(catalogLocation, ncmlPath);
                 Extent extent = ThreddsExtentUtil.getExtent(ncmlPath);
                 NCMLModifier ncmod = new NCMLModifier();
                 Element rootElement = getRootElement(ncmlPath);

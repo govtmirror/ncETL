@@ -75,11 +75,12 @@ Ext.onReady(function() {
 					padding : '2 2 2 2'
 				});
 
-				var ncISOPanel = new Ext.panel.Panel({
+				var ncISOPanel = new ncETL.panel.ncISO({
 					title : 'ncISO',
 					layout : 'fit',
 					border : false,
-					contentEl : 'decorate'
+                                        filename : record.get('location')
+					//contentEl : 'decorate'
 				});
 
 				new Ext.container.Viewport({
