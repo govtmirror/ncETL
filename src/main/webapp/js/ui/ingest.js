@@ -42,15 +42,6 @@ Ext.onReady(function() {
 				//################ NORMAL EXECUTION ##################
 				var formItems = [];
 
-//				var catalogForm = new ncETL.form.Model({
-//					model : "Catalog",
-//					defaults : {
-//						anchor : '100%'
-//					}
-//				});
-//				catalogForm.loadRecord(record);
-//				formItems.push(catalogForm);
-
 				var ingestStore = record.ingestors();
 
 				var ingestGrid = new ncETL.grid.Ingestor({
