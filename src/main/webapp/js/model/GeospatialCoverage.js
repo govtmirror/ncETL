@@ -20,10 +20,10 @@ Ext.define('GeospatialCoverage', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/geospatialcoverage/json/default',
-			create : 'service/geospatialcoverage/json/default/create',
-			update : 'service/geospatialcoverage/json/default/update',
-			destroy : 'service/geospatialcoverage/json/default/delete'
+			read : 'service/geospatial/json/default',
+			create : 'service/geospatial/json/default/create',
+			update : 'service/geospatial/json/default/update',
+			destroy : 'service/geospatial/json/default/delete'
 		},
 		reader : {
 			type : 'spec',

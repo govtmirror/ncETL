@@ -18,19 +18,19 @@ Ext.define('Dataset', {
         primaryKey: 'id',
         foreignKey: 'dataset_id',
         autoLoad: true
-    }//, {
-//        type: 'hasMany',
-//        model: 'GeospatialCoverage',
-//        primaryKey: 'id',
-//        foreignKey: 'dataset_id',
-//        autoLoad: true
-//    }, {
-//        type: 'hasMany',
-//        model: 'TimeCoverage',
-//        primaryKey: 'id',
-//        foreignKey: 'dataset_id',
-//        autoLoad: true
-//    }
+    }, {
+        type: 'hasMany',
+        model: 'GeospatialCoverage',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'TimeCoverage',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }
 ],
     fields: [{
         name : 'id',

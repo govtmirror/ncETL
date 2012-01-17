@@ -23,10 +23,10 @@ Ext.define('TimeCoverage', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/timecoverage/json/default',
-			create : 'service/timecoverage/json/default/create',
-			update : 'service/timecoverage/json/default/update',
-			destroy : 'service/timecoverage/json/default/delete'
+			read : 'service/time/json/default',
+			create : 'service/time/json/default/create',
+			update : 'service/time/json/default/update',
+			destroy : 'service/time/json/default/delete'
 		},
 		reader : {
 			type : 'spec',

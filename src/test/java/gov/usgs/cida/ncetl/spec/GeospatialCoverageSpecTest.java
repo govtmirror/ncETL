@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import thredds.catalog.SpatialRangeType;
 import thredds.catalog.ThreddsMetadata.GeospatialCoverage;
 import thredds.catalog.ThreddsMetadata.Range;
@@ -143,6 +144,7 @@ public class GeospatialCoverageSpecTest {
      * Test of unmarshal method, of class GeospatialCoverageSpec.
      */
     @Test
+    @Ignore
     public void testUnmarshalEmpy() throws Exception {
         System.out.println("* GeospatialCoverageSpec: unmarshal (empty)");
 

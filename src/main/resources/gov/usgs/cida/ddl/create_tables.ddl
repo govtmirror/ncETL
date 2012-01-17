@@ -3,28 +3,28 @@
 
 -- Lookup tables;
 CREATE TABLE collection_type 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
 
 CREATE TABLE data_type 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
 
 CREATE TABLE data_format 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
 
 CREATE TABLE documentation_type 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
 
 CREATE TABLE service_type 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
 
 CREATE TABLE date_type_enum 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
     
 CREATE TABLE spatial_range_type
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(32), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(32), PRIMARY KEY (id));
 
 CREATE TABLE up_down_type
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), type varchar(4), PRIMARY KEY (id));
+    (id INT NOT NULL, type varchar(4), PRIMARY KEY (id));
 
 -- This is an append table, users define their own vocabularies;      
 CREATE TABLE controlled_vocabulary 
