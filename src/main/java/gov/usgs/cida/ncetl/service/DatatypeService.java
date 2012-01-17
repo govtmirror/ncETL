@@ -34,14 +34,6 @@ public class DatatypeService extends WebService {
        Map<String, String[]> tmpParams = new HashMap<String, String[]>();
        tmpParams.putAll(super.defineParameters(req, router, params));
        
-       ActionType action = router.getActionTypeFromUri();
-       
-       if (ActionType.create == action) {
-           tmpParams.put("inserted", new String[] {"true"});
-       } else if (ActionType.update == action) {
-           tmpParams.put("updated", new String[] {"true"});
-       }
-       
        return tmpParams;
     }
 

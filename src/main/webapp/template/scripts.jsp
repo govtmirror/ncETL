@@ -17,6 +17,8 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 
 <%-- Lookup Models --%>
 <script type="text/javascript" src="js/model/Datatype.js"></script>
+<script type="text/javascript" src="js/model/DataFormat.js"></script>
+<script type="text/javascript" src="js/model/ServiceType.js"></script>
 
 <%-- Models --%>
 <script type="text/javascript" src="js/model/Access.js"></script>

@@ -1,6 +1,6 @@
 package gov.usgs.cida.ncetl.service;
 
-import gov.usgs.cida.ncetl.spec.PropertySpec;
+import gov.usgs.cida.ncetl.spec.GeospatialCoverageSpec;
 import gov.usgs.webservices.jdbc.routing.ActionType;
 import gov.usgs.webservices.jdbc.routing.InvalidServiceException;
 import gov.usgs.webservices.jdbc.routing.UriRouter;
@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Ivan Suftin <isuftin@usgs.gov>
  */
-public class PropertyService extends WebService {
+public class GeospatialCoverageService extends WebService {
     private static final long serialVersionUID = 1L;
 
-    public PropertyService() {
+    public GeospatialCoverageService() {
         this.enableCaching = false;
-        this.specMapping.put("default", PropertySpec.class);
+        this.specMapping.put("default", GeospatialCoverageSpec.class);
     }
 
     @Override

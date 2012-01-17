@@ -29,7 +29,7 @@ Ext.define("ncETL.panel.ncISO", {
             //                    });
             },
             failure: function(){
-                alert("failure");
+                //alert("failure");
             }
         });
         ncETL.panel.ncISO.superclass.constructor.call(this, config);

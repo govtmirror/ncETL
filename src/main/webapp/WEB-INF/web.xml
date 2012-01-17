@@ -226,4 +226,40 @@
         <servlet-name>ServiceService</servlet-name>
         <url-pattern>/service/srvc/*</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>ServiceTypeService</servlet-name>
+        <servlet-class>gov.usgs.cida.ncetl.service.ServiceTypeService</servlet-class>
+        <init-param>
+            <param-name>jndi_name</param-name>
+            <param-value>java:comp/env/jdbc/NCETL</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServiceTypeService</servlet-name>
+        <url-pattern>/service/srvctype/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GeospatialCoverageService</servlet-name>
+        <servlet-class>gov.usgs.cida.ncetl.service.GeospatialCoverageService</servlet-class>
+        <init-param>
+            <param-name>jndi_name</param-name>
+            <param-value>java:comp/env/jdbc/NCETL</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GeospatialCoverageService</servlet-name>
+        <url-pattern>/service/geospatial/*</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>TimeCoverageService</servlet-name>
+        <servlet-class>gov.usgs.cida.ncetl.service.TimeCoverageService</servlet-class>
+        <init-param>
+            <param-name>jndi_name</param-name>
+            <param-value>java:comp/env/jdbc/NCETL</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TimeCoverageService</servlet-name>
+        <url-pattern>/service/time/*</url-pattern>
+    </servlet-mapping>
 </web-app>
