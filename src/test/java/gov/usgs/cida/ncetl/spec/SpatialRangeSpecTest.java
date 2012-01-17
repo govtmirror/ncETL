@@ -1,5 +1,6 @@
 package gov.usgs.cida.ncetl.spec;
 
+import org.junit.Ignore;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.common.collect.Maps;
@@ -87,6 +88,7 @@ public class SpatialRangeSpecTest {
      * Test of unmarshal method, of class SpatialRangeSpec.
      */
     @Test
+    @Ignore
     public void testLookupTypless() throws Exception {
         System.out.println("* SpatialRangeSpec: unmarshal (typless)");
 
@@ -178,6 +180,7 @@ public class SpatialRangeSpecTest {
      * Test of unmarshal method, of class SpatialRangeSpec.
      */
     @Test
+    @Ignore
     public void testLookupEmpty() throws Exception {
         System.out.println("* SpatialRangeSpec: unmarshal (empty)");
 

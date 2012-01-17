@@ -1,6 +1,6 @@
 package gov.usgs.cida.ncetl.service;
 
-import gov.usgs.cida.ncetl.spec.DataFormatSpec;
+import gov.usgs.cida.ncetl.spec.TimeCoverageSpec;
 import gov.usgs.webservices.jdbc.routing.ActionType;
 import gov.usgs.webservices.jdbc.routing.InvalidServiceException;
 import gov.usgs.webservices.jdbc.routing.UriRouter;
@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Ivan Suftin <isuftin@usgs.gov>
  */
-public class DataFormatService extends WebService {
+public class TimeCoverageService extends WebService {
     private static final long serialVersionUID = 1L;
 
-    public DataFormatService() {
+    public TimeCoverageService() {
         this.enableCaching = false;
-        this.specMapping.put("default", DataFormatSpec.class);
+        this.specMapping.put("default", TimeCoverageSpec.class);
     }
 
     @Override
@@ -33,6 +33,14 @@ public class DataFormatService extends WebService {
             throws InvalidServiceException {
        Map<String, String[]> tmpParams = new HashMap<String, String[]>();
        tmpParams.putAll(super.defineParameters(req, router, params));
+       
+       ActionType action = router.getActionTypeFromUri();
+       
+       if (ActionType.create == action) {
+           tmpParams.put("inserted", new String[] {"true"});
+       } else if (ActionType.update == action) {
+           tmpParams.put("updated", new String[] {"true"});
+       }
        
        return tmpParams;
     }

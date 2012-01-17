@@ -6,6 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import ucar.nc2.units.DateType;
 
 /**
@@ -68,6 +69,7 @@ public class DateTypeFormattedSpecTest {
      * Test of unmarshal method, of class SpatialRangeSpec.
      */
     @Test
+    @Ignore
     public void testLookupHalfEmpty() throws Exception {
         System.out.println("* SpatialRangeSpec: unmarshal (half empty)");
 
@@ -87,6 +89,7 @@ public class DateTypeFormattedSpecTest {
      * Test of unmarshal method, of class SpatialRangeSpec.
      */
     @Test
+    @Ignore
     public void testLookupEmpty() throws Exception {
         System.out.println("* SpatialRangeSpec: unmarshal (empty)");
 
