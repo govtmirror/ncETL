@@ -34,7 +34,10 @@ Ext.define('Dataset', {
 ],
     fields: [{
         name : 'id',
-        type : 'int'
+        type : 'int',
+		editor : {
+			xtype : 'hidden'
+		}
     }, {
         name : 'name',
         type : 'string',
