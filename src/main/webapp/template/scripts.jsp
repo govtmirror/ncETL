@@ -21,6 +21,7 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 <script type="text/javascript" src="js/model/ServiceType.js"></script>
 
 <%-- Models --%>
+<script type="text/javascript" src="js/model/Service.js"></script>
 <script type="text/javascript" src="js/model/Access.js"></script>
 <script type="text/javascript" src="js/model/Catalog.js"></script>
 <script type="text/javascript" src="js/model/Contributor.js"></script>
@@ -35,7 +36,6 @@ Ext.BLANK_IMAGE_URL = 'images/s.gif';<%-- Path to the blank image should point t
 <script type="text/javascript" src="js/model/Project.js"></script>
 <script type="text/javascript" src="js/model/Property.js"></script>
 <script type="text/javascript" src="js/model/Publisher.js"></script>
-<script type="text/javascript" src="js/model/Service.js"></script>
 <script type="text/javascript" src="js/model/SpatialRange.js"></script>
 <script type="text/javascript" src="js/model/TimeCoverage.js"></script>
 

@@ -4,20 +4,26 @@ Ext.define('Access', {
         name : 'id',
         type : 'int'
     }, {
-        name : 'name',
-        type : 'string',
-        editor : {
-            xtype: 'textfield',
-            fieldLabel : 'Name',
-            allowBlank : false,
-            name : 'name'
-        }
-    }, {
         name : 'dataset_id',
         type : 'int'
     }, {
         name : 'service_id',
-        type : 'int'
+        type : 'int',
+        editor : {
+            xtype : 'combo',
+            fieldLabel : 'Service Name',
+            store : new Ext.data.Store({
+                model : 'Service',
+                autoLoad : true
+            }),
+            queryMode : 'local',
+            displayField : 'name',
+            valueField : 'id',
+            name : 'service_id',
+            triggerAction : 'all',
+            typeAhead : true,
+            forceSelection : true
+        }
     }, {
         name : 'dataformat_id',
         type : 'int',
