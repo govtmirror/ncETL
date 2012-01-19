@@ -12,21 +12,6 @@ Ext.define("ncETL.panel.ModelFormGroup", {
 		this.btns = new Ext.Container({});
 		this.children = new Ext.Container({});
 		
-		if (_editable) {
-//			this.btns.add(new Ext.button.Button({
-//				text : "Add " + _modelName,
-//				handler : function(btn) {
-//					this.store.add(Ext.ModelMgr.getModel(this.modelName).create());
-//					this.that.reload();
-//				},
-//				scope : {
-//					that : this, 
-//					store : _store, 
-//					modelName : _modelName
-//				}
-//			}));
-		}
-		
 		_store.data.each(function(item) {
 			this.items.add(new ncETL.form.Model({
 				model : item,
