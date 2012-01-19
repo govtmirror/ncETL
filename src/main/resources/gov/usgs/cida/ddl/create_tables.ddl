@@ -78,8 +78,8 @@ CREATE TABLE dataset
 CREATE TABLE service 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    catalog_id INT CONSTRAINT CATALOG4_FK REFERENCES catalog ON DELETE CASCADE, 
-    service_id INT CONSTRAINT SERVICE1_FK REFERENCES service ON DELETE CASCADE,  
+    catalog_id INT, 
+    service_id INT,  
     service_type_id INT CONSTRAINT SERVICETYPE_FK REFERENCES service_type, 
     name varchar(64), 
     base varchar(32),  
@@ -219,3 +219,13 @@ CREATE TABLE publisher_join
 
 CREATE TABLE date_join
     (dataset_id INT CONSTRAINT DATASET12_FK REFERENCES dataset, date_type_formatted_id INT CONSTRAINT DTF1_FK REFERENCES date_type_formatted, inserted boolean DEFAULT false, updated boolean DEFAULT false);
+
+CREATE TRIGGER catalog_delete
+    AFTER DELETE ON catalog REFERENCING OLD AS deleted_row
+    FOR EACH ROW MODE DB2SQL
+    DELETE FROM service WHERE catalog_id = deleted_row.id;
+
+CREATE TRIGGER service_delete
+    AFTER DELETE ON service REFERENCING OLD AS deleted_row
+    FOR EACH ROW MODE DB2SQL
+    DELETE FROM service WHERE service_id = deleted_row.id;
