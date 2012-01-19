@@ -1,6 +1,18 @@
 Ext.define('Service', {
 	extend: 'Ext.data.Model',
-        belongsTo: 'Catalog',
+        associations : [{
+            type: 'hasMany',
+            model: 'Service',
+            primaryKey: 'id',
+            foreignKey: 'service_id',
+            autoLoad: true
+        }, {
+            type : 'belongsTo',
+            model : 'Catalog'
+        }, {
+            type : 'belongsTo',
+            model : 'Service'
+        }],
 	fields: [{
 		name : 'id',
 		type : 'int'
@@ -17,9 +29,9 @@ Ext.define('Service', {
 		name : 'catalog_id',
 		type : 'int'
 	}, {
-//		name : 'service_id',
-//		type : 'int'
-//	}, {
+		name : 'service_id',
+		type : 'int'
+	}, {
 		name : 'service_type_id',
 		type : 'int',
                 editor : {
