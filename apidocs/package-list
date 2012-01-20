@@ -1,0 +1,8 @@
+gov.usgs.cida.data
+gov.usgs.cida.ncetl.service
+gov.usgs.cida.ncetl.servlet
+gov.usgs.cida.ncetl.spec
+gov.usgs.cida.ncetl.utils
+thredds.catalog
+thredds.catalog2.simpleImpl
+ucar.nc2
