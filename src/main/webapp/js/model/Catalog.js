@@ -41,10 +41,10 @@ Ext.define('Catalog', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/catalog/json/default',
-			create : 'service/catalog/json/default/create',
-			update : 'service/catalog/json/default/update',
-			destroy : 'service/catalog/json/default/delete'
+			read : 'service/catalog/json/catalog',
+			create : 'service/catalog/json/catalog/create',
+			update : 'service/catalog/json/catalog/update',
+			destroy : 'service/catalog/json/catalog/delete'
 		},
 		reader : {
 			type : 'spec',

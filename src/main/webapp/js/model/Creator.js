@@ -1,21 +1,58 @@
-//TODO
 Ext.define('Creator', {
 	extend: 'Ext.data.Model',
+        belongsTo: 'Dataset',
+        // might want ControlledVocabulary as association
 	fields: [{
 		name : 'id',
-		type : 'int'
+		type : 'int',
+                editor : {
+                    xtype : 'hidden'
+                }
 	}, {
 		name : 'name',
-		type : 'string'
+		type : 'string',
+                editor : {
+                    xtype: 'textfield',
+                    fieldLabel : 'Name',
+                    allowBlank : false,
+                    name : 'name'
+                }
 	}, {
 		name : 'controlled_vocabulary_id',
-		type : 'int'
+		type : 'int',
+                editor : {
+                    xtype: 'combo',
+                    fieldLabel : 'Vocabulary',
+                    store : new Ext.data.Store({
+                        model : 'ControlledVocabulary',
+                        autoLoad : true
+                    }),
+                    queryMode: 'local',
+                    displayField: 'type',
+                    valueField: 'id',
+                    name : 'controlled_vocabulary_id',
+                    triggerAction : 'all',
+                    typeAhead : true,
+                    forceSelection : true
+                }
 	}, {
 		name : 'contact_url',
-		type : 'string'
+		type : 'string',
+                editor : {
+                    xtype: 'textfield',
+                    fieldLabel : 'Contact URL',
+                    allowBlank : false,
+                    name : 'contact_url'
+                }
 	}, {
 		name : 'contact_email',
-		type : 'string'
+		type : 'string',
+                editor : {
+                    xtype: 'textfield',
+                    fieldLabel : 'Email',
+                    allowBlank : false,
+                    name : 'contact_email'
+                }
 	}],
 	proxy: {
 		type : 'spec',

@@ -1,5 +1,6 @@
 Ext.define('Dataset', {
     extend: 'Ext.data.Model',
+    belongsTo: 'Catalog',
     associations : [{
         type: 'hasMany',
         model: 'Access',
@@ -87,7 +88,6 @@ Ext.define('Dataset', {
             name : 'authority'
         }
     }],
-    belongsTo: 'Catalog',
     proxy: {
         type : 'spec',
         api : {
