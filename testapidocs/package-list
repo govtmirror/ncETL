@@ -1,0 +1,7 @@
+gov.usgs.cida.data
+gov.usgs.cida.ncetl
+gov.usgs.cida.ncetl.mocks
+gov.usgs.cida.ncetl.spec
+gov.usgs.cida.ncetl.utils
+thredds.catalog
+ucar.nc2
