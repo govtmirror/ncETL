@@ -1,7 +1,7 @@
-//TODO
 Ext.define('TimeCoverage', {
 	extend: 'Ext.data.Model',
-	fields: [{
+        belongsTo: 'Dataset',
+        fields: [{
 		name : 'id',
 		type : 'int'
 	}, {
@@ -23,10 +23,10 @@ Ext.define('TimeCoverage', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/time/json/default',
-			create : 'service/time/json/default/create',
-			update : 'service/time/json/default/update',
-			destroy : 'service/time/json/default/delete'
+			read : 'service/catalog/json/time',
+			create : 'service/catalog/json/time/create',
+			update : 'service/catalog/json/time/update',
+			destroy : 'service/catalog/json/time/delete'
 		},
 		reader : {
 			type : 'spec',

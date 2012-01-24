@@ -1,23 +1,38 @@
-//TODO
 Ext.define('Contributor', {
 	extend: 'Ext.data.Model',
+        belongsTo: 'Dataset',
 	fields: [{
 		name : 'id',
-		type : 'int'
+		type : 'int',
+                editor : {
+                    xtype : 'hidden'
+                }
 	}, {
 		name : 'role',
-		type : 'string'
+		type : 'string',
+                editor : {
+                    xtype: 'textfield',
+                    fieldLabel : 'Role',
+                    allowBlank : false,
+                    name : 'role'
+                }
 	}, {
 		name : 'text',
-		type : 'string'
+		type : 'string',
+                editor : {
+                    xtype: 'textfield',
+                    fieldLabel : 'Text',
+                    allowBlank : false,
+                    name : 'text'
+                }
 	}],
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/contributor/json/default',
-			create : 'service/contributor/json/default/create',
-			update : 'service/contributor/json/default/update',
-			destroy : 'service/contributor/json/default/delete'
+			read : 'service/catalog/json/contributor',
+			create : 'service/catalog/json/contributor/create',
+			update : 'service/catalog/json/contributor/update',
+			destroy : 'service/catalog/json/contributor/delete'
 		},
 		reader : {
 			type : 'spec',

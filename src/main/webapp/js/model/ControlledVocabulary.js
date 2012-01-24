@@ -1,20 +1,33 @@
-//TODO
 Ext.define('ControlledVocabulary', {
 	extend: 'Ext.data.Model',
+        // TODO add more associations
+        associations: [{
+                type : 'belongsTo', 
+                model : 'Publisher'
+        }],
 	fields: [{
 		name : 'id',
-		type : 'int'
+		type : 'int',
+                editor : {
+                    xtype : 'hidden'
+                }
 	}, {
 		name : 'vocab',
-		type : 'string'
+		type : 'string',
+                editor : {
+                    xtype: 'textfield',
+                    fieldLabel : 'Vocab',
+                    allowBlank : false,
+                    name : 'vocab'
+                }
 	}],
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/controlledvocabulary/json/default',
-			create : 'service/controlledvocabulary/json/default/create',
-			update : 'service/controlledvocabulary/json/default/update',
-			destroy : 'service/controlledvocabulary/json/default/delete'
+			read : 'service/catalog/json/vocab',
+			create : 'service/catalog/json/vocab/create',
+			update : 'service/catalog/json/vocab/update',
+			destroy : 'service/catalog/json/vocab/delete'
 		},
 		reader : {
 			type : 'spec',

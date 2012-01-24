@@ -1,6 +1,6 @@
-//TODO
 Ext.define('Project', {
 	extend: 'Ext.data.Model',
+        belongsTo: 'Dataset',
 	fields: [{
 		name : 'id',
 		type : 'int'
@@ -14,10 +14,10 @@ Ext.define('Project', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/project/json/default',
-			create : 'service/project/json/default/create',
-			update : 'service/project/json/default/update',
-			destroy : 'service/project/json/default/delete'
+			read : 'service/catalog/json/project',
+			create : 'service/catalog/json/project/create',
+			update : 'service/catalog/json/project/update',
+			destroy : 'service/catalog/json/project/delete'
 		},
 		reader : {
 			type : 'spec',
