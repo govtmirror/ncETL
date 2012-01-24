@@ -80,10 +80,10 @@ Ext.define('Service', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/srvc/json/default',
-			create : 'service/srvc/json/default/create',
-			update : 'service/srvc/json/default/update',
-			destroy : 'service/srvc/json/default/delete'
+			read : 'service/catalog/json/srvc',
+			create : 'service/catalog/json/srvc/create',
+			update : 'service/catalog/json/srvc/update',
+			destroy : 'service/catalog/json/srvc/delete'
 		},
 		reader : {
 			type : 'spec',

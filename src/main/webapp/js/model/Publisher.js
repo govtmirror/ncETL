@@ -1,7 +1,7 @@
-//TODO
 Ext.define('Publisher', {
 	extend: 'Ext.data.Model',
-	fields: [{
+        belongsTo: 'Dataset',
+        fields: [{
 		name : 'id',
 		type : 'int'
 	}, {
@@ -20,10 +20,10 @@ Ext.define('Publisher', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/publisher/json/default',
-			create : 'service/publisher/json/default/create',
-			update : 'service/publisher/json/default/update',
-			destroy : 'service/publisher/json/default/delete'
+			read : 'service/catalog/json/publisher',
+			create : 'service/catalog/json/publisher/create',
+			update : 'service/catalog/json/publisher/update',
+			destroy : 'service/catalog/json/publisher/delete'
 		},
 		reader : {
 			type : 'spec',

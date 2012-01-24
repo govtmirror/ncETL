@@ -1,7 +1,7 @@
-//TODO
 Ext.define('SpatialRange', {
 	extend: 'Ext.data.Model',
-	fields: [{
+        belongsTo: 'Dataset',
+        fields: [{
 		name : 'id',
 		type : 'int'
 	}, {
@@ -26,10 +26,10 @@ Ext.define('SpatialRange', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/spatialrange/json/default',
-			create : 'service/spatialrange/json/default/create',
-			update : 'service/spatialrange/json/default/update',
-			destroy : 'service/spatialrange/json/default/delete'
+			read : 'service/catalog/json/spatialrange',
+			create : 'service/catalog/json/spatialrange/create',
+			update : 'service/catalog/json/spatialrange/update',
+			destroy : 'service/catalog/json/spatialrange/delete'
 		},
 		reader : {
 			type : 'spec',

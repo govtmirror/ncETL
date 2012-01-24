@@ -31,6 +31,48 @@ Ext.define('Dataset', {
         primaryKey: 'id',
         foreignKey: 'dataset_id',
         autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'Contributor',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'Creator',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'Datatype',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'Keyword',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'Project',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'Publisher',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
+    }, {
+        type: 'hasMany',
+        model: 'SpatialRange',
+        primaryKey: 'id',
+        foreignKey: 'dataset_id',
+        autoLoad: true
     }
 ],
     fields: [{

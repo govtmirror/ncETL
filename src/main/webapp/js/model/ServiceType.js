@@ -1,5 +1,6 @@
 Ext.define('ServiceType', {
 	extend: 'Ext.data.Model',
+        belongsTo: 'Service',
 	fields: [{
 		name : 'id',
 		type : 'int'
@@ -10,10 +11,10 @@ Ext.define('ServiceType', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/srvctype/json/default',
-			create : 'service/srvctype/json/default/create',
-			update : 'service/srvctype/json/default/update',
-			destroy : 'service/srvctype/json/default/delete'
+			read : 'service/catalog/json/srvctype',
+			create : 'service/catalog/json/srvctype/create',
+			update : 'service/catalog/json/srvctype/update',
+			destroy : 'service/catalog/json/srvctype/delete'
 		},
 		reader : {
 			type : 'spec',
