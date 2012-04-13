@@ -325,6 +325,11 @@
                     <connectionType>developerConnection</connectionType>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.2.1</version>
+            </plugin>
         </plugins>
         <finalName>ncETL</finalName>
     </build>
