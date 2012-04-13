@@ -1,5 +1,6 @@
 Ext.define('DataFormat', {
     extend: 'Ext.data.Model',
+    belongsTo: 'Access',
     fields: [{
         name : 'id',
         type : 'int'
@@ -10,10 +11,10 @@ Ext.define('DataFormat', {
     proxy: {
         type : 'spec',
         api : {
-            read : 'service/dataformat/json/default',
-            create : 'service/dataformat/json/default/create',
-            update : 'service/dataformat/json/default/update',
-            destroy : 'service/dataformat/json/default/delete'
+            read : 'service/lookup/json/dataformat',
+            create : 'service/lookup/json/dataformat/create',
+            update : 'service/lookup/json/dataformat/update',
+            destroy : 'service/lookup/json/dataformat/delete'
         },
         reader : {
             type : 'spec',

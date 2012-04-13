@@ -1,6 +1,6 @@
-//TODO
 Ext.define('Keyword', {
 	extend: 'Ext.data.Model',
+        belongsTo: 'Dataset',
 	fields: [{
 		name : 'id',
 		type : 'int'
@@ -14,10 +14,10 @@ Ext.define('Keyword', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/keyword/json/default',
-			create : 'service/keyword/json/default/create',
-			update : 'service/keyword/json/default/update',
-			destroy : 'service/keyword/json/default/delete'
+			read : 'service/catalog/json/keyword',
+			create : 'service/catalog/json/keyword/create',
+			update : 'service/catalog/json/keyword/update',
+			destroy : 'service/catalog/json/keyword/delete'
 		},
 		reader : {
 			type : 'spec',

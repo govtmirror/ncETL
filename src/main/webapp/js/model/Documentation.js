@@ -1,5 +1,6 @@
 Ext.define('Documentation', {
 	extend: 'Ext.data.Model',
+        belongsTo: 'Dataset',
 	fields: [{
 		name : 'id',
 		type : 'int'
@@ -25,10 +26,10 @@ Ext.define('Documentation', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/documentation/json/default',
-			create : 'service/documentation/json/default/create',
-			update : 'service/documentation/json/default/update',
-			destroy : 'service/documentation/json/default/delete'
+			read : 'service/catalog/json/doc',
+			create : 'service/catalog/json/doc/create',
+			update : 'service/catalog/json/doc/update',
+			destroy : 'service/catalog/json/doc/delete'
 		},
 		reader : {
 			type : 'spec',

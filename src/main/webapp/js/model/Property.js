@@ -1,7 +1,7 @@
-//TODO
 Ext.define('Property', {
 	extend: 'Ext.data.Model',
-	fields: [{
+        belongsTo: 'Dataset',
+        fields: [{
 		name : 'id',
 		type : 'int'
 	}, {
@@ -17,10 +17,10 @@ Ext.define('Property', {
 	proxy: {
 		type : 'spec',
 		api : {
-			read : 'service/property/json/default',
-			create : 'service/property/json/default/create',
-			update : 'service/property/json/default/update',
-			destroy : 'service/property/json/default/delete'
+			read : 'service/catalog/json/prop',
+			create : 'service/catalog/json/prop/create',
+			update : 'service/catalog/json/prop/update',
+			destroy : 'service/catalog/json/prop/delete'
 		},
 		reader : {
 			type : 'spec',
