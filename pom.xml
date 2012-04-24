@@ -55,7 +55,12 @@
         <repository>
             <id>52n-releases</id>
             <name>52N Releases</name>
-            <url>http://52north.org/maven/repo/releases/</url>
+            <url>http://52north.org/maven/repo/releases</url>
+        </repository>
+        <repository>
+            <id>unidata-snapshots</id>
+            <name>Unidata Snapshots</name>
+            <url>http://artifacts.unidata.ucar.edu/content/repositories/thredds-snapshots</url>
         </repository>
     </repositories>
     
@@ -246,7 +251,7 @@
         <dependency>
             <artifactId>netcdf</artifactId>
             <groupId>edu.ucar</groupId>
-            <version>4.2.20</version>
+            <version>4.3.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>gov.usgs.cida.gdp</groupId>

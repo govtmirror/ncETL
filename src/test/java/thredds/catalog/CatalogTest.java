@@ -71,8 +71,6 @@ public class CatalogTest {
         f.deleteOnExit();
         URI uri = f.toURI();
         InvCatalogImpl impl = new InvCatalogImpl("Test Catalog", "1.0", uri);
-        impl.setCatalogFactory(factory);
-        impl.setCatalogConverterToVersion1();
         FileOutputStream fos = new FileOutputStream(f);
         impl.writeXML(fos);
         assertTrue(f.exists());

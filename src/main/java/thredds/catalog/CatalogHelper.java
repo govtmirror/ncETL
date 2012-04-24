@@ -74,8 +74,8 @@ public final class CatalogHelper {
     protected static InvCatalogImpl createCatalogImpl(String name, URI uri) {
         InvCatalogFactory factory = new InvCatalogFactory("CatalogFactory", true);
         InvCatalogImpl impl = new InvCatalogImpl(name, "1.0", uri);
-        impl.setCatalogFactory(factory);
-        impl.setCatalogConverterToVersion1();
+        //impl.setCatalogFactory(factory);
+        //impl.setCatalogConverterToVersion1();
         return impl;
     }
 
