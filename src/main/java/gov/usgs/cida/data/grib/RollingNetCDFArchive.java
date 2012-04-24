@@ -3,34 +3,29 @@ package gov.usgs.cida.data.grib;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.CRSUtility;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystemAxis;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.MathTransformFactory;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
@@ -46,6 +41,7 @@ public class RollingNetCDFArchive {
     private GridDataset gridDs;
     private CoordinateReferenceSystem crs;
     private GridDatatype gdt;
+    
 
     // should be able to open existing file here
     public RollingNetCDFArchive(File rollingFile) throws IOException {
@@ -55,43 +51,96 @@ public class RollingNetCDFArchive {
         }
         else {
             netcdf = NetcdfFileWriteable.createNew(fileAsString);
+            gridDs = null;
+            crs = null;
+            gdt = null;
         }
     }
     
     public void define(File gribPrototype) throws IOException, FactoryException, TransformException {
-        FeatureDataset dataset = FeatureDatasetFactoryManager.open(
-                FeatureType.ANY, gribPrototype.getAbsolutePath(), null, null);
-        if (dataset != null && dataset instanceof GridDataset) {
-            // grib should be grid
-            gridDs = (GridDataset) dataset;
-            List<GridDatatype> gdts = gridDs.getGrids();
-            if (!gdts.isEmpty()) {
-                gdt = gdts.get(0);
-                GridCoordSystem coordinateSystem = gdt.getCoordinateSystem();
-                crs = CRSUtility.getCRSFromGridCoordSystem(coordinateSystem);
-            }
-        }
+        FeatureDataset featureDataset = getFeatureDatasetFromFile(gribPrototype);
+        gridDs = getGridDatasetFromFeatureDataset(featureDataset);
+        gdt = getDatatypeFromDataset(gridDs);
+        crs = getCRSFromDatatype(gdt);
         double[] latLonPairs = transformToLatLon(getXCoords(), getYCoords());
         NetcdfDataset srcNc = gridDs.getNetcdfDataset();
-        List<Variable> variables = srcNc.getVariables();
-        List<Attribute> globalAttributes = srcNc.getGlobalAttributes();
         
+        for (Variable var : srcNc.getVariables()) {
+            netcdf.addVariable(null, var);
+        }
         
+        Dimension timeDim = null;
+        for (Dimension dim : netcdf.getDimensions()) {
+            if (dim.getName().equals("time")) {
+                timeDim = dim;
+            }
+            else {
+                netcdf.addDimension(dim.getGroup(), dim);
+            }
+        }
+        if (timeDim != null) {
+            netcdf.addUnlimitedDimension(timeDim.getName());
+        }
+        
+        for (Attribute attr : srcNc.getGlobalAttributes()) {
+            netcdf.addGlobalAttribute(attr);
+        }
+        
+        netcdf.setRedefineMode(false);
     }
     
-    public NetcdfDataset netcdfFromPrototype(File prototype) {
-        return null;
+    private void checkDefined() {
+        if (netcdf == null || gridDs == null || crs == null || gdt == null) {
+            throw new UnsupportedOperationException("Must define prototype before continuing");
+        }
+    }
+    
+    private FeatureDataset getFeatureDatasetFromFile(File grib) throws IOException {
+        FeatureDataset dataset = FeatureDatasetFactoryManager.open(
+                FeatureType.ANY, grib.getAbsolutePath(), null, null);
+        return dataset;
+    }
+    
+    private GridDataset getGridDatasetFromFeatureDataset(FeatureDataset dataset) {
+        if (dataset != null && dataset instanceof GridDataset) {
+            return (GridDataset)dataset;
+        }
+        throw new UnsupportedOperationException("Dataset must be of type: GRID");
+    }
+    
+    private GridDatatype getDatatypeFromDataset(GridDataset gridDataset) {
+        if (gridDataset != null) {
+            List<GridDatatype> gdts = gridDataset.getGrids();
+            if (!gdts.isEmpty()) {
+                return gdts.get(0);
+            }
+        }
+        throw new UnsupportedOperationException("Not a valid gridDataset");
+    }
+    
+    private CoordinateReferenceSystem getCRSFromDatatype(GridDatatype gridDatatype) {
+        GridCoordSystem coordinateSystem = gridDatatype.getCoordinateSystem();
+        return CRSUtility.getCRSFromGridCoordSystem(coordinateSystem);
+    } 
+    
+    public NetcdfDataset getNetcdfFromGrib(File gribIn) throws IOException {
+        FeatureDataset featureDataset = getFeatureDatasetFromFile(gribIn);
+        GridDataset gds = getGridDatasetFromFeatureDataset(featureDataset);
+        return gds.getNetcdfDataset();
     }
 
     public GridDataset getDataset() {
+        checkDefined();
         return gridDs;
     }
 
     public CoordinateReferenceSystem getCRS() {
+        checkDefined();
         return crs;
     }
     
     public double[][] transformToLatLonNetCDFStyle(double[] xCoords, double[] yCoords) {
+        checkDefined();
         double[][] from = new double[2][xCoords.length * yCoords.length];
         for (int x=0; x<xCoords.length; x++) {
             for (int y=0; y<yCoords.length; y++) {
@@ -105,9 +154,7 @@ public class RollingNetCDFArchive {
     }
     
     public double[] transformToLatLon(double[] xCoords, double[] yCoords) throws FactoryException, TransformException {
-        if (crs == null) {
-            throw new TransformException("Must have source crs to perform transform");
-        }
+        checkDefined();
         double[] transformArray = new double[2 * xCoords.length * yCoords.length];
         int i=0;
         for (int y=0; y<yCoords.length; y++) {
@@ -127,6 +174,7 @@ public class RollingNetCDFArchive {
     }
 
     public double[] getXCoords() {
+        checkDefined();
         NetcdfDataset nc = gridDs.getNetcdfDataset();
         CoordinateAxis axis = nc.findCoordinateAxis(AxisType.GeoX);
         if (axis instanceof CoordinateAxis1D) {
@@ -138,6 +186,7 @@ public class RollingNetCDFArchive {
     }
 
     public double[] getYCoords() {
+        checkDefined();
         NetcdfDataset nc = gridDs.getNetcdfDataset();
         CoordinateAxis axis = nc.findCoordinateAxis(AxisType.GeoY);
         if (axis instanceof CoordinateAxis1D) {
