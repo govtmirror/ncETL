@@ -60,7 +60,7 @@
         <repository>
             <id>unidata-snapshots</id>
             <name>Unidata Snapshots</name>
-            <url>http://artifacts.unidata.ucar.edu/content/repositories/thredds-snapshots</url>
+            <url>http://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots</url>
         </repository>
     </repositories>
     
@@ -249,8 +249,13 @@
             <version>2.6</version>
         </dependency>
         <dependency>
-            <artifactId>netcdf</artifactId>
             <groupId>edu.ucar</groupId>
+            <artifactId>netcdf</artifactId>
+            <version>4.3.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>grib</artifactId>
             <version>4.3.8-SNAPSHOT</version>
         </dependency>
         <dependency>

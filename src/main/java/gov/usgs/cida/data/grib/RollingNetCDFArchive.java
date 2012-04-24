@@ -1,7 +1,9 @@
 package gov.usgs.cida.data.grib;
 
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.CRSUtility;
+import java.io.Closeable;
 import java.io.File;
+import java.io.Flushable;
 import java.io.IOException;
 import java.util.List;
 import org.geotools.referencing.CRS;
@@ -12,6 +14,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
@@ -32,7 +35,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class RollingNetCDFArchive {
+public class RollingNetCDFArchive implements Closeable, Flushable {
 
     private static final Logger log = LoggerFactory.getLogger(
             RollingNetCDFArchive.class);
@@ -57,7 +60,7 @@ public class RollingNetCDFArchive {
         }
     }
     
-    public void define(File gribPrototype) throws IOException, FactoryException, TransformException {
+    public void define(File gribPrototype, List<String> excludeVars, String unlimitedDim) throws IOException, FactoryException, TransformException {
         FeatureDataset featureDataset = getFeatureDatasetFromFile(gribPrototype);
         gridDs = getGridDatasetFromFeatureDataset(featureDataset);
         gdt = getDatatypeFromDataset(gridDs);
@@ -65,28 +68,36 @@ public class RollingNetCDFArchive {
         double[] latLonPairs = transformToLatLon(getXCoords(), getYCoords());
         NetcdfDataset srcNc = gridDs.getNetcdfDataset();
         
-        for (Variable var : srcNc.getVariables()) {
-            netcdf.addVariable(null, var);
-        }
         
-        Dimension timeDim = null;
-        for (Dimension dim : netcdf.getDimensions()) {
-            if (dim.getName().equals("time")) {
-                timeDim = dim;
+        Dimension unlimited = null;
+        for (Dimension dim : srcNc.getDimensions()) {
+            if (unlimitedDim.equals(dim.getName())) {
+                unlimited = dim;
+            }
+            else if (excludeVars.contains(dim.getName())) {
+                // hold this one out
             }
             else {
-                netcdf.addDimension(dim.getGroup(), dim);
+                netcdf.addDimension(dim.getName(), dim.getLength());
             }
         }
-        if (timeDim != null) {
-            netcdf.addUnlimitedDimension(timeDim.getName());
+        if (unlimited != null) {
+            netcdf.addUnlimitedDimension(unlimited.getName());
         }
         
+        for (Variable var : srcNc.getVariables()) {
+            if (!excludeVars.contains(var.getFullName())) {
+                Variable newVar = netcdf.addVariable(var.getFullName(), var.getDataType(), var.getDimensionsString());
+                for (Attribute varAttr : var.getAttributes()) {
+                    netcdf.addVariableAttribute(newVar, varAttr);
+                }
+            }
+        }
         for (Attribute attr : srcNc.getGlobalAttributes()) {
             netcdf.addGlobalAttribute(attr);
         }
         
-        netcdf.setRedefineMode(false);
+        netcdf.create();
     }
     
     private void checkDefined() {
@@ -207,5 +218,15 @@ public class RollingNetCDFArchive {
         finally {
             ncd.close();
         }
+    }
+    
+    @Override
+    public void flush() throws IOException {
+        netcdf.flush();
+    }
+    
+    @Override
+    public void close() throws IOException {
+        netcdf.close();
     }
 }
