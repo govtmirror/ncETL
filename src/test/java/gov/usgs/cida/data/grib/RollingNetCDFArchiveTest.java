@@ -28,8 +28,14 @@ public class RollingNetCDFArchiveTest {
     @Test
     public void testGeotoolsProjection() throws Exception {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
-        roll.define(new File("/home/jordan/test/QPE.20100319.009.160"), 
-                    Lists.newArrayList("time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_Mixed_intervals_Accumulation"), "time");
+        roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
+        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_Mixed_intervals_Accumulation");
+        roll.setExcludeList(RollingNetCDFArchive.XY, "PolarStereographic_Projection", "x", "y");
+        roll.setGridMapping("Latitude_Longitude");
+        roll.setUnlimitedDimension("time");
+        roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        roll.define(new File("/home/jordan/test/QPE.20100319.009.160"));
+        roll.addFile(new File("/home/jordan/test/QPE.20100319.009.160"));
         CoordinateReferenceSystem crs = roll.getCRS();
         GridDataset dataset = roll.getDataset();
         double[] xCoords = roll.getXCoords();

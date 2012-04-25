@@ -1,11 +1,18 @@
 package gov.usgs.cida.data.grib;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.CRSUtility;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility;
 import java.io.Closeable;
 import java.io.File;
 import java.io.Flushable;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
@@ -14,21 +21,20 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.Variable;
+import ucar.ma2.*;
+import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
@@ -37,6 +43,10 @@ import ucar.unidata.geoloc.ProjectionImpl;
  */
 public class RollingNetCDFArchive implements Closeable, Flushable {
 
+    public static final String DIM = "dimension";
+    public static final String VAR = "variable";
+    public static final String XY = "xy";
+    
     private static final Logger log = LoggerFactory.getLogger(
             RollingNetCDFArchive.class);
     
@@ -44,7 +54,10 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     private GridDataset gridDs;
     private CoordinateReferenceSystem crs;
     private GridDatatype gdt;
-    
+    private Map<String, List<String>> excludes;
+    private String unlimited;
+    private String gridMapping;
+    private List<String> gridVariables;
 
     // should be able to open existing file here
     public RollingNetCDFArchive(File rollingFile) throws IOException {
@@ -58,46 +71,125 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
             crs = null;
             gdt = null;
         }
+        excludes = Maps.newHashMap();
+        gridVariables = null;
+        unlimited = "time";
+        gridMapping = "Latitude_Longitude";
     }
     
-    public void define(File gribPrototype, List<String> excludeVars, String unlimitedDim) throws IOException, FactoryException, TransformException {
+    public void setExcludeList(String key, String... excludes) {
+        this.excludes.put(key, Lists.newArrayList(excludes));
+    }
+    
+    public void setUnlimitedDimension(String dimName) {
+        this.unlimited = dimName;
+    }
+    
+    public void setGridMapping(String gridMappingName) {
+        this.gridMapping = gridMappingName;
+    }
+    
+    public void setGridVariables(String... varName) {
+        gridVariables = Lists.newArrayList(varName);
+    }
+    
+    public void define(File gribPrototype) throws IOException, FactoryException, TransformException, InvalidRangeException {
         FeatureDataset featureDataset = getFeatureDatasetFromFile(gribPrototype);
         gridDs = getGridDatasetFromFeatureDataset(featureDataset);
         gdt = getDatatypeFromDataset(gridDs);
         crs = getCRSFromDatatype(gdt);
-        double[] latLonPairs = transformToLatLon(getXCoords(), getYCoords());
+        
         NetcdfDataset srcNc = gridDs.getNetcdfDataset();
         
-        
-        Dimension unlimited = null;
+        Dimension unlimitedDim = null;
+        List<String> dimExcludes = excludes.get(DIM);
         for (Dimension dim : srcNc.getDimensions()) {
-            if (unlimitedDim.equals(dim.getName())) {
-                unlimited = dim;
+            if (unlimited.equals(dim.getName())) {
+                unlimitedDim = dim;
             }
-            else if (excludeVars.contains(dim.getName())) {
+            else if (dimExcludes != null && dimExcludes.contains(dim.getName())) {
                 // hold this one out
             }
             else {
                 netcdf.addDimension(dim.getName(), dim.getLength());
             }
         }
-        if (unlimited != null) {
-            netcdf.addUnlimitedDimension(unlimited.getName());
+        if (unlimitedDim != null) {
+            netcdf.addUnlimitedDimension(unlimited);
         }
         
+        Variable latVar = null;
+        Variable lonVar = null;
+        if (excludes.containsKey(XY)) {
+            Variable latLonVar = netcdf.addVariable(gridMapping, DataType.INT, "");
+            // this whole section will only work if gridMapping == Latitude_Longitude
+            netcdf.addVariableAttribute(latLonVar, new Attribute("grid_mapping_name", "latitude_longitude"));
+            netcdf.addVariableAttribute(latLonVar, new Attribute("semi_major_axis", 6378137.0));
+            netcdf.addVariableAttribute(latLonVar, new Attribute("semi_minor_axis", 6356752.314245));
+            netcdf.addVariableAttribute(latLonVar, new Attribute("longitude_of_prime_meridian", 0));
+            
+            latVar = netcdf.addVariable("lat", DataType.DOUBLE, "y x");
+            netcdf.addVariableAttribute(latVar, new Attribute("units", "degrees_north"));
+            netcdf.addVariableAttribute(latVar, new Attribute("long_name", "Latitude"));
+            netcdf.addVariableAttribute(latVar, new Attribute("standard_name", "latitude"));
+            
+            lonVar = netcdf.addVariable("lon", DataType.DOUBLE, "y x");
+            netcdf.addVariableAttribute(lonVar, new Attribute("units", "degrees_east"));
+            netcdf.addVariableAttribute(lonVar, new Attribute("long_name", "Longitude"));
+            netcdf.addVariableAttribute(lonVar, new Attribute("standard_name", "longitude"));
+        }
+        
+        List<String> varExcludes = Lists.newArrayList();
+        varExcludes.addAll(excludes.get(VAR));
+        varExcludes.addAll(excludes.get(XY));
         for (Variable var : srcNc.getVariables()) {
-            if (!excludeVars.contains(var.getFullName())) {
+            if (varExcludes.contains(var.getFullName())) {
+                // hold this var out
+            }
+            else {
                 Variable newVar = netcdf.addVariable(var.getFullName(), var.getDataType(), var.getDimensionsString());
+
                 for (Attribute varAttr : var.getAttributes()) {
                     netcdf.addVariableAttribute(newVar, varAttr);
                 }
+                // again this will pretty much just work for this case
+                // adding a standard name is not a bad idea
+                netcdf.addVariableAttribute(newVar, new Attribute("grid_mapping", gridMapping));
+                netcdf.addVariableAttribute(newVar, new Attribute("coordinates", "lon lat"));
             }
         }
+        
         for (Attribute attr : srcNc.getGlobalAttributes()) {
             netcdf.addGlobalAttribute(attr);
         }
+        netcdf.addGlobalAttribute(new Attribute("Conventions", "CF-1.6"));
         
         netcdf.create();
+        writeLatsAndLons(latVar, lonVar);
+    }
+    
+    private void writeLatsAndLons(Variable latVar, Variable lonVar) throws FactoryException, TransformException, IOException, InvalidRangeException {
+        checkDefined();
+        double[] xCoords = getXCoords();
+        double[] yCoords = getYCoords();
+        double[] latLonPairs = transformToLatLon(xCoords, yCoords);
+        ArrayDouble.D2 dataLat = new ArrayDouble.D2(yCoords.length, xCoords.length);
+        ArrayDouble.D2 dataLon = new ArrayDouble.D2(yCoords.length, xCoords.length);
+        int yIndex = 0;
+        int xIndex = 0;
+        for (int i=0; i<latLonPairs.length; i+=2) {
+            double lon = latLonPairs[i];
+            double lat = latLonPairs[i+1];
+
+            dataLat.set(yIndex, xIndex, lat);
+            dataLon.set(yIndex, xIndex, lon);
+            if (++xIndex % xCoords.length == 0) {
+                xIndex = 0;
+                yIndex++;
+            }
+        }
+        netcdf.write(latVar.getFullNameEscaped(), dataLat);
+        netcdf.write(lonVar.getFullNameEscaped(), dataLon);
     }
     
     private void checkDefined() {
@@ -208,16 +300,41 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         throw new RuntimeException("Must contain 1D GeoX axis type");
     }
 
-    public void addFile(File gribOrSomething) throws IOException {
+    public void addFile(File gribOrSomething) throws IOException, InvalidRangeException {
         // make GridDataset out of it
-        NetcdfDataset ncd = null;
+        checkDefined();
+        FeatureDataset fd = getFeatureDatasetFromFile(gribOrSomething);
+        GridDataset dataset = null;
         try {
-            ncd = NetcdfDataset.openDataset(gribOrSomething.getAbsolutePath());
-            // Read through the gridDataset and write it to netcdf
+            dataset = getGridDatasetFromFeatureDataset(fd);
+            for (String varname : gridVariables) {
+                GridDatatype grid = dataset.findGridDatatype(varname);
+                GridCoordSystem gcs = grid.getCoordinateSystem();
+                int xAxisLength = GridUtility.getXAxisLength(gcs);
+                int yAxisLength = GridUtility.getYAxisLength(gcs);
+                CoordinateAxis1DTime timeAxis1D = gcs.getTimeAxis1D();
+                int[] origins = new int[3];
+                for (int i=0; i<timeAxis1D.getSize(); i++) {
+                    origins[0] = i;
+                    CalendarDate calendarDate = timeAxis1D.getCalendarDate(i);
+                    Array slice = grid.readDataSlice(i, -1, -1, -1);
+                    netcdf.write(grid.getFullName(), origins, slice);
+                    calendarDate.toDate(); // need to write date to unlimited dimension
+                }
+                
+
+            }
         }
         finally {
-            ncd.close();
+            dataset.close();
         }
+    }
+    
+    public void finalize() throws IOException {
+        netcdf.setRedefineMode(true);
+        netcdf.getUnlimitedDimension().setUnlimited(false);
+        netcdf.setRedefineMode(false);
+        close();
     }
     
     @Override
