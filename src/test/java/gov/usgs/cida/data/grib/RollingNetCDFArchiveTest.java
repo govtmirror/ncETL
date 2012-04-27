@@ -7,12 +7,14 @@ import com.google.common.io.Flushables;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GridDataset;
 
 /**
@@ -60,6 +62,14 @@ public class RollingNetCDFArchiveTest {
             IOUtils.closeQuietly(lonWriter);
             IOUtils.closeQuietly(latWriter);
         }
+    }
+    
+    @Test
+    public void testAddingNewGrib() throws IOException, InvalidRangeException {
+        RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
+        roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        roll.setUnlimitedDimension("time");
+        roll.addFile(new File("/home/jordan/test/QPE.20100319.009.160"));
     }
 
 }

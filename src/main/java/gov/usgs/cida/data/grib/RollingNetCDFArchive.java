@@ -1,8 +1,5 @@
 package gov.usgs.cida.data.grib;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.CRSUtility;
@@ -22,7 +19,10 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -64,6 +64,10 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         String fileAsString = rollingFile.getAbsolutePath();
         if (rollingFile.exists() && NetcdfFileWriteable.canOpen(fileAsString)) {
             netcdf = NetcdfFileWriteable.openExisting(fileAsString);
+            FeatureDataset fd = getFeatureDatasetFromFile(rollingFile);
+            gridDs = getGridDatasetFromFeatureDataset(fd);
+            gdt = getDatatypeFromDataset(gridDs);
+            crs = getCRSFromDatatype(gdt);
         }
         else {
             netcdf = NetcdfFileWriteable.createNew(fileAsString);
@@ -94,6 +98,9 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     }
     
     public void define(File gribPrototype) throws IOException, FactoryException, TransformException, InvalidRangeException {
+        if (!netcdf.isDefineMode()) {
+            throw new IllegalStateException("Cannot call define on an already defined dataset");
+        }
         FeatureDataset featureDataset = getFeatureDatasetFromFile(gribPrototype);
         gridDs = getGridDatasetFromFeatureDataset(featureDataset);
         gdt = getDatatypeFromDataset(gridDs);
@@ -198,20 +205,20 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         }
     }
     
-    private FeatureDataset getFeatureDatasetFromFile(File grib) throws IOException {
+    private static FeatureDataset getFeatureDatasetFromFile(File grib) throws IOException {
         FeatureDataset dataset = FeatureDatasetFactoryManager.open(
                 FeatureType.ANY, grib.getAbsolutePath(), null, null);
         return dataset;
     }
     
-    private GridDataset getGridDatasetFromFeatureDataset(FeatureDataset dataset) {
+    private static GridDataset getGridDatasetFromFeatureDataset(FeatureDataset dataset) {
         if (dataset != null && dataset instanceof GridDataset) {
             return (GridDataset)dataset;
         }
         throw new UnsupportedOperationException("Dataset must be of type: GRID");
     }
     
-    private GridDatatype getDatatypeFromDataset(GridDataset gridDataset) {
+    private static GridDatatype getDatatypeFromDataset(GridDataset gridDataset) {
         if (gridDataset != null) {
             List<GridDatatype> gdts = gridDataset.getGrids();
             if (!gdts.isEmpty()) {
@@ -221,12 +228,12 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         throw new UnsupportedOperationException("Not a valid gridDataset");
     }
     
-    private CoordinateReferenceSystem getCRSFromDatatype(GridDatatype gridDatatype) {
+    private static CoordinateReferenceSystem getCRSFromDatatype(GridDatatype gridDatatype) {
         GridCoordSystem coordinateSystem = gridDatatype.getCoordinateSystem();
         return CRSUtility.getCRSFromGridCoordSystem(coordinateSystem);
     } 
     
-    public NetcdfDataset getNetcdfFromGrib(File gribIn) throws IOException {
+    private static NetcdfDataset getNetcdfFromGrib(File gribIn) throws IOException {
         FeatureDataset featureDataset = getFeatureDatasetFromFile(gribIn);
         GridDataset gds = getGridDatasetFromFeatureDataset(featureDataset);
         return gds.getNetcdfDataset();
@@ -303,6 +310,8 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     public void addFile(File gribOrSomething) throws IOException, InvalidRangeException {
         // make GridDataset out of it
         checkDefined();
+        CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
+        int unlimitedLength = netcdf.getUnlimitedDimension().getLength();
         FeatureDataset fd = getFeatureDatasetFromFile(gribOrSomething);
         GridDataset dataset = null;
         try {
@@ -315,11 +324,23 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 CoordinateAxis1DTime timeAxis1D = gcs.getTimeAxis1D();
                 int[] origins = new int[3];
                 for (int i=0; i<timeAxis1D.getSize(); i++) {
-                    origins[0] = i;
+                    origins[0] = i + unlimitedLength;
                     CalendarDate calendarDate = timeAxis1D.getCalendarDate(i);
-                    Array slice = grid.readDataSlice(i, -1, -1, -1);
-                    netcdf.write(grid.getFullName(), origins, slice);
-                    calendarDate.toDate(); // need to write date to unlimited dimension
+                    int timeIndex = timeAxis.findTimeIndexFromCalendarDate(calendarDate);
+                    ArrayInt.D1 timeArray = new ArrayInt.D1(1);
+                    timeArray.set(0, 17);
+                    
+                    ArrayFloat.D3 dataArray = new ArrayFloat.D3(1, yAxisLength, xAxisLength);
+                    ArrayFloat.D2 slice = (ArrayFloat.D2)grid.readDataSlice(i, -1, -1, -1);
+
+                    for (int y=0; y<yAxisLength; y++) {
+                        for (int x=0; x<xAxisLength; x++) {
+                            dataArray.set(0, y, x, slice.get(y, x));
+                        }
+                    }
+                                        
+                    netcdf.write(grid.getFullName(), origins, dataArray);
+                    netcdf.write(unlimited, new int[]{i + unlimitedLength}, timeArray);
                 }
                 
 
@@ -330,7 +351,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         }
     }
     
-    public void finalize() throws IOException {
+    public void finish() throws IOException {
         netcdf.setRedefineMode(true);
         netcdf.getUnlimitedDimension().setUnlimited(false);
         netcdf.setRedefineMode(false);
