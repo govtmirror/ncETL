@@ -1,7 +1,6 @@
 
 package gov.usgs.cida.data.grib;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
 import com.google.common.io.Flushables;
 import java.io.BufferedWriter;
@@ -16,6 +15,10 @@ import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time.CalendarPeriod.Field;
 
 /**
  *
@@ -34,7 +37,7 @@ public class RollingNetCDFArchiveTest {
         roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_Mixed_intervals_Accumulation");
         roll.setExcludeList(RollingNetCDFArchive.XY, "PolarStereographic_Projection", "x", "y");
         roll.setGridMapping("Latitude_Longitude");
-        roll.setUnlimitedDimension("time");
+        roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
         roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         roll.define(new File("/home/jordan/test/QPE.20100319.009.160"));
         roll.addFile(new File("/home/jordan/test/QPE.20100319.009.160"));
@@ -65,11 +68,24 @@ public class RollingNetCDFArchiveTest {
     }
     
     @Test
-    public void testAddingNewGrib() throws IOException, InvalidRangeException {
+    public void testAddingNewGrib() throws IOException, InvalidRangeException, Exception {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
         roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
-        roll.setUnlimitedDimension("time");
+        roll.setUnlimitedDimension("time", "hours since 2000-01-01T00:00:00Z");
         roll.addFile(new File("/home/jordan/test/QPE.20100319.009.160"));
     }
 
+    @Test
+    public void testCalendarDateFromUdunits() {
+        String units = "0 hours since 2000-01-01T00:00:00Z";
+        CalendarDate originDate = CalendarDate.parseUdunits(null, units);
+        assertThat(originDate.compareTo(CalendarDate.of(Calendar.none, 2000, 1, 1, 0, 0, 0)), is(equalTo(0)));
+    }
+    
+    @Test
+    public void testCalendarPeriodFromUdunits() {
+        String units = "hours";
+        Field fromUnitString = CalendarPeriod.fromUnitString(units);
+        assertThat(fromUnitString, is(equalTo(CalendarPeriod.Field.Hour)));
+    }
 }

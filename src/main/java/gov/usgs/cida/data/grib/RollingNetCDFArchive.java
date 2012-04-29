@@ -35,6 +35,8 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
@@ -56,6 +58,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     private GridDatatype gdt;
     private Map<String, List<String>> excludes;
     private String unlimited;
+    private String unlimitedUnits;
     private String gridMapping;
     private List<String> gridVariables;
 
@@ -78,6 +81,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         excludes = Maps.newHashMap();
         gridVariables = null;
         unlimited = "time";
+        unlimitedUnits = "hours since 2000-01-01 00:00:00";
         gridMapping = "Latitude_Longitude";
     }
     
@@ -85,8 +89,9 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         this.excludes.put(key, Lists.newArrayList(excludes));
     }
     
-    public void setUnlimitedDimension(String dimName) {
+    public void setUnlimitedDimension(String dimName, String units) {
         this.unlimited = dimName;
+        this.unlimitedUnits = units;
     }
     
     public void setGridMapping(String gridMappingName) {
@@ -160,9 +165,14 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                     netcdf.addVariableAttribute(newVar, varAttr);
                 }
                 // again this will pretty much just work for this case
-                // adding a standard name is not a bad idea
-                netcdf.addVariableAttribute(newVar, new Attribute("grid_mapping", gridMapping));
-                netcdf.addVariableAttribute(newVar, new Attribute("coordinates", "lon lat"));
+                // adding a standard name is not a bad idea // REFACTOR
+                if (unlimited.equals(var.getFullName())) {
+                    netcdf.addVariableAttribute(newVar, new Attribute("units", unlimitedUnits));
+                }
+                else {
+                    netcdf.addVariableAttribute(newVar, new Attribute("grid_mapping", gridMapping));
+                    netcdf.addVariableAttribute(newVar, new Attribute("coordinates", "lon lat"));
+                }
             }
         }
         
@@ -307,10 +317,13 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         throw new RuntimeException("Must contain 1D GeoX axis type");
     }
 
-    public void addFile(File gribOrSomething) throws IOException, InvalidRangeException {
+    public void addFile(File gribOrSomething) throws IOException, InvalidRangeException, Exception {
         // make GridDataset out of it
         checkDefined();
         CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
+        CalendarDate originDate = CalendarDate.parseUdunits(null, "0 " + timeAxis.getUnitsString());
+        CalendarPeriod periodOfMeasure = CalendarPeriod.of(1, 
+            CalendarPeriod.fromUnitString(timeAxis.getUnitsString().split(" ")[0]));
         int unlimitedLength = netcdf.getUnlimitedDimension().getLength();
         FeatureDataset fd = getFeatureDatasetFromFile(gribOrSomething);
         GridDataset dataset = null;
@@ -321,14 +334,15 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 GridCoordSystem gcs = grid.getCoordinateSystem();
                 int xAxisLength = GridUtility.getXAxisLength(gcs);
                 int yAxisLength = GridUtility.getYAxisLength(gcs);
-                CoordinateAxis1DTime timeAxis1D = gcs.getTimeAxis1D();
+                CoordinateAxis1DTime appendingTimeAxis = gcs.getTimeAxis1D();
                 int[] origins = new int[3];
-                for (int i=0; i<timeAxis1D.getSize(); i++) {
+                for (int i=0; i<appendingTimeAxis.getSize(); i++) {
                     origins[0] = i + unlimitedLength;
-                    CalendarDate calendarDate = timeAxis1D.getCalendarDate(i);
-                    int timeIndex = timeAxis.findTimeIndexFromCalendarDate(calendarDate);
+                    CalendarDate calendarDate = appendingTimeAxis.getCalendarDate(i);
+                    int timeValue = periodOfMeasure.subtract(originDate, calendarDate);
+
                     ArrayInt.D1 timeArray = new ArrayInt.D1(1);
-                    timeArray.set(0, 17);
+                    timeArray.set(0, timeValue);
                     
                     ArrayFloat.D3 dataArray = new ArrayFloat.D3(1, yAxisLength, xAxisLength);
                     ArrayFloat.D2 slice = (ArrayFloat.D2)grid.readDataSlice(i, -1, -1, -1);
