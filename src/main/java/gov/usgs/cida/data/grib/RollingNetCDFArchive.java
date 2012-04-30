@@ -12,8 +12,12 @@ import java.util.List;
 import java.util.Map;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.crs.DefaultProjectedCRS;
+import org.geotools.referencing.cs.DefaultSphericalCS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
+import org.opengis.referencing.cs.SphericalCS;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
@@ -38,6 +42,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.util.Parameter;
 
 /**
  *
@@ -189,15 +194,14 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         checkDefined();
         double[] xCoords = getXCoords();
         double[] yCoords = getYCoords();
-        double[] latLonPairs = transformToLatLon(xCoords, yCoords);
+        double[][] latLonPairs = transformToLatLonNetCDFStyle(xCoords, yCoords);
         ArrayDouble.D2 dataLat = new ArrayDouble.D2(yCoords.length, xCoords.length);
         ArrayDouble.D2 dataLon = new ArrayDouble.D2(yCoords.length, xCoords.length);
         int yIndex = 0;
         int xIndex = 0;
-        for (int i=0; i<latLonPairs.length; i+=2) {
-            double lon = latLonPairs[i];
-            double lat = latLonPairs[i+1];
-
+        for (int i=0; i<latLonPairs[0].length; i++) {
+            double lat = latLonPairs[0][i];
+            double lon = latLonPairs[1][i];
             dataLat.set(yIndex, xIndex, lat);
             dataLon.set(yIndex, xIndex, lon);
             if (++xIndex % xCoords.length == 0) {
@@ -208,6 +212,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         netcdf.write(latVar.getFullNameEscaped(), dataLat);
         netcdf.write(lonVar.getFullNameEscaped(), dataLon);
     }
+    
     
     private void checkDefined() {
         if (netcdf == null || gridDs == null || crs == null || gdt == null) {
@@ -241,12 +246,6 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     private static CoordinateReferenceSystem getCRSFromDatatype(GridDatatype gridDatatype) {
         GridCoordSystem coordinateSystem = gridDatatype.getCoordinateSystem();
         return CRSUtility.getCRSFromGridCoordSystem(coordinateSystem);
-    } 
-    
-    private static NetcdfDataset getNetcdfFromGrib(File gribIn) throws IOException {
-        FeatureDataset featureDataset = getFeatureDatasetFromFile(gribIn);
-        GridDataset gds = getGridDatasetFromFeatureDataset(featureDataset);
-        return gds.getNetcdfDataset();
     }
 
     public GridDataset getDataset() {
@@ -262,10 +261,10 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     public double[][] transformToLatLonNetCDFStyle(double[] xCoords, double[] yCoords) {
         checkDefined();
         double[][] from = new double[2][xCoords.length * yCoords.length];
-        for (int x=0; x<xCoords.length; x++) {
-            for (int y=0; y<yCoords.length; y++) {
-                from[0][x*yCoords.length+y] = xCoords[x];
-                from[1][x*yCoords.length+y] = yCoords[y];
+        for (int y=0; y<yCoords.length; y++) {
+            for (int x=0; x<xCoords.length; x++) {
+                from[0][y*xCoords.length+x] = xCoords[x];
+                from[1][y*xCoords.length+x] = yCoords[y];
             }
         }
         ProjectionImpl projection = gdt.getCoordinateSystem().getProjection();
@@ -273,25 +272,25 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         return projToLatLon;
     }
     
-    public double[] transformToLatLon(double[] xCoords, double[] yCoords) throws FactoryException, TransformException {
-        checkDefined();
-        double[] transformArray = new double[2 * xCoords.length * yCoords.length];
-        int i=0;
-        for (int y=0; y<yCoords.length; y++) {
-            for (int x=0; x<xCoords.length; x++) {
-                transformArray[i++] = xCoords[x];
-                transformArray[i++] = yCoords[y];
-            }
-        }
-        
-        MathTransform toWGS84Transform = CRS.findMathTransform(
-                crs,
-                DefaultGeographicCRS.WGS84,
-                true);  // must be true if missing bursa-wolf parameters (akak TOWGS84[...])
-        
-        toWGS84Transform.transform(transformArray, 0, transformArray, 0, transformArray.length / 2);
-        return transformArray;
-    }
+//    public double[] transformToLatLon(double[] xCoords, double[] yCoords) throws FactoryException, TransformException {
+//        checkDefined();
+//        double[] transformArray = new double[2 * xCoords.length * yCoords.length];
+//        int i=0;
+//        for (int y=0; y<yCoords.length; y++) {
+//            for (int x=0; x<xCoords.length; x++) {
+//                transformArray[i++] = xCoords[x];
+//                transformArray[i++] = yCoords[y];
+//            }
+//        }
+//        
+//        MathTransform toWGS84Transform = CRS.findMathTransform(
+//                crs,
+//                DefaultGeographicCRS.WGS84,
+//                true);  // must be true if missing bursa-wolf parameters (akak TOWGS84[...])
+//        
+//        toWGS84Transform.transform(transformArray, 0, transformArray, 0, transformArray.length / 2);
+//        return transformArray;
+//    }
 
     public double[] getXCoords() {
         checkDefined();
@@ -320,11 +319,15 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     public void addFile(File gribOrSomething) throws IOException, InvalidRangeException, Exception {
         // make GridDataset out of it
         checkDefined();
+        if (!netcdf.hasUnlimitedDimension()) {
+            throw new UnsupportedOperationException("Cannot add to file which is already finished");
+        }
+        int unlimitedLength = netcdf.getUnlimitedDimension().getLength();
+        
         CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
         CalendarDate originDate = CalendarDate.parseUdunits(null, "0 " + timeAxis.getUnitsString());
         CalendarPeriod periodOfMeasure = CalendarPeriod.of(1, 
             CalendarPeriod.fromUnitString(timeAxis.getUnitsString().split(" ")[0]));
-        int unlimitedLength = netcdf.getUnlimitedDimension().getLength();
         FeatureDataset fd = getFeatureDatasetFromFile(gribOrSomething);
         GridDataset dataset = null;
         try {
