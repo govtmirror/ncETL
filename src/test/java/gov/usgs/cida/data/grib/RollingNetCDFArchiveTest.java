@@ -104,8 +104,6 @@ public class RollingNetCDFArchiveTest {
         }
     }
     
-
-    
     @Test
     public void testAddFile() throws IOException, InvalidRangeException, Exception {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));

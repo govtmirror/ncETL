@@ -324,16 +324,19 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         }
         int unlimitedLength = netcdf.getUnlimitedDimension().getLength();
         
-        CoordinateAxis1DTime timeAxis = gdt.getCoordinateSystem().getTimeAxis1D();
-        CalendarDate originDate = CalendarDate.parseUdunits(null, "0 " + timeAxis.getUnitsString());
+        CalendarDate originDate = CalendarDate.parseUdunits(null, "0 " + unlimitedUnits);
         CalendarPeriod periodOfMeasure = CalendarPeriod.of(1, 
-            CalendarPeriod.fromUnitString(timeAxis.getUnitsString().split(" ")[0]));
+            CalendarPeriod.fromUnitString(unlimitedUnits.split(" ")[0]));
         FeatureDataset fd = getFeatureDatasetFromFile(gribOrSomething);
         GridDataset dataset = null;
         try {
             dataset = getGridDatasetFromFeatureDataset(fd);
             for (String varname : gridVariables) {
                 GridDatatype grid = dataset.findGridDatatype(varname);
+                if (grid == null) {
+                    log.debug("target variable not found, skipping this file");
+                    continue;
+                }
                 GridCoordSystem gcs = grid.getCoordinateSystem();
                 int xAxisLength = GridUtility.getXAxisLength(gcs);
                 int yAxisLength = GridUtility.getYAxisLength(gcs);
@@ -359,8 +362,6 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                     netcdf.write(grid.getFullName(), origins, dataArray);
                     netcdf.write(unlimited, new int[]{i + unlimitedLength}, timeArray);
                 }
-                
-
             }
         }
         finally {
@@ -369,9 +370,13 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     }
     
     public void finish() throws IOException {
+        /* Do not use this, need to think it out
+         * currently changes unlimited dimension all around
         netcdf.setRedefineMode(true);
         netcdf.getUnlimitedDimension().setUnlimited(false);
         netcdf.setRedefineMode(false);
+        * 
+        */
         close();
     }
     

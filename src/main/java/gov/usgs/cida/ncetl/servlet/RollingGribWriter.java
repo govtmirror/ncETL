@@ -2,10 +2,13 @@ package gov.usgs.cida.ncetl.servlet;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
+import com.google.common.io.Flushables;
 import gov.usgs.cida.data.grib.RollingNetCDFArchive;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,39 +85,43 @@ public class RollingGribWriter extends HttpServlet {
             RollingNetCDFArchive rollingNetCDF = null;
             try {
                 String currentMonth = null;
+                Arrays.sort(listFiles);
                 for (File file : listFiles) {
                     Matcher rfcMatcher = rfcPattern.matcher(file.getName());
-                    String year = rfcMatcher.group(1);
-                    String month = rfcMatcher.group(2);
-                    if (!month.equals(currentMonth)) {
-                        currentMonth = month;
-                        if (rollingNetCDF != null) {
-                            rollingNetCDF.finish();
-                            Closeables.closeQuietly(rollingNetCDF);
+                    if (rfcMatcher.matches()) {
+                        String year = rfcMatcher.group(1);
+                        String month = rfcMatcher.group(2);
+                        if (!month.equals(currentMonth)) {
+                            currentMonth = month;
+                            if (rollingNetCDF != null) {
+                                Flushables.flushQuietly(rollingNetCDF);
+                                //rollingNetCDF.finish();
+                                Closeables.closeQuietly(rollingNetCDF);
+                            }
+                            rollingNetCDF = setupNetCDF(outputDirFile, year, month, rfcCode);
+                            try {
+                                rollingNetCDF.define(file);
+                            }
+                            catch (FactoryException ex) {
+                                response.sendError(400, "Error getting CRS from prototype grib\n" + ex.getMessage());
+                                return;
+                            }
+                            catch (TransformException ex) {
+                                response.sendError(400, "Error transforming to lat lon\n" + ex.getMessage());
+                                return;
+                            }
+                            catch (InvalidRangeException ex) {
+                                response.sendError(400, "Invalid range when defining netcdf\n" + ex.getMessage());
+                                return;
+                            }
                         }
-                        rollingNetCDF = setupNetCDF(outputDirFile, year, month, rfcCode);
                         try {
-                            rollingNetCDF.define(file);
+                            rollingNetCDF.addFile(file);
                         }
-                        catch (FactoryException ex) {
-                            response.sendError(400, "Error getting CRS from prototype grib\n" + ex.getMessage());
+                        catch (Exception ex) {
+                            response.sendError(400, "Exception occured adding new file\n" + ex.getMessage());
                             return;
                         }
-                        catch (TransformException ex) {
-                            response.sendError(400, "Error transforming to lat lon\n" + ex.getMessage());
-                            return;
-                        }
-                        catch (InvalidRangeException ex) {
-                            response.sendError(400, "Invalid range when defining netcdf\n" + ex.getMessage());
-                            return;
-                        }
-                    }
-                    try {
-                        rollingNetCDF.addFile(file);
-                    }
-                    catch (Exception ex) {
-                        response.sendError(400, "Exception occured adding new file\n" + ex.getMessage());
-                        return;
                     }
                 }
             }
@@ -123,7 +130,22 @@ public class RollingGribWriter extends HttpServlet {
             }
         }
         
-        
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try {
+          
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet ASCIIConverterServlet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Complete!</h1>");
+            out.println("</body>");
+            out.println("</html>");
+             
+        } finally {            
+            out.close();
+        }
     }
     
     private RollingNetCDFArchive setupNetCDF(File outputDir, String year, String month, String rfcCode) throws IOException {
