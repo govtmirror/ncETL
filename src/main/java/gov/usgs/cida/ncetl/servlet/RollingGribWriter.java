@@ -119,7 +119,7 @@ public class RollingGribWriter extends HttpServlet {
                             rollingNetCDF.addFile(file);
                         }
                         catch (Exception ex) {
-                            response.sendError(400, "Exception occured adding new file\n" + ex.getMessage());
+                            response.sendError(400, "Exception occured adding new file, " + file + ex.getMessage());
                             return;
                         }
                     }
@@ -152,7 +152,8 @@ public class RollingGribWriter extends HttpServlet {
         String ncFilename = outputDir.getCanonicalPath() + File.separatorChar + "QPE." + year + "." + month + "." + rfcCode + ".nc";
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File(ncFilename));
         roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
-        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_Mixed_intervals_Accumulation");
+        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds",
+            "Total_precipitation_surface_Mixed_intervals_Accumulation", "Total_precipitation_surface_6_Hour_Accumulation");
         roll.setExcludeList(RollingNetCDFArchive.XY, "PolarStereographic_Projection", "x", "y");
         roll.setGridMapping("Latitude_Longitude");
         roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
