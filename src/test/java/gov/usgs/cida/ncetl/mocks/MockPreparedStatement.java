@@ -527,5 +527,15 @@ public class MockPreparedStatement implements PreparedStatement {
     public boolean isWrapperFor(Class<?> type) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void closeOnCompletion() throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

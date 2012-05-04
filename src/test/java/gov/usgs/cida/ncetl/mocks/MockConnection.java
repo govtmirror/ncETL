@@ -18,6 +18,7 @@ import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * Masquerades as a connection to a database, allowing for preconstruction of results
@@ -306,6 +307,31 @@ public class MockConnection implements Connection {
 
     @Override
     public boolean isWrapperFor(Class<?> type) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setSchema(String arg0) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getSchema() throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void abort(Executor arg0) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setNetworkTimeout(Executor arg0, int arg1) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int getNetworkTimeout() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
