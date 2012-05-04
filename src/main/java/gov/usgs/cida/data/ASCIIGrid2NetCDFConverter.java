@@ -106,6 +106,8 @@ public class ASCIIGrid2NetCDFConverter {
                 albvar.addAttribute(new Attribute("units", "m"));
                 albvar.addAttribute(new Attribute("false_easting", 0));
                 albvar.addAttribute(new Attribute("false_northing", 0));
+                albvar.addAttribute(new Attribute("semi_major_axis", 6378137.0));
+                albvar.addAttribute(new Attribute("inverse_flattening", 298.257222101));
 
                 nc.create();
 

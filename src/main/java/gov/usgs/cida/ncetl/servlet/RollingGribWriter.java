@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -65,6 +63,7 @@ public class RollingGribWriter extends HttpServlet {
             throws ServletException, IOException {
         String inputDir = request.getParameter("inputDir");
         String outputDir = request.getParameter("outputDir");
+        String completeDir = request.getParameter("completeDir");
         if (inputDir == null || outputDir == null) {
             response.sendError(400, "Must specify input and output directories");
             return;
@@ -79,7 +78,7 @@ public class RollingGribWriter extends HttpServlet {
         }
         
         for (String rfcCode : rfcList) {
-            Pattern rfcPattern = Pattern.compile("QPE\\.(\\d{4})(\\d{2})\\d{2}\\.009\\." + rfcCode);
+            Pattern rfcPattern = Pattern.compile("QPE\\.(\\d{4})(\\d{2})\\d{2}\\.009\\." + rfcCode + "$");
             FileFilter filter = new RegexFileFilter(rfcPattern);
             File[] listFiles = inputDirFile.listFiles(filter);
             RollingNetCDFArchive rollingNetCDF = null;
@@ -122,6 +121,9 @@ public class RollingGribWriter extends HttpServlet {
                             response.sendError(400, "Exception occured adding new file, " + file + ex.getMessage());
                             return;
                         }
+                    }
+                    if (completeDir != null) {
+                        file.renameTo(new File(completeDir + File.separator + file.getName()));
                     }
                 }
             }
