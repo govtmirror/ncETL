@@ -64,6 +64,12 @@ CREATE TABLE ingest
     active boolean, 
     inserted boolean DEFAULT false, updated boolean DEFAULT false, PRIMARY KEY (id));
 
+CREATE TABLE task
+    (
+    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    name varchar(64),
+    params varchar(256));
+
 CREATE TABLE dataset 
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
