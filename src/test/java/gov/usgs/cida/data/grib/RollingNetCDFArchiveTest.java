@@ -11,10 +11,9 @@ import org.apache.commons.io.IOUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -28,6 +27,14 @@ public class RollingNetCDFArchiveTest {
     
     private static String testGribFile = RollingNetCDFArchiveTest.class.getClassLoader().getResource(
             "gov/usgs/cida/data/grib/QPE.20100319.009.160").getFile();
+    private File tmpNc = null;
+    
+    @Before
+    public void setUpClass() throws IOException {
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        tmpNc = new File(tmpdir + File.separator + Long.toString(System.nanoTime()) + ".nc");
+        tmpNc.deleteOnExit();
+    }
 
     /**
      * Test of addFile method, of class RollingNetCDFArchive.
@@ -70,9 +77,8 @@ public class RollingNetCDFArchiveTest {
 //        }
 //    }
     
-    @Test
-    public void testDefine() throws Exception {
-        RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
+    private RollingNetCDFArchive define() throws Exception {
+        RollingNetCDFArchive roll = new RollingNetCDFArchive(tmpNc);
         roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
         roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_Mixed_intervals_Accumulation");
         roll.setExcludeList(RollingNetCDFArchive.XY, "PolarStereographic_Projection", "x", "y");
@@ -80,11 +86,17 @@ public class RollingNetCDFArchiveTest {
         roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
         roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         roll.define(new File(testGribFile));
+        return roll;
+    }
+    
+    @Test
+    public void testDefine() throws Exception {
+        RollingNetCDFArchive roll = define();
         double[] xCoords = roll.getXCoords();
         double[] yCoords = roll.getYCoords();
         assertThat(xCoords.length, is(equalTo(250)));
         assertThat(yCoords.length, is(equalTo(260)));
-        double[][] latLons = roll.transformToLatLonNetCDFStyle(xCoords, yCoords);
+        double[][] latLons = roll.transform();
         BufferedWriter lonWriter = null;
         BufferedWriter latWriter = null;
         try {
@@ -106,7 +118,7 @@ public class RollingNetCDFArchiveTest {
     
     @Test
     public void testAddFile() throws IOException, InvalidRangeException, Exception {
-        RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
+        RollingNetCDFArchive roll = define();
         roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         roll.setUnlimitedDimension("time", "hours since 2000-01-01T00:00:00Z");
         roll.addFile(new File(testGribFile));
@@ -114,6 +126,7 @@ public class RollingNetCDFArchiveTest {
         Closeables.closeQuietly(roll);
     }
     
+    /* Finish currently doesn't do anything, leaving dimension unlimited */
     @Test
     public void testFinish() throws IOException {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
