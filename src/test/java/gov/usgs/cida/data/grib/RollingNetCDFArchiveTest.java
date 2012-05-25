@@ -1,12 +1,15 @@
 
 package gov.usgs.cida.data.grib;
 
+import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.google.common.io.Flushables;
+import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,6 +17,11 @@ import static org.hamcrest.Matchers.is;
 import org.junit.Before;
 import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -80,11 +88,14 @@ public class RollingNetCDFArchiveTest {
     private RollingNetCDFArchive define() throws Exception {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(tmpNc);
         roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
-        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_Mixed_intervals_Accumulation");
-        roll.setExcludeList(RollingNetCDFArchive.XY, "PolarStereographic_Projection", "x", "y");
+        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds");
+        roll.setExcludeList(RollingNetCDFArchive.XY, "Total_precipitation_surface_Mixed_intervals_Accumulation", "PolarStereographic_Projection", "x", "y");
         roll.setGridMapping("Latitude_Longitude");
         roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
-        roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        Map<String, String> varMap = Maps.newHashMap();
+        varMap.put("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation","1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        varMap.put("Total_precipitation_surface_Mixed_intervals_Accumulation", "1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        roll.setGridVariables(varMap);
         roll.define(new File(testGribFile));
         return roll;
     }
@@ -119,11 +130,27 @@ public class RollingNetCDFArchiveTest {
     @Test
     public void testAddFile() throws IOException, InvalidRangeException, Exception {
         RollingNetCDFArchive roll = define();
-        roll.setGridVariables("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        Map<String, String> varMap = Maps.newHashMap();
+        varMap.put("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation","1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        varMap.put("Total_precipitation_surface_Mixed_intervals_Accumulation", "1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        roll.setGridVariables(varMap);
         roll.setUnlimitedDimension("time", "hours since 2000-01-01T00:00:00Z");
         roll.addFile(new File(testGribFile));
         Flushables.flushQuietly(roll);
         Closeables.closeQuietly(roll);
+    }
+    
+    @Test
+    public void testBounds() throws IOException {
+        FeatureDataset fd = GribUtils.getFeatureDatasetFromFile(new File(testGribFile));
+        GridDataset dataset = GribUtils.getGridDatasetFromFeatureDataset(fd);
+        String varname = "Total_precipitation_surface_Mixed_intervals_Accumulation";
+        GridDatatype grid = dataset.findGridDatatype(varname);
+        GridCoordSystem gcs = grid.getCoordinateSystem();
+        CoordinateAxis1DTime appendingTimeAxis = gcs.getTimeAxis1D();
+        double[] bound1 = appendingTimeAxis.getBound1();
+        double[] bound2 = appendingTimeAxis.getBound2();
+        assertThat(bound2[2] - bound1[2], is(equalTo(1D)));
     }
     
     /* Finish currently doesn't do anything, leaving dimension unlimited */

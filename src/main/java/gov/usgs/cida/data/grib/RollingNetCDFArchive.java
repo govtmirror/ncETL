@@ -49,7 +49,8 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     private String unlimited;
     private String unlimitedUnits;
     private String gridMapping;
-    private List<String> gridVariables;
+    // map this variable to another
+    private Map<String, String> gridVariables;
 
     // should be able to open existing file here
     public RollingNetCDFArchive(File rollingFile) throws IOException {
@@ -87,8 +88,8 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         this.gridMapping = gridMappingName;
     }
     
-    public void setGridVariables(String... varName) {
-        gridVariables = Lists.newArrayList(varName);
+    public void setGridVariables(Map<String, String> variableMapping) {
+        gridVariables = variableMapping;
     }
     
     public void define(File gribPrototype) throws IOException, FactoryException, TransformException, InvalidRangeException {
@@ -143,9 +144,16 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         List<String> varExcludes = Lists.newArrayList();
         varExcludes.addAll(excludes.get(VAR));
         varExcludes.addAll(excludes.get(XY));
+        
+        // hack to map bad variable to good one
+        boolean addedDataVar = false;
+        Variable mappedVariable = null;
         for (Variable var : srcNc.getVariables()) {
             if (varExcludes.contains(var.getFullName())) {
                 // hold this var out
+                if (gridVariables.containsKey(var.getFullName())) {
+                    mappedVariable = var;
+                }
             }
             else {
                 Variable newVar = netcdf.addVariable(var.getFullName(), var.getDataType(), var.getDimensionsString());
@@ -159,10 +167,21 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                     netcdf.addVariableAttribute(newVar, new Attribute("units", unlimitedUnits));
                 }
                 else {
+                    addedDataVar = true;
                     netcdf.addVariableAttribute(newVar, new Attribute("grid_mapping", gridMapping));
                     netcdf.addVariableAttribute(newVar, new Attribute("coordinates", "lon lat"));
                 }
             }
+        }
+        
+        if (!addedDataVar && mappedVariable != null) {
+            String target = gridVariables.get(mappedVariable.getFullName());
+            Variable newVar = netcdf.addVariable(target, mappedVariable.getDataType(), mappedVariable.getDimensionsString());
+            for (Attribute varAttr : mappedVariable.getAttributes()) {
+                netcdf.addVariableAttribute(newVar, varAttr);
+            }
+            netcdf.addVariableAttribute(newVar, new Attribute("grid_mapping", gridMapping));
+            netcdf.addVariableAttribute(newVar, new Attribute("coordinates", "lon lat"));
         }
         
         for (Attribute attr : srcNc.getGlobalAttributes()) {
@@ -264,7 +283,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         GridDataset dataset = null;
         try {
             dataset = GribUtils.getGridDatasetFromFeatureDataset(fd);
-            for (String varname : gridVariables) {
+            for (String varname : gridVariables.keySet()) {
                 GridDatatype grid = dataset.findGridDatatype(varname);
                 if (grid == null) {
                     log.debug("target variable not found, skipping this file");
@@ -274,9 +293,19 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 int xAxisLength = GridUtility.getXAxisLength(gcs);
                 int yAxisLength = GridUtility.getYAxisLength(gcs);
                 CoordinateAxis1DTime appendingTimeAxis = gcs.getTimeAxis1D();
+                double[] bound1 = appendingTimeAxis.getBound1();
+                double[] bound2 = appendingTimeAxis.getBound2();
                 int[] origins = new int[3];
                 for (int i=0; i<appendingTimeAxis.getSize(); i++) {
                     origins[0] = i + unlimitedLength;
+                    if (bound1 != null && bound1.length > i &&
+                        bound2 != null && bound2.length > i) {
+                        double interval = bound2[i] - bound1[i];
+                        // here I should allow non-hourly intervals in a more general way
+                        if (interval != 1) {
+                            continue;
+                        }
+                    }
                     CalendarDate calendarDate = appendingTimeAxis.getCalendarDate(i);
                     int timeValue = periodOfMeasure.subtract(originDate, calendarDate);
 
@@ -292,7 +321,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                         }
                     }
                                         
-                    netcdf.write(grid.getFullName(), origins, dataArray);
+                    netcdf.write(gridVariables.get(varname), origins, dataArray);
                     netcdf.write(unlimited, new int[]{i + unlimitedLength}, timeArray);
                 }
             }
