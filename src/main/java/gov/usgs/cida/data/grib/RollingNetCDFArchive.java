@@ -296,33 +296,36 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 double[] bound1 = appendingTimeAxis.getBound1();
                 double[] bound2 = appendingTimeAxis.getBound2();
                 int[] origins = new int[3];
-                for (int i=0; i<appendingTimeAxis.getSize(); i++) {
-                    origins[0] = i + unlimitedLength;
-                    if (bound1 != null && bound1.length > i &&
-                        bound2 != null && bound2.length > i) {
-                        double interval = bound2[i] - bound1[i];
+                int writeIndex = 0;
+                for (int readIndex = 0; readIndex<appendingTimeAxis.getSize(); readIndex++) {
+                    if (bound1 != null && bound1.length > readIndex &&
+                        bound2 != null && bound2.length > readIndex) {
+                        double interval = bound2[readIndex] - bound1[readIndex];
                         // here I should allow non-hourly intervals in a more general way
                         if (interval != 1) {
                             continue;
                         }
                     }
-                    CalendarDate calendarDate = appendingTimeAxis.getCalendarDate(i);
-                    int timeValue = periodOfMeasure.subtract(originDate, calendarDate);
+                    
+                    origins[0] = writeIndex + unlimitedLength;
+                    CalendarDate calDate = appendingTimeAxis.getCalendarDate(readIndex);
+                    int timeValue = periodOfMeasure.subtract(originDate, calDate);
 
                     ArrayInt.D1 timeArray = new ArrayInt.D1(1);
                     timeArray.set(0, timeValue);
                     
                     ArrayFloat.D3 dataArray = new ArrayFloat.D3(1, yAxisLength, xAxisLength);
-                    ArrayFloat.D2 slice = (ArrayFloat.D2)grid.readDataSlice(i, -1, -1, -1);
+                    ArrayFloat.D2 slice = (ArrayFloat.D2)grid.readDataSlice(readIndex, -1, -1, -1);
 
                     for (int y=0; y<yAxisLength; y++) {
                         for (int x=0; x<xAxisLength; x++) {
                             dataArray.set(0, y, x, slice.get(y, x));
                         }
                     }
-                                        
+
                     netcdf.write(gridVariables.get(varname), origins, dataArray);
-                    netcdf.write(unlimited, new int[]{i + unlimitedLength}, timeArray);
+                    netcdf.write(unlimited, new int[]{writeIndex + unlimitedLength}, timeArray);
+                    writeIndex++;
                 }
             }
         }
