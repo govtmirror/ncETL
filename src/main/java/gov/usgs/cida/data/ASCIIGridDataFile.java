@@ -67,6 +67,8 @@ public class ASCIIGridDataFile {
                     indices.add(0l);
                 }
                 else {
+                    // !! There is a bug here that gives the wrong date for days between Apr 2x and Oct 2x
+                    //    it appears to be related to DST, though the exact cause is unknown !!
                     Instant thisDate = Instant.parse(yyyymmdd, DateTimeFormat.forPattern("yyyyMMdd"));
                     int thisYear = thisDate.get(year());
                     Duration daysSince = new Duration(startDate, thisDate);
