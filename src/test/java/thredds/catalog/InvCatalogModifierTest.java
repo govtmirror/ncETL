@@ -9,13 +9,9 @@ import java.io.File;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import org.junit.*;
 import ucar.nc2.units.DateType;
 
 /**

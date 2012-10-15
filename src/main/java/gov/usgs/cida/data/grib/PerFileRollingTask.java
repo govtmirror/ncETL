@@ -1,7 +1,6 @@
 package gov.usgs.cida.data.grib;
 
 import com.google.common.io.Closeables;
-import com.google.common.io.Flushables;
 import gov.usgs.cida.ncetl.task.NcetlTask;
 import java.io.File;
 import java.io.FileFilter;
@@ -10,9 +9,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
-import ucar.ma2.InvalidRangeException;
 
 /**
  *

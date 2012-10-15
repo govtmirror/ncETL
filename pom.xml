@@ -57,10 +57,15 @@
             <name>52N Releases</name>
             <url>http://52north.org/maven/repo/releases</url>
         </repository>
+<!--        <repository>
+            <id>cida-unidata-releases</id>
+            <name>CIDA Unidata Releases</name>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/unidata-releases</url>
+        </repository>-->
         <repository>
-            <id>unidata-snapshots</id>
-            <name>Unidata Snapshots</name>
-            <url>http://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots</url>
+            <id>unidata-releases</id>
+            <name>Unidata Releases</name>
+            <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
         </repository>
     </repositories>
     
@@ -251,12 +256,12 @@
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>netcdf</artifactId>
-            <version>4.3.8-SNAPSHOT</version>
+            <version>4.3.13</version>
         </dependency>
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>grib</artifactId>
-            <version>4.3.8-SNAPSHOT</version>
+            <version>4.3.13</version>
         </dependency>
         <dependency>
             <groupId>gov.usgs.cida.gdp</groupId>

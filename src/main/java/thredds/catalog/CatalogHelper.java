@@ -1,5 +1,6 @@
 package thredds.catalog;
 
+import com.google.common.io.Flushables;
 import gov.usgs.cida.ncetl.utils.FileHelper;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,6 +68,7 @@ public final class CatalogHelper {
             impl.writeXML(fos);
         }
         finally {
+            Flushables.flushQuietly(fos);
             IOUtils.closeQuietly(fos);
         }
     }

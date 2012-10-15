@@ -43,7 +43,6 @@ public class CatalogHelperTest {
     @BeforeClass
     public static void setUpAll() throws Exception {
         tempLocation = new File(tempDir + CatalogHelper.getDefaultCatalogFilename());
-        tempLocation.deleteOnExit();
         
         dbTemp = new File(tempDir + "db" + new Date().getTime());
         dbTemp.deleteOnExit();
@@ -66,22 +65,26 @@ public class CatalogHelperTest {
         }
     }
     
-    @Before
-    public void setUp() throws Exception {
-        tempLocation = new File(tempDir + CatalogHelper.getDefaultCatalogFilename());
-        tempLocation.deleteOnExit();
-    }
+//    @Before
+//    public void setUp() throws Exception {
+//        tempLocation = new File(tempDir + CatalogHelper.getDefaultCatalogFilename());
+//        tempLocation.deleteOnExit();
+//    }
 
     @After
     public void tearDown() throws Exception {
-        if (tempLocation.exists()) FileUtils.forceDelete(tempLocation);
+        if (tempLocation.exists()) {
+            FileUtils.forceDelete(tempLocation);
+        }
         //DatabaseUtil.shutdownDatabase("jdbc:derby:" + dbTemp.getPath() + ";shutdown=true");
     }
     
     @Test
-    public void testSetupCatalogUsingDefaultCatalogName() throws URISyntaxException, FileNotFoundException, IOException {
+    public void testSetupCatalogUsingDefaultCatalogName() throws URISyntaxException, FileNotFoundException, IOException, InterruptedException {
         CatalogHelper.setupCatalog(tempLocation);
-        assertThat(tempLocation.exists(), is(true));
+        boolean exists = tempLocation.isFile();
+        Thread.sleep(1000);
+        assertThat(exists, is(true));
         
         String catalog = FileUtils.readFileToString(tempLocation);
         assertThat(catalog.contains(CatalogHelper.getDefaultCatalogName()), is(true));

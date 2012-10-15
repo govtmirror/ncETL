@@ -1,9 +1,9 @@
 package thredds.catalog;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 import ucar.nc2.constants.FeatureType;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
 /**
  *
  * @author Ivan Suftin <isuftin@usgs.gov>

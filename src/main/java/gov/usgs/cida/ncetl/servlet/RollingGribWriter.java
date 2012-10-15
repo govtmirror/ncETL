@@ -147,7 +147,7 @@ public class RollingGribWriter extends HttpServlet {
             out.println("</body>");
             out.println("</html>");
              
-        } finally {            
+        } finally {
             out.close();
         }
     }

@@ -2,27 +2,15 @@ package thredds.catalog;
 
 import com.google.common.collect.Lists;
 import gov.usgs.cida.ncetl.utils.FileHelper;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
-import javax.crypto.spec.IvParameterSpec;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.constants.FeatureType;
 
 /**
