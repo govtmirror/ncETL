@@ -15,10 +15,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -41,7 +38,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     private static final Logger log = LoggerFactory.getLogger(
             RollingNetCDFArchive.class);
     
-    private NetcdfFileWriteable netcdf;
+    private NetcdfFileWriter netcdf;
     private GridDataset gridDs;
     private CoordinateReferenceSystem crs;
     private GridDatatype gdt;
@@ -55,15 +52,16 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     // should be able to open existing file here
     public RollingNetCDFArchive(File rollingFile) throws IOException {
         String fileAsString = rollingFile.getAbsolutePath();
-        if (rollingFile.exists() && NetcdfFileWriteable.canOpen(fileAsString)) {
-            netcdf = NetcdfFileWriteable.openExisting(fileAsString);
+        if (rollingFile.exists() && rollingFile.canWrite()) {
+            netcdf = NetcdfFileWriter.openExisting(fileAsString);
             FeatureDataset fd = GribUtils.getFeatureDatasetFromFile(rollingFile);
             gridDs = GribUtils.getGridDatasetFromFeatureDataset(fd);
             gdt = GribUtils.getDatatypeFromDataset(gridDs);
             crs = GribUtils.getCRSFromDatatype(gdt);
         }
         else {
-            netcdf = NetcdfFileWriteable.createNew(fileAsString);
+            netcdf = NetcdfFileWriter.createNew(
+                    NetcdfFileWriter.Version.netcdf3, fileAsString);
             gridDs = null;
             crs = null;
             gdt = null;
@@ -113,7 +111,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 // hold this one out
             }
             else {
-                netcdf.addDimension(dim.getName(), dim.getLength());
+                netcdf.addDimension(null, dim.getName(), dim.getLength());
             }
         }
         if (unlimitedDim != null) {
@@ -123,19 +121,19 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         Variable latVar = null;
         Variable lonVar = null;
         if (excludes.containsKey(XY)) {
-            Variable latLonVar = netcdf.addVariable(gridMapping, DataType.INT, "");
+            Variable latLonVar = netcdf.addVariable(null, gridMapping, DataType.INT, "");
             // this whole section will only work if gridMapping == Latitude_Longitude
             netcdf.addVariableAttribute(latLonVar, new Attribute("grid_mapping_name", "latitude_longitude"));
             netcdf.addVariableAttribute(latLonVar, new Attribute("semi_major_axis", 6378137.0));
             netcdf.addVariableAttribute(latLonVar, new Attribute("semi_minor_axis", 6356752.314245));
             netcdf.addVariableAttribute(latLonVar, new Attribute("longitude_of_prime_meridian", 0));
             
-            latVar = netcdf.addVariable("lat", DataType.DOUBLE, "y x");
+            latVar = netcdf.addVariable(null, "lat", DataType.DOUBLE, "y x");
             netcdf.addVariableAttribute(latVar, new Attribute("units", "degrees_north"));
             netcdf.addVariableAttribute(latVar, new Attribute("long_name", "Latitude"));
             netcdf.addVariableAttribute(latVar, new Attribute("standard_name", "latitude"));
             
-            lonVar = netcdf.addVariable("lon", DataType.DOUBLE, "y x");
+            lonVar = netcdf.addVariable(null, "lon", DataType.DOUBLE, "y x");
             netcdf.addVariableAttribute(lonVar, new Attribute("units", "degrees_east"));
             netcdf.addVariableAttribute(lonVar, new Attribute("long_name", "Longitude"));
             netcdf.addVariableAttribute(lonVar, new Attribute("standard_name", "longitude"));
@@ -156,7 +154,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 }
             }
             else {
-                Variable newVar = netcdf.addVariable(var.getFullName(), var.getDataType(), var.getDimensionsString());
+                Variable newVar = netcdf.addVariable(null, var.getFullName(), var.getDataType(), var.getDimensionsString());
 
                 for (Attribute varAttr : var.getAttributes()) {
                     netcdf.addVariableAttribute(newVar, varAttr);
@@ -176,7 +174,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         
         if (!addedDataVar && mappedVariable != null) {
             String target = gridVariables.get(mappedVariable.getFullName());
-            Variable newVar = netcdf.addVariable(target, mappedVariable.getDataType(), mappedVariable.getDimensionsString());
+            Variable newVar = netcdf.addVariable(null, target, mappedVariable.getDataType(), mappedVariable.getDimensionsString());
             for (Attribute varAttr : mappedVariable.getAttributes()) {
                 netcdf.addVariableAttribute(newVar, varAttr);
             }
@@ -185,9 +183,9 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         }
         
         for (Attribute attr : srcNc.getGlobalAttributes()) {
-            netcdf.addGlobalAttribute(attr);
+            netcdf.addGroupAttribute(null, attr);
         }
-        netcdf.addGlobalAttribute(new Attribute("Conventions", "CF-1.6"));
+        netcdf.addGroupAttribute(null, new Attribute("Conventions", "CF-1.6"));
         
         netcdf.create();
         writeLatsAndLons(latVar, lonVar);
@@ -212,8 +210,8 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                 yIndex++;
             }
         }
-        netcdf.write(latVar.getFullNameEscaped(), dataLat);
-        netcdf.write(lonVar.getFullNameEscaped(), dataLon);
+        netcdf.write(latVar, dataLat);
+        netcdf.write(lonVar, dataLon);
     }
     
     
@@ -271,10 +269,10 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     public void addFile(File gribOrSomething) throws IOException, InvalidRangeException, Exception {
         // make GridDataset out of it
         checkDefined();
-        if (!netcdf.hasUnlimitedDimension()) {
+        if (!netcdf.isDefineMode()) {
             throw new UnsupportedOperationException("Cannot add to file which is already finished");
         }
-        int unlimitedLength = netcdf.getUnlimitedDimension().getLength();
+        int unlimitedLength = netcdf.findVariable(unlimited).getShape(0);
         
         CalendarDate originDate = CalendarDate.parseUdunits(null, "0 " + unlimitedUnits);
         CalendarPeriod periodOfMeasure = CalendarPeriod.of(1, 
@@ -323,8 +321,8 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                         }
                     }
 
-                    netcdf.write(gridVariables.get(varname), origins, dataArray);
-                    netcdf.write(unlimited, new int[]{writeIndex + unlimitedLength}, timeArray);
+                    netcdf.write(netcdf.findVariable(gridVariables.get(varname)), origins, dataArray);
+                    netcdf.write(netcdf.findVariable(unlimited), new int[]{writeIndex + unlimitedLength}, timeArray);
                     writeIndex++;
                 }
             }
