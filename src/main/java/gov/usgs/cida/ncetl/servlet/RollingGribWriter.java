@@ -80,7 +80,7 @@ public class RollingGribWriter extends HttpServlet {
         }
         
         for (String rfcCode : rfcList) {
-            Pattern rfcPattern = Pattern.compile("QPE\\.(\\d{4})(\\d{2})\\d{2}\\.009\\." + rfcCode + "$");
+            Pattern rfcPattern = Pattern.compile("QPE\\.(\\d{4})(\\d{2})\\d{2}(\\.\\d{2})?\\.009\\." + rfcCode + "$");
             FileFilter filter = new RegexFileFilter(rfcPattern);
             File[] listFiles = inputDirFile.listFiles(filter);
             RollingNetCDFArchive rollingNetCDF = null;
@@ -156,13 +156,15 @@ public class RollingGribWriter extends HttpServlet {
         String ncFilename = outputDir.getCanonicalPath() + File.separatorChar + "QPE." + year + "." + month + "." + rfcCode + ".nc";
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File(ncFilename));
         roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
-        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_6_Hour_Accumulation", "Total_precipitation_surface_Mixed_intervals_Accumulation");
+        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds", "Total_precipitation_surface_6_Hour_Accumulation",
+                                "Total_precipitation_surface_Mixed_intervals_Accumulation", "Total_precipitation_surface_1_Hour_Accumulation");
         roll.setExcludeList(RollingNetCDFArchive.XY, "PolarStereographic_Projection", "x", "y");
         roll.setGridMapping("Latitude_Longitude");
         roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
         Map<String, String> varMap = Maps.newHashMap();
         varMap.put("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation","1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         varMap.put("Total_precipitation_surface_Mixed_intervals_Accumulation", "1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
+        varMap.put("Total_precipitation_surface_1_Hour_Accumulation","1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         roll.setGridVariables(varMap);
         return roll;
     }

@@ -37,6 +37,24 @@ CREATE TABLE controlled_vocabulary
 CREATE TABLE global_config 
     (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), base_dir varchar(512), thredds_dir varchar(512), PRIMARY KEY (id));
         
+-- Tables to configure recurring archive task
+CREATE TABLE archive_config
+    (
+    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    input_dir varchar(256),
+    output_dir varchar(256),
+    complete_dir varchar(256),
+    file_regex varchar(256),
+    
+    )
+CREATE TABLE rfc_mapping
+    (
+    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
+    archive_id INT CONSTRAINT ARCHIVE1_FK REFERENCES archive_config ON DELETE CASCADE, 
+    rfc_code INT,
+    rfc_regex varchar(64)
+    )
+
 -- Catalog schema tables;
 CREATE TABLE catalog 
     (
