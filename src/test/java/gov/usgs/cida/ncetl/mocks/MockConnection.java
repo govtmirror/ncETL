@@ -310,27 +310,23 @@ public class MockConnection implements Connection {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
+    /** Added these for java7 implementation of Connection - no Overrides */
     public void setSchema(String arg0) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public String getSchema() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public void abort(Executor arg0) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public void setNetworkTimeout(Executor arg0, int arg1) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public int getNetworkTimeout() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }

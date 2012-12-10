@@ -528,12 +528,11 @@ public class MockPreparedStatement implements PreparedStatement {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
+    /** Added these for java7 implementation of PreparedStatement - no Overrides */
     public void closeOnCompletion() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public boolean isCloseOnCompletion() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -96,7 +96,7 @@ public class FileHelperTest {
     @Test
     public void testDirAppend() {
         String directoryWithoutSep = "test";
-        String directoryWithSep = "test/";
+        String directoryWithSep = "test" + File.separator;
         String result = FileHelper.dirAppend(directoryWithoutSep, directoryWithoutSep);
         String result2 = FileHelper.dirAppend(directoryWithSep, directoryWithoutSep);
         assertThat(result, is(equalTo(result2)));
