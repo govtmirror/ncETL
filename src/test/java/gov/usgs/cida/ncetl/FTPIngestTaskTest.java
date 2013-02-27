@@ -1,6 +1,6 @@
 package gov.usgs.cida.ncetl;
 
-import gov.usgs.cida.ncetl.utils.FTPIngestTask;
+import gov.usgs.cida.ncetl.ingest.FTPIngestTask;
 import org.junit.Ignore;
 import java.io.File;
 import java.net.MalformedURLException;

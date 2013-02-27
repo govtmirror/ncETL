@@ -1,5 +1,6 @@
 package gov.usgs.cida.ncetl.utils;
 
+import gov.usgs.cida.ncetl.ingest.FTPIngestTask;
 import com.google.common.collect.Maps;
 import gov.usgs.cida.ncetl.spec.IngestControlSpec;
 import java.net.MalformedURLException;

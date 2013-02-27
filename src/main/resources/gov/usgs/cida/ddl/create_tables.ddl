@@ -44,7 +44,7 @@ CREATE TABLE archive_config
     input_dir varchar(256),
     output_dir varchar(256),
     complete_dir varchar(256),
-    file_regex varchar(256),
+    file_regex varchar(256)
     
     )
 CREATE TABLE rfc_mapping

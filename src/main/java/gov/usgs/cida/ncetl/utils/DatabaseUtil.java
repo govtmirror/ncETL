@@ -226,13 +226,13 @@ public final class DatabaseUtil {
         return false;
     }
 
-    static Connection getConnection() throws SQLException,
+    public static Connection getConnection() throws SQLException,
                                                        NamingException,
                                                        ClassNotFoundException {
         return getConnection(JNDI_CONTEXT);
     }
 
-    static Connection getConnection(String jndiContext) throws
+    public static Connection getConnection(String jndiContext) throws
             SQLException, NamingException, ClassNotFoundException {
         return SqlUtils.getConnection(jndiContext);
     }
