@@ -45,6 +45,10 @@ public class TaskRunner extends HttpServlet {
             out.close();
         }
     }
+    
+    private void runTask() {
+        
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

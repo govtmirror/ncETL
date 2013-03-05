@@ -1,19 +1,11 @@
 package gov.usgs.cida.ncetl.spec;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import gov.usgs.cida.ncetl.ingest.FTPIngestTask;
-import gov.usgs.webservices.jdbc.spec.Spec;
 import gov.usgs.webservices.jdbc.spec.mapping.ColumnMapping;
 import gov.usgs.webservices.jdbc.spec.mapping.SearchMapping;
 import gov.usgs.webservices.jdbc.spec.mapping.WhereClauseType;
-import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,14 +70,12 @@ public class ArchiveSpec extends AbstractNcetlSpec {
     @Override
     public ResultSet getInsertedRows(Connection con) throws SQLException {
         ResultSet rs = super.getInsertedRows(con);
-        // TODO For new rows, start up ingestor
         return rs;
     }
 
     @Override
     public ResultSet getUpdatedRows(Connection con) throws SQLException {
         ResultSet rs = super.getUpdatedRows(con);
-        // TODO for updated rows, restart ingestors
         return rs;
     }
    
