@@ -55,21 +55,23 @@ CREATE TABLE archive_config
     PRIMARY KEY (id)
     );
 
-CREATE TABLE exclude_mapping
-    (
-    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    archive_id INT CONSTRAINT ARCHIVE2_FK REFERENCES archive_config ON DELETE CASCADE,
-    exclude_type_id INT CONSTRAINT EXCLUDE_TYPE_FK REFERENCES exclude_types ON DELETE CASCADE,
-    exclude_text varchar(256),
-    PRIMARY KEY (id)
-    );
-
 CREATE TABLE exclude_type
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
     type varchar(8),
     PRIMARY KEY (id)
     );
+
+CREATE TABLE exclude_mapping
+    (
+    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
+    archive_id INT CONSTRAINT ARCHIVE2_FK REFERENCES archive_config ON DELETE CASCADE,
+    exclude_type_id INT CONSTRAINT EXCLUDE_TYPE_FK REFERENCES exclude_type ON DELETE CASCADE,
+    exclude_text varchar(256),
+    PRIMARY KEY (id)
+    );
+
+
 
 CREATE TABLE rename_mapping
     (
