@@ -528,12 +528,10 @@ public class MockPreparedStatement implements PreparedStatement {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public void closeOnCompletion() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public boolean isCloseOnCompletion() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
