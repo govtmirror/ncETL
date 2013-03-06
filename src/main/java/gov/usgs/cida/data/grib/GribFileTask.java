@@ -1,14 +1,14 @@
 package gov.usgs.cida.data.grib;
 
-import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.google.common.io.Flushables;
-import static gov.usgs.cida.ncetl.spec.ArchiveSpec.*;
-import gov.usgs.cida.ncetl.task.PerFileRollingTask;
+import static gov.usgs.cida.ncetl.spec.task.ArchiveSpec.*;
+import gov.usgs.cida.ncetl.task.NcetlTask;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,11 +23,13 @@ import ucar.ma2.InvalidRangeException;
  *
  * @author Jordan Walker <jiwalker@usgs.gov>
  */
-public class PerGribFileTask extends PerFileRollingTask {
+public class GribFileTask extends NcetlTask {
     
-    private static Logger log = LoggerFactory.getLogger(PerGribFileTask.class);
+    private static Logger log = LoggerFactory.getLogger(GribFileTask.class);
     
     public static final String RFC_CODE_REPLACE = "{rfc_code}";
+    
+    private Map<String, Object> parameters = null;
     
     @Override
     public void run() {
@@ -40,11 +42,11 @@ public class PerGribFileTask extends PerFileRollingTask {
     }
     
     private void processFile() {
-        String inputDir = parameters.get(INPUT_DIR);
-        String outputDir = parameters.get(OUTPUT_DIR);
-        String completeDir = parameters.get(COMPLETE_DIR);
-        String fileRegex = parameters.get(FILE_REGEX);
-        String rfcCode = parameters.get(RFC_CODE);
+        String inputDir = (String)parameters.get(INPUT_DIR);
+        String outputDir = (String)parameters.get(OUTPUT_DIR);
+        String completeDir = (String)parameters.get(COMPLETE_DIR);
+        String fileRegex = (String)parameters.get(FILE_REGEX);
+        String rfcCode = String.valueOf((Integer)parameters.get(RFC_CODE));
         
         if (inputDir == null || outputDir == null) {
             throw new RuntimeException("Must specify input and output directories");
@@ -114,22 +116,14 @@ public class PerGribFileTask extends PerFileRollingTask {
     
     private RollingNetCDFArchive setupNetCDF(File outputDir, String year, String month, String rfcCode) throws IOException {
         
-        String dimExcludeStr = parameters.get(DIM_EXLUDES);
-        String[] dimExcludes = dimExcludeStr.split(",");
-        String varExcludeStr = parameters.get(VAR_EXLUDES);
-        String[] varExcludes = varExcludeStr.split(",");
-        String xyExcludeStr = parameters.get(XY_EXLUDES);
-        String[] xyExcludes = xyExcludeStr.split(",");
+        List<String> dimExcludes = (List<String>)parameters.get(DIM_EXCLUDES);
+        List<String> varExcludes = (List<String>)parameters.get(VAR_EXCLUDES);
+        List<String> xyExcludes = (List<String>)parameters.get(XY_EXCLUDES);
         
-        String unlimitedDim = parameters.get(UNLIM_DIM);
-        String unlimitedUnits = parameters.get(UNLIM_UNITS);
+        String unlimitedDim = (String)parameters.get(UNLIM_DIM);
+        String unlimitedUnits = (String)parameters.get(UNLIM_UNITS);
         
-        String fromVarStr = parameters.get(RENAME_FROM_VAR);
-        String[] fromVars = fromVarStr.split(","); // not sure if there will ever be multiple
-        String toVarStr = parameters.get(RENAME_TO_VAR);
-        if (toVarStr.contains(",")) {
-            throw new RuntimeException("Can only rename single variable");
-        }
+        Map<String, String> renames = (Map<String, String>)parameters.get(RENAMES);
         
         String ncFilename = outputDir.getCanonicalPath() + File.separatorChar + "QPE." + year + "." + month + "." + rfcCode + ".nc";
         RollingNetCDFArchive roll = new RollingNetCDFArchive(new File(ncFilename));
@@ -137,13 +131,15 @@ public class PerGribFileTask extends PerFileRollingTask {
         roll.setExcludeList(RollingNetCDFArchive.DIM, dimExcludes);
         roll.setExcludeList(RollingNetCDFArchive.VAR, varExcludes);
         roll.setExcludeList(RollingNetCDFArchive.XY, xyExcludes);
+        
         roll.setGridMapping("Latitude_Longitude");
         roll.setUnlimitedDimension(unlimitedDim, unlimitedUnits);
-        Map<String, String> varMap = Maps.newHashMap();
-        for (String from : fromVars) {
-            varMap.put(from, toVarStr);
-        }
-        roll.setGridVariables(varMap);
+        roll.setGridVariables(renames);
         return roll;
     }   
+
+    @Override
+    public void setRunParams(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
 }

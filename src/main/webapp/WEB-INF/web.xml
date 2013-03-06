@@ -61,10 +61,10 @@
         <servlet-name>ASCIIConverterServlet</servlet-name>
         <servlet-class>gov.usgs.cida.ncetl.servlet.ASCIIConverterServlet</servlet-class>
     </servlet>
-    <servlet>
+<!--    <servlet>
         <servlet-name>RollingGribWriter</servlet-name>
         <servlet-class>gov.usgs.cida.ncetl.servlet.RollingGribWriter</servlet-class>
-    </servlet>
+    </servlet>-->
     <servlet>
         <servlet-name>GridCoordsNcml</servlet-name>
         <servlet-class>gov.usgs.cida.ncetl.servlet.GridCoordsNcml</servlet-class>
@@ -154,10 +154,10 @@
         <servlet-name>IngestControlService</servlet-name>
         <url-pattern>/service/task/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+<!--    <servlet-mapping>
         <servlet-name>RollingGribWriter</servlet-name>
         <url-pattern>/RollingGribWriter</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>GridCoordsNcml</servlet-name>
         <url-pattern>/GridCoordsNcml</url-pattern>

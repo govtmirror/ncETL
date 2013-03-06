@@ -1,6 +1,7 @@
 
 package gov.usgs.cida.data.grib;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.google.common.io.Flushables;
@@ -9,6 +10,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -87,9 +90,20 @@ public class RollingNetCDFArchiveTest {
     
     private RollingNetCDFArchive define() throws Exception {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(tmpNc);
-        roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
-        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds");
-        roll.setExcludeList(RollingNetCDFArchive.XY, "Total_precipitation_surface_Mixed_intervals_Accumulation", "PolarStereographic_Projection", "x", "y");
+        List<String> dimList = Lists.newLinkedList();
+        dimList.add("time1");
+        List<String> varList = Lists.newLinkedList();
+        varList.add("time1");
+        varList.add("time_bounds");
+        varList.add("time1_bounds");
+        List<String> xyList = Lists.newLinkedList();
+        xyList.add("Total_precipitation_surface_Mixed_intervals_Accumulation");
+        xyList.add("PolarStereographic_Projection");
+        xyList.add("x");
+        xyList.add("y");
+        roll.setExcludeList(RollingNetCDFArchive.DIM, dimList);
+        roll.setExcludeList(RollingNetCDFArchive.VAR, varList);
+        roll.setExcludeList(RollingNetCDFArchive.XY, xyList);
         roll.setGridMapping("Latitude_Longitude");
         roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
         Map<String, String> varMap = Maps.newHashMap();

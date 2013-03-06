@@ -35,17 +35,13 @@ CREATE TABLE controlled_vocabulary
 
 -- Application configuration table, mostly for future use;
 CREATE TABLE global_config 
-    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), base_dir varchar(512), thredds_dir varchar(512), PRIMARY KEY (id));
-        
+    (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
+    base_dir varchar(512), 
+    thredds_dir varchar(512), 
+    PRIMARY KEY (id)
+    );
 
--- add other foreign keys for other tasks later
-CREATE TABLE task_config
-    (
-    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
-    archive_config_id INT CONSTRAINT ARCHIVE1_FK REFERENCES archive_config ON DELETE CASCADE
-    )
-
--- Tables to configure recurring archive task
+-- Tables to configure recurring archive task;
 CREATE TABLE archive_config
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
@@ -55,37 +51,34 @@ CREATE TABLE archive_config
     file_regex varchar(256),
     rfc_code INT,
     unlimited_dim varchar(256),
-    unlimited_units varchar(256)
-    )
+    unlimited_units varchar(256),
+    PRIMARY KEY (id)
+    );
 
-CREATE TABLE dim_excludes_mapping
+CREATE TABLE exclude_mapping
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    archive_id INT CONSTRAINT ARCHIVE2_FK REFERENCES archive_config ON DELETE CASCADE, 
-    dimension_excludes varchar(256)
-    )
+    archive_id INT CONSTRAINT ARCHIVE2_FK REFERENCES archive_config ON DELETE CASCADE,
+    exclude_type_id INT CONSTRAINT EXCLUDE_TYPE_FK REFERENCES exclude_types ON DELETE CASCADE,
+    exclude_text varchar(256),
+    PRIMARY KEY (id)
+    );
 
-CREATE TABLE var_excludes_mapping
+CREATE TABLE exclude_type
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    archive_id INT CONSTRAINT ARCHIVE3_FK REFERENCES archive_config ON DELETE CASCADE, 
-    variable_excludes varchar(256)
-    )
-
-CREATE TABLE xy_excludes_mapping
-    (
-    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
-    archive_id INT CONSTRAINT ARCHIVE4_FK REFERENCES archive_config ON DELETE CASCADE, 
-    xy_excludes varchar(256)
-    )
+    type varchar(8),
+    PRIMARY KEY (id)
+    );
 
 CREATE TABLE rename_mapping
     (
     id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
     archive_id INT CONSTRAINT ARCHIVE5_FK REFERENCES archive_config ON DELETE CASCADE, 
     from_name varchar(256),
-    to_name varchar(256)
-    )
+    to_name varchar(256),
+    PRIMARY KEY (id)
+    );
 
 -- Catalog schema tables;
 CREATE TABLE catalog 

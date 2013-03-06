@@ -9,7 +9,7 @@ import java.util.TimerTask;
  */
 public abstract class NcetlTask extends TimerTask {
 
-    public abstract void setRunParams(Map<String, String> hopefullyAStringMapWillDo);
+    public abstract void setRunParams(Map<String, Object> parameters);
     
     @Override
     public abstract void run();

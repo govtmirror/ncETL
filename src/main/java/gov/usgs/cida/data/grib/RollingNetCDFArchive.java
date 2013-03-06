@@ -73,8 +73,8 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         gridMapping = "Latitude_Longitude";
     }
     
-    public void setExcludeList(String key, String... excludes) {
-        this.excludes.put(key, Lists.newArrayList(excludes));
+    public void setExcludeList(String key, List<String> excludes) {
+        this.excludes.put(key, excludes);
     }
     
     public void setUnlimitedDimension(String dimName, String units) {
