@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -38,13 +41,19 @@ public class RollingNetCDFArchiveTest {
     
     private static String testGribFile = RollingNetCDFArchiveTest.class.getClassLoader().getResource(
             "gov/usgs/cida/data/grib/QPE.20100319.009.160").getFile();
-    private File tmpNc = null;
+    private static File tmpNc = null;
     
-    @Before
-    public void setUpClass() throws IOException {
+    @BeforeClass
+    public static void setUpClass() throws IOException {
         String tmpdir = System.getProperty("java.io.tmpdir");
         tmpNc = new File(tmpdir + File.separator + Long.toString(System.nanoTime()) + ".nc");
-        tmpNc.deleteOnExit();
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        if (tmpNc.exists()) {
+            FileUtils.forceDelete(tmpNc);
+        }
     }
 
     /**
@@ -170,7 +179,7 @@ public class RollingNetCDFArchiveTest {
     /* Finish currently doesn't do anything, leaving dimension unlimited */
     @Test
     public void testFinish() throws IOException {
-        RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
+        RollingNetCDFArchive roll = new RollingNetCDFArchive(tmpNc);
         roll.finish();
         Closeables.closeQuietly(roll);
     }

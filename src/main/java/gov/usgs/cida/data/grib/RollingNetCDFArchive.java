@@ -2,6 +2,7 @@ package gov.usgs.cida.data.grib;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.Closeables;
 import gov.usgs.cida.gdp.coreprocessing.analysis.grid.GridUtility;
 import java.io.Closeable;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.IOUtils;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -269,9 +271,10 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     public void addFile(File gribOrSomething) throws IOException, InvalidRangeException, Exception {
         // make GridDataset out of it
         checkDefined();
-        if (!netcdf.isDefineMode()) {
-            throw new UnsupportedOperationException("Cannot add to file which is already finished");
-        }
+        // we want to make sure file is not finished (can be out of define mode though)
+//        if (!netcdf.isDefineMode()) {
+//            throw new UnsupportedOperationException("Cannot add to file which is already finished");
+//        }
         int unlimitedLength = netcdf.findVariable(unlimited).getShape(0);
         
         CalendarDate originDate = CalendarDate.parseUdunits(null, "0 " + unlimitedUnits);
@@ -350,6 +353,14 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
     
     @Override
     public void close() throws IOException {
-        netcdf.close();
+        try {
+            netcdf.close();
+        }
+        catch (Exception e) {
+            // couldn't close
+        }
+        finally {
+            netcdf = null;
+        }
     }
 }

@@ -24,8 +24,7 @@ import static org.hamcrest.Matchers.*;
 public class NcMLUtilTest {
     
     private static File testFile;
-    private static String destination = FileHelper.getTempDirectory() +  "test_delete_me" + File.separator;
-    private static String destinationFile = destination + "temp.QPE.20110214.009.105";
+    private static File destinationFile;
     private static WrapperNetcdfFile wrapper;
     
     public NcMLUtilTest() {
@@ -36,6 +35,7 @@ public class NcMLUtilTest {
         wrapper = new WrapperNetcdfFile();
         URL resource = NcMLUtilTest.class.getClassLoader().getResource("QPE.20110214.009.105");
         testFile = new File(resource.getFile());
+        destinationFile = new File(FileHelper.getTempDirectory() + File.separator + "temp.QPE.20110214.009.105");
     }
 
     @AfterClass
@@ -44,13 +44,14 @@ public class NcMLUtilTest {
     
     @Before
     public void setUp() throws IOException {
-        FileUtils.forceMkdir(new File(destination));
-        FileUtils.copyFile(testFile, new File(destinationFile));
+        FileUtils.copyFile(testFile, destinationFile);
     }
     
     @After
     public void tearDown() throws IOException {
-        FileUtils.forceDelete(new File(destination));
+        if (destinationFile.exists()) {
+            FileUtils.forceDelete(destinationFile);
+        }
     }
 
     /**
@@ -82,27 +83,30 @@ public class NcMLUtilTest {
     }
     
     @Test
-    public void testCreateNCML() throws ThreddsUtilitiesException {
-        File test = NcMLUtil.createNcML(destinationFile);
+    public void testCreateNCML() throws ThreddsUtilitiesException, IOException {
+        File test = NcMLUtil.createNcML(destinationFile.getCanonicalPath());
+        test.deleteOnExit();
         assertThat(test, is(notNullValue()));
         assertThat(test.length(), is(not(new Long(0))));
     }
     
     @Test
     public void testTransformNCMLtoHTML() throws ThreddsUtilitiesException, IOException {
-       File ncmlFile = NcMLUtil.createNcML(destinationFile);
+       File ncmlFile = NcMLUtil.createNcML(destinationFile.getCanonicalPath());
+       ncmlFile.deleteOnExit();
        String _xsltMetadataAssessmentToHTML = NcMLUtilTest.class.getClassLoader().getResource("UnidataDDCount-HTML.xsl").getPath();
-       File htmlFile = ThreddsTranslatorUtil.transform(_xsltMetadataAssessmentToHTML, ncmlFile.getCanonicalPath(), destination + "output.html");
+       File htmlFile = ThreddsTranslatorUtil.transform(_xsltMetadataAssessmentToHTML, ncmlFile.getCanonicalPath(), FileHelper.getTempDirectory() + File.separator + "output.html");
        htmlFile.deleteOnExit();
        assertThat(htmlFile.exists(), is(true));
        assertThat(htmlFile.length(), is(not(new Long(0))));
     }
     
-        @Test
+    @Test
     public void testTransformNCMLtoXML() throws ThreddsUtilitiesException, IOException {
-       File ncmlFile = NcMLUtil.createNcML(destinationFile);
-        String _xsltMetadataAssessmentToXML = NcMLUtilTest.class.getClassLoader().getResource("UnidataDDCount-xml.xsl").getPath();
-        File xmlFile = ThreddsTranslatorUtil.transform(_xsltMetadataAssessmentToXML, ncmlFile.getCanonicalPath(), destination + "output.xml");
+       File ncmlFile = NcMLUtil.createNcML(destinationFile.getCanonicalPath());
+       ncmlFile.deleteOnExit();
+       String _xsltMetadataAssessmentToXML = NcMLUtilTest.class.getClassLoader().getResource("UnidataDDCount-xml.xsl").getPath();
+       File xmlFile = ThreddsTranslatorUtil.transform(_xsltMetadataAssessmentToXML, ncmlFile.getCanonicalPath(), FileHelper.getTempDirectory() + File.separator + "output.xml");
        xmlFile.deleteOnExit();
        assertThat(xmlFile.exists(), is(true));
        assertThat(xmlFile.length(), is(not(new Long(0))));

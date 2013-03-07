@@ -104,7 +104,7 @@ public final class NcMLUtil {
     public static synchronized File createNcML(String catalogLocation) throws
             ThreddsUtilitiesException {
         File catalog = new File(catalogLocation);
-        String ncmlName = catalog.getParent() + File.separator + "waf/nciso.ncml";
+        String ncmlName = catalog.getParent() + File.separator + "nciso.ncml";
         File ncmlFile = new File(ncmlName);
         if (!ncmlFile.exists()) {
             try {
