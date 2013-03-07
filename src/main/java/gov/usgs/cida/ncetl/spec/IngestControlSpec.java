@@ -2,7 +2,7 @@ package gov.usgs.cida.ncetl.spec;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gov.usgs.cida.ncetl.utils.FTPIngestTask;
+import gov.usgs.cida.ncetl.ingest.FTPIngestTask;
 import gov.usgs.webservices.jdbc.spec.Spec;
 import gov.usgs.webservices.jdbc.spec.mapping.ColumnMapping;
 import gov.usgs.webservices.jdbc.spec.mapping.SearchMapping;

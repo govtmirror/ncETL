@@ -1,6 +1,9 @@
-package gov.usgs.cida.ncetl.utils;
+package gov.usgs.cida.ncetl.ingest;
 
 import gov.usgs.cida.ncetl.spec.IngestControlSpec;
+import gov.usgs.cida.ncetl.utils.DatabaseUtil;
+import gov.usgs.cida.ncetl.utils.FileHelper;
+import gov.usgs.cida.ncetl.utils.ModifiedSinceFilter;
 import gov.usgs.webservices.jdbc.spec.Spec;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,7 +14,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +22,6 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.joda.time.DateTime;
-
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,31 +30,33 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwalker
  */
-public final class FTPIngestTask extends TimerTask {
+public class FTPIngestTask extends IngestTask {
+    
     private static final Logger LOG = LoggerFactory.getLogger(FTPIngestTask.class.getName());
-    public static final long DEFAULT_RESCAN_PERIOD = 1000 * 60 * 60;
     public static final String DEFAULT_PASSWORD = "anonymous";
     public static final String DEFAULT_USER = "anonymous";
-    public static final boolean DEFAULT_ACTIVE = false;
-    public static final String EVERYTHING_REGEX = ".*";
 
     private FTPIngestTask() {
         client = new FTPClient();
         lastSuccessfulRun = new DateTime(0L);
     }
 
+    @Override
     public long getRescanEvery() {
         return rescanEvery;
     }
     
+    @Override
     public boolean isActive() {
         return active;
     }
     
+    @Override
     public String getName() {
         return ingestName;
     }
 
+    @Override
     public String toJSONString() {
         JSONObject json = new JSONObject();
         json.put("ftpLocation", ftpLocation);
@@ -65,6 +68,7 @@ public final class FTPIngestTask extends TimerTask {
         return json.toJSONString();
     }
 
+    @Override
     public String toXMLString() {
         StringBuilder str = new StringBuilder();
         str.append("<?xml");

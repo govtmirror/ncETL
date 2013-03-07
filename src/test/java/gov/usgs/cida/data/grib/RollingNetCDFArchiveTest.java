@@ -1,6 +1,7 @@
 
 package gov.usgs.cida.data.grib;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
 import com.google.common.io.Flushables;
@@ -9,12 +10,17 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -35,13 +41,19 @@ public class RollingNetCDFArchiveTest {
     
     private static String testGribFile = RollingNetCDFArchiveTest.class.getClassLoader().getResource(
             "gov/usgs/cida/data/grib/QPE.20100319.009.160").getFile();
-    private File tmpNc = null;
+    private static File tmpNc = null;
     
-    @Before
-    public void setUpClass() throws IOException {
+    @BeforeClass
+    public static void setUpClass() throws IOException {
         String tmpdir = System.getProperty("java.io.tmpdir");
         tmpNc = new File(tmpdir + File.separator + Long.toString(System.nanoTime()) + ".nc");
-        tmpNc.deleteOnExit();
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        if (tmpNc.exists()) {
+            FileUtils.forceDelete(tmpNc);
+        }
     }
 
     /**
@@ -87,9 +99,20 @@ public class RollingNetCDFArchiveTest {
     
     private RollingNetCDFArchive define() throws Exception {
         RollingNetCDFArchive roll = new RollingNetCDFArchive(tmpNc);
-        roll.setExcludeList(RollingNetCDFArchive.DIM, "time1");
-        roll.setExcludeList(RollingNetCDFArchive.VAR, "time1", "time_bounds", "time1_bounds");
-        roll.setExcludeList(RollingNetCDFArchive.XY, "Total_precipitation_surface_Mixed_intervals_Accumulation", "PolarStereographic_Projection", "x", "y");
+        List<String> dimList = Lists.newLinkedList();
+        dimList.add("time1");
+        List<String> varList = Lists.newLinkedList();
+        varList.add("time1");
+        varList.add("time_bounds");
+        varList.add("time1_bounds");
+        List<String> xyList = Lists.newLinkedList();
+        xyList.add("Total_precipitation_surface_Mixed_intervals_Accumulation");
+        xyList.add("PolarStereographic_Projection");
+        xyList.add("x");
+        xyList.add("y");
+        roll.setExcludeList(RollingNetCDFArchive.DIM, dimList);
+        roll.setExcludeList(RollingNetCDFArchive.VAR, varList);
+        roll.setExcludeList(RollingNetCDFArchive.XY, xyList);
         roll.setGridMapping("Latitude_Longitude");
         roll.setUnlimitedDimension("time", "hours since 2000-01-01 00:00:00");
         Map<String, String> varMap = Maps.newHashMap();
@@ -156,7 +179,7 @@ public class RollingNetCDFArchiveTest {
     /* Finish currently doesn't do anything, leaving dimension unlimited */
     @Test
     public void testFinish() throws IOException {
-        RollingNetCDFArchive roll = new RollingNetCDFArchive(new File("/tmp/test.nc"));
+        RollingNetCDFArchive roll = new RollingNetCDFArchive(tmpNc);
         roll.finish();
         Closeables.closeQuietly(roll);
     }

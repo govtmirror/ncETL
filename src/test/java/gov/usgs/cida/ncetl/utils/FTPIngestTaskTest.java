@@ -1,7 +1,8 @@
 package gov.usgs.cida.ncetl.utils;
 
+import gov.usgs.cida.ncetl.ingest.FTPIngestTask;
 import org.joda.time.DateTime;
-import gov.usgs.cida.ncetl.utils.FTPIngestTask.Builder;
+import gov.usgs.cida.ncetl.ingest.FTPIngestTask.Builder;
 import java.net.MalformedURLException;
 import java.util.Date;
 import org.junit.After;

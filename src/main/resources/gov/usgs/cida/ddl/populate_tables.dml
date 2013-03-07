@@ -80,3 +80,8 @@ INSERT INTO spatial_range_type (id, type)
 INSERT INTO up_down_type (id, type)
     VALUES  (1, 'up'),
             (2, 'down');
+
+INSERT INTO exclude_type (id, type)
+    VALUES  (1, 'dim'),
+            (2, 'var'),
+            (3, 'xy');

@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.*;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -20,14 +21,17 @@ public class CatalogTest {
 
     private static InvCatalogFactory factory = null;
     private static Logger log = LoggerFactory.getLogger(CatalogTest.class);
+    private static File tmpCatalog;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         factory = new InvCatalogFactory("testFactory", true);
+        tmpCatalog = new File(FileHelper.getTempDirectory() + CatalogHelper.getDefaultCatalogFilename());
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+
     }
 
     @Before
@@ -35,7 +39,10 @@ public class CatalogTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws IOException {
+        if (tmpCatalog.exists()) {
+            FileUtils.forceDelete(tmpCatalog);
+        }
     }
 
     @Ignore
@@ -55,20 +62,18 @@ public class CatalogTest {
     @Test
     public void writeCatalog() throws URISyntaxException, FileNotFoundException,
                                       IOException {
-        File f = File.createTempFile("catalog_new", "xml");
-        f.deleteOnExit();
-        URI uri = f.toURI();
+        URI uri = tmpCatalog.toURI();
         InvCatalogImpl impl = new InvCatalogImpl("Test Catalog", "1.0", uri);
-        FileOutputStream fos = new FileOutputStream(f);
+        FileOutputStream fos = new FileOutputStream(tmpCatalog);
         impl.writeXML(fos);
-        assertTrue(f.exists());
+        assertTrue(tmpCatalog.exists());
 
     }
     
     @Test
     public void testDataset() throws URISyntaxException, IOException {
-        CatalogHelper.setupCatalog(new File("/tmp/catalog.xml"), "testcat");
-        InvCatalog readCatalog = CatalogHelper.readCatalog(new URI("file:///tmp/catalog.xml"));
+        CatalogHelper.setupCatalog(tmpCatalog, "testcat");
+        InvCatalog readCatalog = CatalogHelper.readCatalog(tmpCatalog.toURI());
         InvDatasetImpl ds = new InvDatasetImpl(null, "test");
         
         ThreddsMetadata tmd = new ThreddsMetadata(true);
@@ -87,7 +92,7 @@ public class CatalogTest {
         dsList.add(ds);
         mod.setDatasets(dsList);
         CatalogHelper.writeCatalog(readCatalog);
-        BufferedReader buf = new BufferedReader(new FileReader("/tmp/catalog.xml"));
+        BufferedReader buf = new BufferedReader(new FileReader(tmpCatalog));
         String line = "";
         StringBuilder total = new StringBuilder();
         while ((line = buf.readLine()) != null) {
