@@ -1021,6 +1021,7 @@ class MockResultSet implements ResultSet {
         this.result = result;
     }
 
+    /** Added these for java7 implementation of ResultSet - no Overrides */
     public <T> T getObject(int arg0,
                            Class<T> arg1) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");

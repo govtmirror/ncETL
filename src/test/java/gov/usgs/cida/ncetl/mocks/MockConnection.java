@@ -310,6 +310,7 @@ public class MockConnection implements Connection {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /** Added these for java7 implementation of Connection - no Overrides */
     public void setSchema(String arg0) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
