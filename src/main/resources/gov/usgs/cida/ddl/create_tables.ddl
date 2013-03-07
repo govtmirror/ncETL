@@ -38,6 +38,7 @@ CREATE TABLE global_config
     (id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
     base_dir varchar(512), 
     thredds_dir varchar(512), 
+    inserted boolean DEFAULT false, updated boolean DEFAULT false,
     PRIMARY KEY (id)
     );
 
@@ -52,6 +53,7 @@ CREATE TABLE archive_config
     rfc_code INT,
     unlimited_dim varchar(256),
     unlimited_units varchar(256),
+    inserted boolean DEFAULT false, updated boolean DEFAULT false,
     PRIMARY KEY (id)
     );
 
@@ -68,10 +70,9 @@ CREATE TABLE exclude_mapping
     archive_id INT CONSTRAINT ARCHIVE2_FK REFERENCES archive_config ON DELETE CASCADE,
     exclude_type_id INT CONSTRAINT EXCLUDE_TYPE_FK REFERENCES exclude_type ON DELETE CASCADE,
     exclude_text varchar(256),
+    inserted boolean DEFAULT false, updated boolean DEFAULT false,
     PRIMARY KEY (id)
     );
-
-
 
 CREATE TABLE rename_mapping
     (
@@ -79,6 +80,7 @@ CREATE TABLE rename_mapping
     archive_id INT CONSTRAINT ARCHIVE5_FK REFERENCES archive_config ON DELETE CASCADE, 
     from_name varchar(256),
     to_name varchar(256),
+    inserted boolean DEFAULT false, updated boolean DEFAULT false,
     PRIMARY KEY (id)
     );
 
