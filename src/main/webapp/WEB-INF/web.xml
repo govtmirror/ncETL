@@ -154,6 +154,18 @@
         <servlet-name>IngestControlService</servlet-name>
         <url-pattern>/service/task/*</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>TaskService</servlet-name>
+        <servlet-class>gov.usgs.cida.ncetl.service.TaskService</servlet-class>
+        <init-param>
+            <param-name>jndi_name</param-name>
+            <param-value>java:comp/env/jdbc/NCETL</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TaskService</servlet-name>
+        <url-pattern>/service/task/*</url-pattern>
+    </servlet-mapping>
 <!--    <servlet-mapping>
         <servlet-name>RollingGribWriter</servlet-name>
         <url-pattern>/RollingGribWriter</url-pattern>
