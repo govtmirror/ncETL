@@ -59,7 +59,7 @@ CREATE TABLE archive_config
 
 CREATE TABLE exclude_type
     (
-    id INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), 
+    id INT NOT NULL, 
     type varchar(8),
     PRIMARY KEY (id)
     );
