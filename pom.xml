@@ -20,7 +20,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
         <logback.version>0.9.26</logback.version>
     </properties>
     
@@ -45,7 +44,12 @@
         <repository>
             <id>cida-snapshots</id>
             <name>CIDA Snapshots</name>
-            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/public-snapshots</url>
+        </repository>
+        <repository>
+            <id>cida-releases</id>
+            <name>CIDA Releases</name>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/public</url>
         </repository>
         <repository>
             <id>cida-gdp-development</id>
