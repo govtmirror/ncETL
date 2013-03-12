@@ -82,7 +82,7 @@ public class ExcludeSpec extends AbstractNcetlSpec {
     public static Map<String, List<String>> getExcludes(int id, Connection con) throws SQLException {
         Spec spec = new ExcludeSpec();
         Map<String, String[]> params = Maps.newHashMap();
-        params.put(ARCHIVE_ID, new String[] { "" + id });
+        params.put("s_" + ARCHIVE_ID, new String[] { "" + id });
         Spec.loadParameters(spec, params);
         
         Map<String, List<String>> excludes = new HashMap<String, List<String>>();
