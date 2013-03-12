@@ -20,7 +20,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.1</slf4j.version>
-        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
         <logback.version>0.9.26</logback.version>
     </properties>
     
@@ -45,7 +44,12 @@
         <repository>
             <id>cida-snapshots</id>
             <name>CIDA Snapshots</name>
-            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots</url>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/public-snapshots</url>
+        </repository>
+        <repository>
+            <id>cida-releases</id>
+            <name>CIDA Releases</name>
+            <url>http://internal.cida.usgs.gov/maven/content/groups/public</url>
         </repository>
         <repository>
             <id>cida-gdp-development</id>
@@ -57,17 +61,25 @@
             <name>52N Releases</name>
             <url>http://52north.org/maven/repo/releases</url>
         </repository>
-<!--        <repository>
-            <id>cida-unidata-releases</id>
-            <name>CIDA Unidata Releases</name>
-            <url>http://internal.cida.usgs.gov/maven/content/repositories/unidata-releases</url>
-        </repository>-->
         <repository>
             <id>unidata-releases</id>
             <name>Unidata Releases</name>
             <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>cida-releases</id>
+            <name>CIDA Releases</name>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>cida-snapshots</id>
+            <name>CIDA Snapshots</name>
+            <url>http://internal.cida.usgs.gov/maven/content/repositories/cida-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     
     <scm>
         <connection>scm:git:http://gitub.com/USGS-CIDA/ncETL.git</connection>
