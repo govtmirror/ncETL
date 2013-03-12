@@ -82,7 +82,7 @@ public class RenameSpec extends AbstractNcetlSpec {
     public static Map<String, String> getRenames(int id, Connection con) throws SQLException {
         Spec spec = new RenameSpec();
         Map<String, String[]> params = Maps.newHashMap();
-        params.put(ARCHIVE_ID, new String[] { "" + id });
+        params.put("s_" + ARCHIVE_ID, new String[] { "" + id });
         Spec.loadParameters(spec, params);
         
         Map<String, String> renames = new HashMap<String, String>();
