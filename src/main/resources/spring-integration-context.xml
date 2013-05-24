@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/file    http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		">
+
+	<context:component-scan base-package="gov.usgs.cida.ncETLsis" />
+
+	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
+	
+	<int-file:inbound-channel-adapter directory="/tmp/ncETL/motherlode" id="motherlode"
+		channel="motherlode-chan" filename-pattern="foo*grib"
+		prevent-duplicates="false"
+	/>
+	
+	<int:channel id="motherlode-chan" datatype="java.io.File"/>
+	
+	<int:header-enricher id="year-month-enricher" input-channel="motherlode-chan" output-channel="ym-chan">
+		<int:header name="year-month" expression="$year$month"/>
+	</int:header-enricher>
+	
+	<int:channel id="ym-chan"/>
+	
+	<!--  see http://static.springsource.org/spring-integration/reference/htmlsingle/#overview-endpoints-aggregator -->
+	<int:aggregator id="grib-agg" input-channel="ym-chan" output-channel="lof-chan" 
+		release-strategy-expression="size() >= 12"
+		correlation-strategy-expression="headers.year-month"
+		expire-groups-upon-completion="true"
+	/>
+	
+	<int:channel id="lof-chan"/>
+	
+	<int:outbound-channel-adapter id="grib-writer" channel="lof-chan"
+		ref="gribber" method="processFiles"
+	/>
+
+</beans>
