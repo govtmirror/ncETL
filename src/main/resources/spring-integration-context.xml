@@ -4,11 +4,13 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int-jpa="http://www.springframework.org/schema/integration/jpa"
 	
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
 		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/integration/file    http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration/jpa     http://www.springframework.org/schema/integration/jpa/spring-integration-jpa.xsd
 		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
 		">
 
@@ -16,15 +18,22 @@
 
 	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
 	
+	<bean id="archive-spec-fetcher" class="gov.usgs.cida.data.grib.jpa.ArchiveSpecManager">
+	</bean>
+
 	<int-file:inbound-channel-adapter directory="/tmp/ncETL/motherlode" id="motherlode"
-		channel="motherlode-chan" filename-pattern="foo*grib"
+		channel="motherlode-chan" filename-pattern="*.grib"
 		prevent-duplicates="false"
-	/>
+	>
+		<int:poller  cron="0 0 0 1 * *"></int:poller>
+	</int-file:inbound-channel-adapter>
 	
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
 	
 	<int:header-enricher id="year-month-enricher" input-channel="motherlode-chan" output-channel="ym-chan">
-		<int:header name="year-month" expression="$year$month"/>
+		<int:header name="year" expression="$year"/>
+		<int:header name="month" expression="$month"/>
+		<int:header name="rfc" expression="$rfc"/>
 	</int:header-enricher>
 	
 	<int:channel id="ym-chan"/>
@@ -32,13 +41,24 @@
 	<!--  see http://static.springsource.org/spring-integration/reference/htmlsingle/#overview-endpoints-aggregator -->
 	<int:aggregator id="grib-agg" input-channel="ym-chan" output-channel="lof-chan" 
 		release-strategy-expression="size() >= 12"
-		correlation-strategy-expression="headers.year-month"
+		correlation-strategy-expression="headers.rfc+headers.year+headers.month"
 		expire-groups-upon-completion="true"
 	/>
 	
-	<int:channel id="lof-chan"/>
+	<int:channel id="lof-chan" >
+		<!-- assert that headers have year, month, rfc -->
+		<!-- assert that payload is list of file -->
+	</int:channel>
 	
-	<int:outbound-channel-adapter id="grib-writer" channel="lof-chan"
+	<int:header-enricher id="rfc-spec-enricher" input-channel="lof-chan" output-channel="grib-chan">
+	
+		<int:header name="archive-spec" expression="@archive-spec-fetcher.fetch(headers.rfc)" >
+		</int:header>
+	</int:header-enricher>
+
+	<int:channel id="grib-chan"/>
+	
+	<int:outbound-channel-adapter id="grib-writer" channel="grib-chan"
 		ref="gribber" method="processFiles"
 	/>
 

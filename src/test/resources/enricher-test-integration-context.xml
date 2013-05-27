@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int-jpa="http://www.springframework.org/schema/integration/jpa"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/file    http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration/jpa     http://www.springframework.org/schema/integration/jpa/spring-integration-jpa.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		">
+	
+	<bean id="archive-spec-fetcher" class="gov.usgs.cida.data.grib.jpa.ArchiveSpecManager">
+	</bean>
+
+	<int:inbound-channel-adapter expression="'hello'" channel="motherlode-chan">
+		<int:poller fixed-delay="5000" max-messages-per-poll="1"></int:poller>
+	</int:inbound-channel-adapter>
+	
+	<int:channel id="motherlode-chan"/>
+	
+	<int:header-enricher id="year-month-enricher" input-channel="motherlode-chan" output-channel="er-chan">
+		<int:header name="year" expression="2013"/>
+		<int:header name="month" expression="5"/>
+		<int:header name="rfc" expression="'rfc'"/>
+	</int:header-enricher>
+	
+	<int:channel id="ym-chan"/>
+	
+	
+	<int:header-enricher id="rfc-spec-enricher" input-channel="er-chan" output-channel="loggingChannel">
+	
+		<int:header name="archive-spec" expression="#{archive-spec-fetcher.fetch(headers['rfc'])}" >
+		</int:header>
+	</int:header-enricher>
+
+
+</beans>
