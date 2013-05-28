@@ -14,9 +14,15 @@
 		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
 		">
 	
-	<bean id="archive-spec-fetcher" class="gov.usgs.cida.data.grib.jpa.ArchiveSpecManager">
+	<bean id="archive-spec-fetcher" class="gov.usgs.cida.ncetl.mocks.MockSpecManager">
 	</bean>
 
+	<int:logging-channel-adapter id="logger" level="DEBUG"/>
+	
+	<bean id="config-enhancer" class="gov.usgs.cida.ncetl.sis.ConfigEnhancer">
+		<property name="archiveSpecManager" ref="archive-spec-fetcher"/>
+	</bean>
+	
 	<int:inbound-channel-adapter expression="'hello'" channel="motherlode-chan">
 		<int:poller fixed-delay="5000" max-messages-per-poll="1"></int:poller>
 	</int:inbound-channel-adapter>
@@ -26,17 +32,14 @@
 	<int:header-enricher id="year-month-enricher" input-channel="motherlode-chan" output-channel="er-chan">
 		<int:header name="year" expression="2013"/>
 		<int:header name="month" expression="5"/>
-		<int:header name="rfc" expression="'rfc'"/>
+		<int:header name="rfc" expression="497" type="java.lang.Integer"/>
 	</int:header-enricher>
 	
-	<int:channel id="ym-chan"/>
-	
-	
-	<int:header-enricher id="rfc-spec-enricher" input-channel="er-chan" output-channel="loggingChannel">
-	
-		<int:header name="archive-spec" expression="#{archive-spec-fetcher.fetch(headers['rfc'])}" >
-		</int:header>
-	</int:header-enricher>
+	<int:channel id="er-chan"/>
 
+	<int:transformer id="rfc-spec-enricher" input-channel="er-chan" output-channel="logger"
+		ref="config-enhancer">
+	</int:transformer>
+	
 
 </beans>

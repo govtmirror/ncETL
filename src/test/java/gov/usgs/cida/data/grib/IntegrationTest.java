@@ -2,6 +2,11 @@ package gov.usgs.cida.data.grib;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
+import gov.usgs.cida.ncetl.jpa.ArchiveConfigManager;
+import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
+
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -43,6 +48,23 @@ public class IntegrationTest {
 			 System.out.printf("enricher %s\n", enricher);
 			 
 			 Thread.sleep(10 * 1000);
+		 } finally {
+			 context.close();
+		 }
+	}
+
+	@Test
+	public void testJPA() throws InterruptedException {
+		 ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("jpa-context.xml");
+		
+		 try {
+			 ArchiveConfigManager acm = context.getBean("archive-manager", ArchiveConfigManager.class);
+		 
+			 List<ArchiveConfig> ll = acm.all();
+			 
+			 for (ArchiveConfig a : ll) {
+				 System.out.printf("ArchiveConfig %d\n", a.getId());
+			 }
 		 } finally {
 			 context.close();
 		 }
