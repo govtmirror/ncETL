@@ -25,13 +25,18 @@
       <property name="persistenceUnitName" value="ncETL"/>
     </bean>
 	
+	<bean id="config-enhancer" class="gov.usgs.cida.ncetl.sis.ConfigEnhancer">
+		<property name="configFetcher" ref="archive-spec-fetcher"/>
+	</bean>
+	
 	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
 	
 	<bean id="archive-spec-fetcher" class="gov.usgs.cida.ncetl.jpa.ArchiveConfigManager">
 	</bean>
 
-	<int-file:inbound-channel-adapter directory="/tmp/ncETL/motherlode" id="motherlode"
-		channel="motherlode-chan" filename-pattern="*.grib"
+	<int-file:inbound-channel-adapter id="motherlode" channel="motherlode-chan" 
+		directory="/mnt/gdp-thredds-data-00/qpe/rearchive/src" 
+		filename-pattern="*.grib1*"
 		prevent-duplicates="false"
 	>
 		<int:poller  cron="0 0 2 3 * *"></int:poller>
@@ -59,12 +64,10 @@
 		<!-- assert that payload is list of file -->
 	</int:channel>
 	
-	<int:header-enricher id="rfc-spec-enricher" input-channel="lof-chan" output-channel="grib-chan">
+	<int:transformer id="rfc-spec-enricher" input-channel="er-chan" output-channel="grib-chan"
+		ref="config-enhancer">
+	</int:transformer>
 	
-		<int:header name="archive-spec" expression="@archive-spec-fetcher.fetch(headers.rfc)" >
-		</int:header>
-	</int:header-enricher>
-
 	<int:channel id="grib-chan"/>
 	
 	<int:outbound-channel-adapter id="grib-writer" channel="grib-chan"

@@ -25,7 +25,7 @@ public class ConfigEnhancer {
 		return mb.build();
 	}
 
-	public void setArchiveSpecManager(gov.usgs.cida.ncetl.jpa.ConfigFetcherI asm) {
+	public void setConfigFetcher(gov.usgs.cida.ncetl.jpa.ConfigFetcherI asm) {
 		this.asm = asm;
 	}
 	

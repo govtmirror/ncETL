@@ -11,8 +11,6 @@ import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.integration.endpoint.EventDrivenConsumer;
-import org.springframework.integration.transformer.HeaderEnricher;
-import org.springframework.integration.transformer.MessageTransformingHandler;
 
 public class IntegrationTest {
 
@@ -24,10 +22,6 @@ public class IntegrationTest {
 		 try {
 			 EventDrivenConsumer enricher = context.getBean("rfc-spec-enricher", EventDrivenConsumer.class);
 		 
-			 // EventDrivenConsumer with handler = MessageTransformingHandler
-			 MessageTransformingHandler handler = /* enricher.handler; */ null;
-			 HeaderEnricher transformer = null;
-			 
 			 System.out.printf("enricher %s\n", enricher);
 		 } finally {
 			 context.close();
@@ -40,11 +34,7 @@ public class IntegrationTest {
 		
 		 try {
 			 EventDrivenConsumer enricher = context.getBean("rfc-spec-enricher", EventDrivenConsumer.class);
-		 
-			 // EventDrivenConsumer with handler = MessageTransformingHandler
-			 MessageTransformingHandler handler = /* enricher.handler; */ null;
-			 HeaderEnricher transformer = null;
-			 
+		 			 
 			 System.out.printf("enricher %s\n", enricher);
 			 
 			 Thread.sleep(10 * 1000);
@@ -63,8 +53,11 @@ public class IntegrationTest {
 			 List<ArchiveConfig> ll = acm.all();
 			 
 			 for (ArchiveConfig a : ll) {
-				 System.out.printf("ArchiveConfig %d\n", a.getId());
+				 System.out.printf("ArchiveConfig %d: rfc %d, input_dir %s, file_regex %s\n", 
+						 a.getId(), a.getRfcCode(), a.getInputDir(), a.getFileRegex());
 			 }
+			 
+			 assertFalse("",ll.isEmpty());
 		 } finally {
 			 context.close();
 		 }
