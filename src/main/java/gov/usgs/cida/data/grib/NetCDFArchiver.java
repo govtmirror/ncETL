@@ -36,6 +36,7 @@ public class NetCDFArchiver {
 	    	for (File f : input) {
 	    		rnca.addFile(f);
 	    	}
+	    	
     	} finally {
     		rnca.close();
     	}
