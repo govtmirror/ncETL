@@ -42,6 +42,8 @@ public class FileFetcherUnitTest {
 	public void testDaysInMonth() {
 		assertEquals(28, victim.daysInMonth(1999, 2));
 		assertEquals(29, victim.daysInMonth(2004, 2));
+		assertEquals(31, victim.daysInMonth(2012, 1));
+		assertEquals(31, victim.daysInMonth(1957, 8));
 	}
 
 }
