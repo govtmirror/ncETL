@@ -25,50 +25,48 @@
       <property name="persistenceUnitName" value="ncETL"/>
     </bean>
 	
-	<bean id="config-enhancer" class="gov.usgs.cida.ncetl.sis.ConfigEnhancer">
-		<property name="configFetcher" ref="archive-spec-fetcher"/>
-	</bean>
+	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
+		entity-manager-factory="em"
+		jpa-query="select s from ArchivConfig s "
+		expect-single-result="false"
+		delete-after-poll="false"
+		>
+			<int:poller  cron="0 0 2 3 * *"></int:poller>
+	</int-jpa:inbound-channel-adapter>
 	
-	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
+	<int:channel id="config-list-chan">
+		<!-- List<ArchiveConfig> -->
+	</int:channel>
 	
-	<bean id="archive-spec-fetcher" class="gov.usgs.cida.ncetl.jpa.ArchiveConfigManager">
-	</bean>
-
-	<int-file:inbound-channel-adapter id="motherlode" channel="motherlode-chan" 
-		directory="/mnt/gdp-thredds-data-00/qpe/rearchive/src" 
-		filename-pattern="*.grib1"
-		prevent-duplicates="false"
-	>
-		<int:poller  cron="0 0 2 3 * *"></int:poller>
-	</int-file:inbound-channel-adapter>
+	<int:splitter input-channel="config-list-chan" output-channel="config-chan"/>
+	
+	<int:channel id="config-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
+	
+	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
+	
+	<!-- Uses ArchiveConfig to fetch list of files. ArchiveConfig is copied to header 'config' -->
+	<int:transformer input-channel="config-chan" output-channel="lof-chan"
+		ref="file-fetcher"
+	/>
+	
+	<int:channel id="lof-chan"/>
+	
+	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
+	<!--  also sets aggregation headers -->
+	<int:splitter id="lof-splitter" input-channel="lof-chan" output-channel="motherlode-chan"
+		ref="file-fetcher"
+	/>
 	
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
-	
-	<int:header-enricher id="year-month-enricher" input-channel="motherlode-chan" output-channel="ym-chan">
-		<int:header name="year" expression="$year"/>
-		<int:header name="month" expression="$month"/>
-		<int:header name="rfc" expression="$rfc"/>
-	</int:header-enricher>
-	
-	<int:channel id="ym-chan"/>
-	
+		
 	<!--  see http://static.springsource.org/spring-integration/reference/htmlsingle/#overview-endpoints-aggregator -->
-	<int:aggregator id="grib-agg" input-channel="ym-chan" output-channel="lof-chan" 
-		release-strategy-expression="size() >= 12"
-		correlation-strategy-expression="headers.rfc+headers.year+headers.month"
+	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
 		expire-groups-upon-completion="true"
 	/>
 	
-	<int:channel id="lof-chan" >
-		<!-- assert that headers have year, month, rfc -->
-		<!-- assert that payload is list of file -->
-	</int:channel>
-	
-	<int:transformer id="rfc-spec-enricher" input-channel="er-chan" output-channel="grib-chan"
-		ref="config-enhancer">
-	</int:transformer>
-	
 	<int:channel id="grib-chan"/>
+	
+	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
 	
 	<int:outbound-channel-adapter id="grib-writer" channel="grib-chan"
 		ref="gribber" method="processFiles"

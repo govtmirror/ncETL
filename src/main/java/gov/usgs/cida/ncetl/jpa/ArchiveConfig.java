@@ -16,6 +16,8 @@ import java.util.Map;
 @Entity
 @Table(name="ARCHIVE_CONFIG")
 public class ArchiveConfig implements Serializable {
+    private static final String RFC_CODE_REPLACE = "{rfc_code}";
+
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String completeDir;
@@ -55,7 +57,8 @@ public class ArchiveConfig implements Serializable {
 
 	@Column(name="FILE_REGEX")
 	public String getFileRegex() {
-		return this.fileRegex;
+		String re = this.fileRegex;
+		return re.replace(RFC_CODE_REPLACE, String.valueOf(rfcCode));
 	}
 
 	public void setFileRegex(String fileRegex) {
