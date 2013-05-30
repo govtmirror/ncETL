@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		">
+			
+	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
+      <property name="go" value="false"/>
+    </bean>
+	
+	<int:inbound-channel-adapter id="source" channel="one-chan"
+		auto-startup="false"
+		expression="'hello'"
+	>
+		<int:poller trigger="oneshot"/>
+	</int:inbound-channel-adapter>
+	
+	<int:logging-channel-adapter id="one-chan" logger-name="SISlog" log-full-message="true"/>
+</beans>

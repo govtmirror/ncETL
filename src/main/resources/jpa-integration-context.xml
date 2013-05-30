@@ -44,8 +44,9 @@
 		jpa-query="select s from ArchivConfig s "
 		expect-single-result="false"
 		delete-after-poll="false"
+		auto-startup="false"
 		>
-			<int:poller  cron="0 0 2 3 * *"></int:poller>
+			<int:poller fixed-rate="10000000"></int:poller>
 	</int-jpa:inbound-channel-adapter>
 	
 	<int:channel id="config-list-chan">
