@@ -82,8 +82,31 @@
 	
 	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
 	
-	<int:outbound-channel-adapter id="grib-writer" channel="grib-chan"
+	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="ok-chan"
 		ref="gribber" method="processFiles"
+		
 	/>
+	
+	<int:channel id="ok-chan"/>
+	
+	<int-jpa:outbound-channel-adapter entity-manager-factory="em" channel="ok-chan"
+		entity-class="gov.usgs.cida.ncetl.jpa.EtlHistory"
+		persist-mode="PERSIST"
+	>
+		<int-jpa:transactional />
+		
+		<int-jpa:parameter name="archiveConfig" expression="headers.config"/>
+		<int-jpa:parameter name="outcome" expression="payload" />
+	</int-jpa:outbound-channel-adapter>
 
+	<int-jpa:outbound-channel-adapter entity-manager-factory="em" channel="errorChannel"
+		entity-class="gov.usgs.cida.ncetl.jpa.EtlHistory"
+		persist-mode="PERSIST"
+	>
+		<int-jpa:transactional />
+		
+		<int-jpa:parameter name="archiveConfig" expression="headers.config"/>
+		<int-jpa:parameter name="outcome" expression="payload" />
+	</int-jpa:outbound-channel-adapter>
+	
 </beans>

@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.List;
 
 import org.springframework.integration.annotation.Header;
-import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.integration.annotation.Transformer;
 
 public class NetCDFArchiver {
 	
-    @ServiceActivator
-	public void processFiles(
+    @Transformer
+	public File processFiles(
 			List<File> input,
 			@Header(value="outputFile", required=true) String filename,
 			@Header(value="config", required=true) ArchiveConfig cfg
@@ -36,6 +36,8 @@ public class NetCDFArchiver {
 	    	for (File f : input) {
 	    		rnca.addFile(f);
 	    	}
+	    	
+	    	return output;
 	    	
     	} finally {
     		rnca.close();
