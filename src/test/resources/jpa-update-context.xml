@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:int-jpa="http://www.springframework.org/schema/integration/jpa"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/file    http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration/jpa     http://www.springframework.org/schema/integration/jpa/spring-integration-jpa.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		">
+
+	<context:property-placeholder/>
+	<context:annotation-config/>
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
+      <property name="go" value="true"/>
+    </bean>
+		
+	<int:channel id="one-chan">
+		<int:interceptors>
+			<int:wire-tap channel="logger"/>
+		</int:interceptors>
+	</int:channel>
+	    
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="url" value="jdbc:derby:${user.home}/.ncetl/database/NCETL"/>
+        <property name="username" value=""/>
+    </bean>
+		
+	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
+		entity-manager-factory="emf"
+		jpa-query="select s from ArchiveConfig s "
+		expect-single-result="false"
+		delete-after-poll="false"
+		auto-startup="false"
+		>
+			<int:poller trigger="oneshot">
+				<int:transactional />
+			</int:poller>
+	</int-jpa:inbound-channel-adapter>
+		
+	<int:channel id="config-list-chan">
+		<!-- List<ArchiveConfig> -->
+	</int:channel>
+	
+	<int:splitter input-channel="config-list-chan" output-channel="config-chan"/>
+	
+	<int:channel id="config-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
+		
+	<int:transformer id="recorder" input-channel="config-chan" output-channel="to-save-chan"
+		expression="payload.addHistory('hello')"
+	></int:transformer>
+	
+	<int:channel id="to-save-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
+	
+	<int-jpa:outbound-channel-adapter entity-manager-factory="emf" channel="to-save-chan"
+		persist-mode="MERGE"
+	>
+		<int-jpa:transactional propagation="REQUIRES_NEW"/>		
+	</int-jpa:outbound-channel-adapter>
+	
+	<int:logging-channel-adapter id="logger" logger-name="SISlog" log-full-message="false"/>
+	
+</beans>
