@@ -11,18 +11,19 @@ import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.integration.endpoint.EventDrivenConsumer;
+import org.springframework.integration.endpoint.SourcePollingChannelAdapter;
 
 public class IntegrationTest {
 
 	
 	@Test
 	public void testLoad() {
-		 ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("spring-integration-context.xml");
+		 ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("jpa-integration-context.xml");
 		
 		 try {
-			 EventDrivenConsumer enricher = context.getBean("rfc-spec-enricher", EventDrivenConsumer.class);
+			 SourcePollingChannelAdapter enricher = context.getBean("config-fetcher", SourcePollingChannelAdapter.class);
 		 
-			 System.out.printf("enricher %s\n", enricher);
+			 System.out.printf("config-fetcher %s\n", enricher);
 		 } finally {
 			 context.close();
 		 }

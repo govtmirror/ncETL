@@ -1,0 +1,47 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="
+    	http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    	http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    ">
+    
+    <changeSet id="create-etl-history" author="rhayes">
+    	<createTable tableName="etl_history">
+    		<column name="id" type="integer" autoIncrement="true" >
+    			<constraints primaryKey="true"/>
+    		</column>
+    		<column name="archive_id" type="integer">
+    		</column>
+    		<column name="ts" type="timestamp"/>
+    		<column name="outcome" type="varchar(255)" />
+    	</createTable>
+    	<addForeignKeyConstraint constraintName="fkEtlHistory" 
+    		referencedTableName="archive_config" referencedColumnNames="id"
+    		baseTableName="etl_history" baseColumnNames="archive_id" 
+    	/>
+    </changeSet>
+    
+    <changeSet id="etl-history-trigger" author="rhayes">
+    	<sql>
+    		CREATE TRIGGER tg_set_time
+  			AFTER INSERT ON ETL_HISTORY
+			FOR EACH STATEMENT MODE DB2SQL
+  			UPDATE ETL_HISTORY 
+  			SET TS = CURRENT_TIMESTAMP
+  			WHERE TS IS NULL;
+    	</sql>
+    	
+    	<rollback>
+    		DROP TRIGGER tg_set_time;
+    	</rollback>
+    </changeSet>
+    
+    <changeSet id="add-rfc-name" author="rhayes">
+    	<addColumn tableName="archive_config">
+    		<column name="name" type="char(4)"/>
+    	</addColumn>
+    </changeSet>
+    
+</databaseChangeLog>

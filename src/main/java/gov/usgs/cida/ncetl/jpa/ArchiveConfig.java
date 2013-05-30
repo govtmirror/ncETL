@@ -23,12 +23,14 @@ public class ArchiveConfig implements Serializable {
 	private String completeDir;
 	private String fileRegex;
 	private String inputDir;
+	private String name;
 	private String outputDir;
 	private int rfcCode;
 	private String unlimitedDim;
 	private String unlimitedUnits;
 	private List<ExcludeMapping> excludeMappings;
 	private List<RenameMapping> renameMappings;
+	private List<EtlHistory> etlHistories;
 
 	public ArchiveConfig() {
 	}
@@ -74,6 +76,16 @@ public class ArchiveConfig implements Serializable {
 	public void setInputDir(String inputDir) {
 		this.inputDir = inputDir;
 	}
+
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 
 	@Column(name="OUTPUT_DIR")
 	public String getOutputDir() {
@@ -164,6 +176,31 @@ public class ArchiveConfig implements Serializable {
 		return renameMapping;
 	}
 	
+	//bi-directional many-to-one association to EtlHistory
+	@OneToMany(mappedBy="archiveConfig")
+	@OrderBy("ts DESC")
+	public List<EtlHistory> getEtlHistories() {
+		return this.etlHistories;
+	}
+
+	public void setEtlHistories(List<EtlHistory> etlHistories) {
+		this.etlHistories = etlHistories;
+	}
+
+	public EtlHistory addEtlHistory(EtlHistory etlHistory) {
+		getEtlHistories().add(etlHistory);
+		etlHistory.setArchiveConfig(this);
+
+		return etlHistory;
+	}
+
+	public EtlHistory removeEtlHistory(EtlHistory etlHistory) {
+		getEtlHistories().remove(etlHistory);
+		etlHistory.setArchiveConfig(null);
+
+		return etlHistory;
+	}
+
 	@Transient
 	public List<String> getDim_excludes() {
 		

@@ -15,16 +15,30 @@
 		">
 
 	<context:component-scan base-package="gov.usgs.cida.ncETLsis" />
-
-<!-- 
-	<bean id="em" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-	</bean>
--->
-
-	<bean id="em" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+	<context:property-placeholder/>
+	<context:annotation-config/>
+	
+	<!-- <bean id="em" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
       <property name="persistenceUnitName" value="ncETL"/>
+      <property name=""
+    </bean> -->
+    
+    <bean id="em" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="url" value="jdbc:derby:${user.home}/.ncetl/database/NCETL"/>
+        <property name="username" value=""/>
     </bean>
 	
+	<!-- Liquibase to upgrade the database; runs automatically on context init -->
+	<bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
+     	<property name="dataSource" ref="dataSource" />
+     	<property name="changeLog" value="classpath:liquibase/changelog.xml" />
+ 	</bean>
+ 	
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="em"
 		jpa-query="select s from ArchivConfig s "

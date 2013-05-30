@@ -70,11 +70,10 @@ public class FileFetcher {
 	
 	@Splitter
 	public List<Message<File>> split(
-			Message<List<File>> ff,
+			List<File> payload,
 			@Header(value="config", required=true) ArchiveConfig cfg
 	) {
 		
-		List<File> payload = ff.getPayload();
 		List<Message<File>> value = new ArrayList<Message<File>>(payload.size());
 				
         Pattern pat = Pattern.compile(cfg.getFileRegex());
