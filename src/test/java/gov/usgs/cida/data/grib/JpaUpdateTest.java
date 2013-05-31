@@ -33,9 +33,12 @@ public class JpaUpdateTest {
 			 
 			 context.start();
 			 
-			 Thread.sleep(5*1000);
+			 Thread.sleep(8*1000);
 			 
 			 assertTrue("survived", true);
+			 
+			 context.stop();
+			 
 		 } finally {
 			 context.close();
 		 }
@@ -49,10 +52,8 @@ public class JpaUpdateTest {
 		EntityTransaction t = em.getTransaction();
 		t.begin();
 		
-		TypedQuery<ArchiveConfig> q = em.createQuery("select s from ArchiveConfig s ", ArchiveConfig.class);
-		
-		q.setMaxResults(1);
-		
+		TypedQuery<ArchiveConfig> q = em.createQuery("select s from ArchiveConfig s where rfcCode = 155 ", ArchiveConfig.class);
+				
 		ArchiveConfig arc = q.getSingleResult();
 		
 		arc.addHistory("steam heat");
@@ -70,8 +71,7 @@ public class JpaUpdateTest {
 		
 		t.begin();
 		
-		TypedQuery<ArchiveConfig> q = em.createQuery("select s from ArchiveConfig s ", ArchiveConfig.class);
-		q.setMaxResults(1);
+		TypedQuery<ArchiveConfig> q = em.createQuery("select s from ArchiveConfig s where rfcCode = 156 ", ArchiveConfig.class);
 		
 		ArchiveConfig arc = q.getSingleResult();
 		

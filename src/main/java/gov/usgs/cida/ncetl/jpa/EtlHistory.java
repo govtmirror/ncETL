@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Table(name="ETL_HISTORY")
 public class EtlHistory implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private int id;
+	private Integer id;
 	private String outcome;
 	private Timestamp ts;
 	private ArchiveConfig archiveConfig;
@@ -24,11 +24,11 @@ public class EtlHistory implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -53,7 +53,7 @@ public class EtlHistory implements Serializable {
 
 
 	//bi-directional many-to-one association to ArchiveConfig
-	@ManyToOne
+	@ManyToOne(cascade={CascadeType.MERGE,CascadeType.PERSIST})
 	@JoinColumn(name="ARCHIVE_ID")
 	public ArchiveConfig getArchiveConfig() {
 		return this.archiveConfig;

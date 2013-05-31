@@ -5,6 +5,7 @@
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-file="http://www.springframework.org/schema/integration/file"
 	xmlns:int-jpa="http://www.springframework.org/schema/integration/jpa"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
@@ -12,11 +13,13 @@
 		http://www.springframework.org/schema/integration/file    http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
 		http://www.springframework.org/schema/integration/jpa     http://www.springframework.org/schema/integration/jpa/spring-integration-jpa.xsd
 		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx				  http://www.springframework.org/schema/tx/spring-tx.xsd		
 		">
 
 	<context:component-scan base-package="gov.usgs.cida.ncETLsis" />
 	<context:property-placeholder/>
 	<context:annotation-config/>
+	<tx:annotation-driven/>
 	
 	<!-- <bean id="em" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
       <property name="persistenceUnitName" value="ncETL"/>
@@ -28,9 +31,10 @@
 	</bean>
 	
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-        <property name="url" value="jdbc:derby:${user.home}/.ncetl/database/NCETL"/>
-        <property name="username" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/ncETL"/>
+        <property name="username" value="GDP"/>
+        <property name="password" value="${secret}"/>
     </bean>
 	
 	<!-- Liquibase to upgrade the database; runs automatically on context init -->
@@ -41,7 +45,7 @@
  	
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="em"
-		jpa-query="select s from ArchivConfig s "
+		jpa-query="select s from ArchivConfig s where s.rfcCode = 155 "
 		expect-single-result="false"
 		delete-after-poll="false"
 		auto-startup="false"

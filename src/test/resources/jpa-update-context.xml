@@ -36,20 +36,21 @@
 	</bean>
 	
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-        <property name="url" value="jdbc:derby:${user.home}/.ncetl/database/NCETL"/>
-        <property name="username" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/ncETL"/>
+        <property name="username" value="GDP"/>
+        <property name="password" value="${secret}"/>
     </bean>
 		
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="emf"
-		jpa-query="select s from ArchiveConfig s "
+		jpa-query="select s from ArchiveConfig s where rfcCode = 154 "
 		expect-single-result="false"
 		delete-after-poll="false"
 		auto-startup="false"
 		>
 			<int:poller trigger="oneshot">
-				<int:transactional />
+				<int:transactional read-only="false" />
 			</int:poller>
 	</int-jpa:inbound-channel-adapter>
 		
@@ -61,17 +62,13 @@
 	
 	<int:channel id="config-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
 		
-	<int:transformer id="recorder" input-channel="config-chan" output-channel="to-save-chan"
+	<!-- <int:transformer id="recorder" input-channel="config-chan" output-channel="logger"
 		expression="payload.addHistory('hello')"
-	></int:transformer>
+	></int:transformer> -->
 	
-	<int:channel id="to-save-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
-	
-	<int-jpa:outbound-channel-adapter entity-manager-factory="emf" channel="to-save-chan"
-		persist-mode="MERGE"
-	>
-		<int-jpa:transactional propagation="REQUIRES_NEW"/>		
-	</int-jpa:outbound-channel-adapter>
+	<int:transformer id="recorder" input-channel="config-chan" output-channel="logger">
+		<bean class="gov.usgs.cida.data.grib.HistoryRecorder"/>
+	</int:transformer>
 	
 	<int:logging-channel-adapter id="logger" logger-name="SISlog" log-full-message="false"/>
 	

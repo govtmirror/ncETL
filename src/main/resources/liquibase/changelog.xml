@@ -23,7 +23,7 @@
     	/>
     </changeSet>
     
-    <changeSet id="etl-history-trigger" author="rhayes">
+    <changeSet id="etl-history-trigger" author="rhayes" dbms="derby">
     	<sql>
     		CREATE TRIGGER tg_set_time
   			AFTER INSERT ON ETL_HISTORY
@@ -38,6 +38,19 @@
     	</rollback>
     </changeSet>
     
+    <changeSet id="etl-history-trigger" author="rhayes" dbms="mysql">
+    	<sql >
+    		CREATE TRIGGER tg_set_time
+  			BEFORE INSERT ON ETL_HISTORY
+			FOR EACH ROW
+  			SET NEW.TS = COALESCE(NEW.TS,CURRENT_TIMESTAMP)
+    	</sql>
+    	
+    	<rollback>
+    		DROP TRIGGER tg_set_time;
+    	</rollback>
+    </changeSet>
+
     <changeSet id="add-rfc-name" author="rhayes">
     	<addColumn tableName="archive_config">
     		<column name="name" type="char(4)"/>
@@ -46,7 +59,7 @@
     
     <changeSet id="rfc-names-and-notes" author="rhayes">
     	<addColumn tableName="archive_config">
-    		<column name="notes" type="varchar(255)"/>
+    		<column name="notes" type="varchar(256)"/>
     	</addColumn>
     
     	<update tableName="archive_config">
@@ -127,11 +140,11 @@
     		<where>rfc_code = 162</where>
     	</update>
 
-	<addNotNullConstraint tableName="archive_config" columnName="name"/>
+	<addNotNullConstraint tableName="archive_config" columnName="name" columnDataType="CHAR(4)"/>
 		
 	<rollback>
 	  <dropColumn tableName="archive_config" columnName="name"/>
-	  <dropColumn tableName="archive_config" columnName="notes"/>
+	  <dropColumn tableName="archive_config" columnName="notes" />
 	</rollback>
 		
     </changeSet>

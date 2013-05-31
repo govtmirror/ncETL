@@ -11,7 +11,7 @@
 		">
 			
 	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
-      <property name="go" value="false"/>
+      <property name="go" value="true"/>
     </bean>
 	
 	<int:inbound-channel-adapter id="source" channel="one-chan"
@@ -21,5 +21,17 @@
 		<int:poller trigger="oneshot"/>
 	</int:inbound-channel-adapter>
 	
-	<int:logging-channel-adapter id="one-chan" logger-name="SISlog" log-full-message="true"/>
+	<int:channel id="one-chan">
+		<int:interceptors>
+			<int:wire-tap channel="logger"/>
+		</int:interceptors>
+	</int:channel>
+	
+	<bean id="counter" class="java.util.concurrent.atomic.AtomicInteger"></bean>
+	
+	<int:transformer id="destination" input-channel="one-chan" output-channel="logger"
+		ref="counter" method="incrementAndGet"
+	/>
+	
+	<int:logging-channel-adapter id="logger" logger-name="SISlog" log-full-message="true"/>
 </beans>

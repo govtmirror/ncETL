@@ -3,6 +3,9 @@ package gov.usgs.cida.ncetl.jpa;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +38,8 @@ public class ArchiveConfig implements Serializable {
 	public ArchiveConfig() {
 	}
 
-
+	private static Logger logger = LoggerFactory.getLogger(ArchiveConfig.class);
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	public int getId() {
@@ -177,7 +181,7 @@ public class ArchiveConfig implements Serializable {
 	}
 	
 	//bi-directional many-to-one association to EtlHistory
-	@OneToMany(mappedBy="archiveConfig")
+	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.MERGE,CascadeType.PERSIST})
 	@OrderBy("ts DESC")
 	public List<EtlHistory> getEtlHistories() {
 		return this.etlHistories;
@@ -242,5 +246,17 @@ public class ArchiveConfig implements Serializable {
 		return renames;
 	}
 
+	@Transient
+	public ArchiveConfig addHistory(String outcome) {
+		
+		EtlHistory h = new EtlHistory();
+		h.setOutcome(outcome);
+		
+		addEtlHistory(h);
+		
+		logger.debug("Added history {} to ArchiveConfig#{}", outcome, getId());
+		
+		return this;
+	}
 
 }
