@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="rhayes (generated)" id="1370026349735-1">
+        <createTable tableName="ACCESS">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651810"/>
+            </column>
+            <column name="DATASET_ID" type="INT"/>
+            <column name="SERVICE_ID" type="INT"/>
+            <column name="DATAFORMAT_ID" type="INT"/>
+            <column name="URL_PATH" type="VARCHAR(512)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-2">
+        <createTable tableName="ARCHIVE_CONFIG">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651270"/>
+            </column>
+            <column name="INPUT_DIR" type="VARCHAR(256)"/>
+            <column name="OUTPUT_DIR" type="VARCHAR(256)"/>
+            <column name="COMPLETE_DIR" type="VARCHAR(256)"/>
+            <column name="FILE_REGEX" type="VARCHAR(256)"/>
+            <column name="RFC_CODE" type="INT"/>
+            <column name="UNLIMITED_DIM" type="VARCHAR(256)"/>
+            <column name="UNLIMITED_UNITS" type="VARCHAR(256)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+            <column name="NAME" type="CHAR(4)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTES" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-3">
+        <createTable tableName="CATALOG">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651540"/>
+            </column>
+            <column name="LOCATION" type="VARCHAR(512)"/>
+            <column name="NAME" type="VARCHAR(64)"/>
+            <column name="EXPIRES" type="DATE"/>
+            <column name="VERSION" type="VARCHAR(8)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-4">
+        <createTable tableName="COLLECTION_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202650920"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-5">
+        <createTable tableName="CONTRIBUTOR">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652130"/>
+            </column>
+            <column name="ROLE" type="VARCHAR(64)"/>
+            <column name="TEXT" type="VARCHAR(256)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-6">
+        <createTable tableName="CONTRIBUTOR_JOIN">
+            <column name="DATASET_ID" type="INT"/>
+            <column name="CONTRIBUTOR_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-7">
+        <createTable tableName="CONTROLLED_VOCABULARY">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651230"/>
+            </column>
+            <column name="VOCAB" type="VARCHAR(32)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-8">
+        <createTable tableName="CREATOR">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652150"/>
+            </column>
+            <column name="NAME" type="VARCHAR(256)"/>
+            <column name="CONTROLLED_VOCABULARY_ID" type="INT"/>
+            <column name="CONTACT_URL" type="VARCHAR(512)"/>
+            <column name="CONTACT_EMAIL" type="VARCHAR(256)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-9">
+        <createTable tableName="CREATOR_JOIN">
+            <column name="DATASET_ID" type="INT"/>
+            <column name="CREATOR_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-10">
+        <createTable tableName="DATA_FORMAT">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651110"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-11">
+        <createTable tableName="DATA_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651070"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-12">
+        <createTable tableName="DATASET">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651650"/>
+            </column>
+            <column name="CATALOG_ID" type="INT"/>
+            <column name="COLLECTION_TYPE_ID" type="INT"/>
+            <column name="DATA_TYPE_ID" type="INT"/>
+            <column name="NAME" type="VARCHAR(64)"/>
+            <column name="NCID" type="VARCHAR(128)"/>
+            <column name="AUTHORITY" type="VARCHAR(64)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-13">
+        <createTable tableName="DATE_JOIN">
+            <column name="DATASET_ID" type="INT"/>
+            <column name="DATE_TYPE_FORMATTED_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-14">
+        <createTable tableName="DATE_TYPE_ENUM">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651170"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-15">
+        <createTable tableName="DATE_TYPE_FORMATTED">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652180"/>
+            </column>
+            <column name="FORMAT" type="VARCHAR(256)"/>
+            <column name="VALUE" type="VARCHAR(256)"/>
+            <column name="DATE_TYPE_ENUM_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-16">
+        <createTable tableName="DOCUMENTATION">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651970"/>
+            </column>
+            <column name="DATASET_ID" type="INT"/>
+            <column name="DOCUMENTATION_TYPE_ID" type="INT"/>
+            <column name="XLINK_HREF" type="VARCHAR(256)"/>
+            <column name="XLINK_TITLE" type="VARCHAR(256)"/>
+            <column name="TEXT" type="VARCHAR(1024)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-17">
+        <createTable tableName="DOCUMENTATION_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651130"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-18">
+        <createTable tableName="ETL_HISTORY">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ETL_HISTORY"/>
+            </column>
+            <column name="ARCHIVE_ID" type="INT"/>
+            <column name="TS" type="TIMESTAMP"/>
+            <column name="OUTCOME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-19">
+        <createTable tableName="EXCLUDE_MAPPING">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651320"/>
+            </column>
+            <column name="ARCHIVE_ID" type="INT"/>
+            <column name="EXCLUDE_TYPE_ID" type="INT"/>
+            <column name="EXCLUDE_TEXT" type="VARCHAR(256)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-20">
+        <createTable tableName="EXCLUDE_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651290"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(8)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-21">
+        <createTable tableName="GEOSPATIAL_COVERAGE">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652290"/>
+            </column>
+            <column name="DATASET_ID" type="INT"/>
+            <column name="CONTROLLED_VOCABULARY_ID" type="INT"/>
+            <column name="NAME" type="VARCHAR(128)"/>
+            <column name="ZPOSITIVE_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-22">
+        <createTable tableName="GLOBAL_CONFIG">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651250"/>
+            </column>
+            <column name="BASE_DIR" type="VARCHAR(512)"/>
+            <column name="THREDDS_DIR" type="VARCHAR(512)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-23">
+        <createTable tableName="INGEST">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651570"/>
+            </column>
+            <column name="CATALOG_ID" type="INT"/>
+            <column name="NAME" type="VARCHAR(128)"/>
+            <column name="FTPLOCATION" type="VARCHAR(512)"/>
+            <column name="RESCANEVERY" type="BIGINT"/>
+            <column name="FILEREGEX" type="VARCHAR(64)"/>
+            <column name="SUCCESSDATE" type="DATE"/>
+            <column name="SUCCESSTIME" type="TIME"/>
+            <column name="USERNAME" type="VARCHAR(64)"/>
+            <column name="PASSWORD" type="VARCHAR(64)"/>
+            <column name="ACTIVE" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-24">
+        <createTable tableName="KEYWORD">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652080"/>
+            </column>
+            <column name="VALUE" type="VARCHAR(64)"/>
+            <column name="CONTROLLED_VOCABULARY_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-25">
+        <createTable tableName="KEYWORD_JOIN">
+            <column name="DATASET_ID" type="INT"/>
+            <column name="KEYWORD_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-26">
+        <createTable tableName="PROJECT">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652210"/>
+            </column>
+            <column name="NAME" type="VARCHAR(256)"/>
+            <column name="CONTROLLED_VOCABULARY_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-27">
+        <createTable tableName="PROJECT_JOIN">
+            <column name="DATASET_ID" type="INT"/>
+            <column name="PROJECT_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-28">
+        <createTable tableName="PROPERTY">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652040"/>
+            </column>
+            <column name="DATASET_ID" type="INT"/>
+            <column name="NAME" type="VARCHAR(128)"/>
+            <column name="VALUE" type="VARCHAR(512)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-29">
+        <createTable tableName="PUBLISHER">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652240"/>
+            </column>
+            <column name="NAME" type="VARCHAR(256)"/>
+            <column name="CONTROLLED_VOCABULARY_ID" type="INT"/>
+            <column name="CONTACT_URL" type="VARCHAR(512)"/>
+            <column name="CONTACT_EMAIL" type="VARCHAR(256)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-30">
+        <createTable tableName="PUBLISHER_JOIN">
+            <column name="DATASET_ID" type="INT"/>
+            <column name="PUBLISHER_ID" type="INT"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-31">
+        <createTable tableName="RENAME_MAPPING">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651470"/>
+            </column>
+            <column name="ARCHIVE_ID" type="INT"/>
+            <column name="FROM_NAME" type="VARCHAR(256)"/>
+            <column name="TO_NAME" type="VARCHAR(256)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-32">
+        <createTable tableName="SERVICE">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651770"/>
+            </column>
+            <column name="CATALOG_ID" type="INT"/>
+            <column name="SERVICE_ID" type="INT"/>
+            <column name="SERVICE_TYPE_ID" type="INT"/>
+            <column name="NAME" type="VARCHAR(64)"/>
+            <column name="BASE" type="VARCHAR(32)"/>
+            <column name="DESCRIPTION" type="VARCHAR(512)"/>
+            <column name="SUFFIX" type="VARCHAR(32)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-33">
+        <createTable tableName="SERVICE_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651150"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-34">
+        <createTable tableName="SPATIAL_RANGE">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652460"/>
+            </column>
+            <column name="GEOSPATIAL_COVERAGE_ID" type="INT"/>
+            <column name="SPATIAL_RANGE_TYPE_ID" type="INT"/>
+            <column name="START" type="float"/>
+            <column name="SIZE" type="float"/>
+            <column name="RESOLUTION" type="float"/>
+            <column name="UNITS" type="VARCHAR(32)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-35">
+        <createTable tableName="SPATIAL_RANGE_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651180"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-36">
+        <createTable tableName="TASK">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR(64)"/>
+            <column name="PARAMS" type="VARCHAR(256)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-37">
+        <createTable tableName="TIME_COVERAGE">
+            <column autoIncrement="true" name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202652580"/>
+            </column>
+            <column name="DATASET_ID" type="INT"/>
+            <column name="START_ID" type="INT"/>
+            <column name="END_ID" type="INT"/>
+            <column name="DURATION" type="VARCHAR(32)"/>
+            <column name="RESOLUTION" type="VARCHAR(32)"/>
+            <column defaultValueBoolean="false" name="INSERTED" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="UPDATED" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-38">
+        <createTable tableName="UP_DOWN_TYPE">
+            <column name="ID" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="SQL130311202651200"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(4)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-39">
+        <addForeignKeyConstraint baseColumnNames="DATAFORMAT_ID" baseTableName="ACCESS" baseTableSchemaName="APP" constraintName="DATAFORMAT_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATA_FORMAT" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-40">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="ACCESS" baseTableSchemaName="APP" constraintName="DATASET1_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-41">
+        <addForeignKeyConstraint baseColumnNames="SERVICE_ID" baseTableName="ACCESS" baseTableSchemaName="APP" constraintName="SERVICE2_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="SERVICE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-42">
+        <addForeignKeyConstraint baseColumnNames="CONTRIBUTOR_ID" baseTableName="CONTRIBUTOR_JOIN" baseTableSchemaName="APP" constraintName="CONTRIB_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CONTRIBUTOR" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-43">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="CONTRIBUTOR_JOIN" baseTableSchemaName="APP" constraintName="DATASET6_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-44">
+        <addForeignKeyConstraint baseColumnNames="CONTROLLED_VOCABULARY_ID" baseTableName="CREATOR" baseTableSchemaName="APP" constraintName="VOCAB2_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CONTROLLED_VOCABULARY" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-45">
+        <addForeignKeyConstraint baseColumnNames="CREATOR_ID" baseTableName="CREATOR_JOIN" baseTableSchemaName="APP" constraintName="CREATOR_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CREATOR" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-46">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="CREATOR_JOIN" baseTableSchemaName="APP" constraintName="DATASET7_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-47">
+        <addForeignKeyConstraint baseColumnNames="CATALOG_ID" baseTableName="DATASET" baseTableSchemaName="APP" constraintName="CATALOG3_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CATALOG" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-48">
+        <addForeignKeyConstraint baseColumnNames="COLLECTION_TYPE_ID" baseTableName="DATASET" baseTableSchemaName="APP" constraintName="COLLECTION1_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="COLLECTION_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-49">
+        <addForeignKeyConstraint baseColumnNames="DATA_TYPE_ID" baseTableName="DATASET" baseTableSchemaName="APP" constraintName="DATATYPE_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATA_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-50">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="DATE_JOIN" baseTableSchemaName="APP" constraintName="DATASET12_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-51">
+        <addForeignKeyConstraint baseColumnNames="DATE_TYPE_FORMATTED_ID" baseTableName="DATE_JOIN" baseTableSchemaName="APP" constraintName="DTF1_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATE_TYPE_FORMATTED" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-52">
+        <addForeignKeyConstraint baseColumnNames="DATE_TYPE_ENUM_ID" baseTableName="DATE_TYPE_FORMATTED" baseTableSchemaName="APP" constraintName="DATEENUM1_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATE_TYPE_ENUM" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-53">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="DOCUMENTATION" baseTableSchemaName="APP" constraintName="DATASET2_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-54">
+        <addForeignKeyConstraint baseColumnNames="DOCUMENTATION_TYPE_ID" baseTableName="DOCUMENTATION" baseTableSchemaName="APP" constraintName="DOCTYPE_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DOCUMENTATION_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-55">
+        <addForeignKeyConstraint baseColumnNames="ARCHIVE_ID" baseTableName="ETL_HISTORY" baseTableSchemaName="APP" constraintName="FKETLHISTORY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="ARCHIVE_CONFIG" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-56">
+        <addForeignKeyConstraint baseColumnNames="ARCHIVE_ID" baseTableName="EXCLUDE_MAPPING" baseTableSchemaName="APP" constraintName="ARCHIVE2_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="ARCHIVE_CONFIG" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-57">
+        <addForeignKeyConstraint baseColumnNames="EXCLUDE_TYPE_ID" baseTableName="EXCLUDE_MAPPING" baseTableSchemaName="APP" constraintName="EXCLUDE_TYPE_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="EXCLUDE_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-58">
+        <addForeignKeyConstraint baseColumnNames="CONTROLLED_VOCABULARY_ID" baseTableName="GEOSPATIAL_COVERAGE" baseTableSchemaName="APP" constraintName="VOCAB5_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CONTROLLED_VOCABULARY" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-59">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="GEOSPATIAL_COVERAGE" baseTableSchemaName="APP" constraintName="DATASET10_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-60">
+        <addForeignKeyConstraint baseColumnNames="ZPOSITIVE_ID" baseTableName="GEOSPATIAL_COVERAGE" baseTableSchemaName="APP" constraintName="UPDOWN_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="UP_DOWN_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-61">
+        <addForeignKeyConstraint baseColumnNames="CATALOG_ID" baseTableName="INGEST" baseTableSchemaName="APP" constraintName="CATALOG2_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CATALOG" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-62">
+        <addForeignKeyConstraint baseColumnNames="CONTROLLED_VOCABULARY_ID" baseTableName="KEYWORD" baseTableSchemaName="APP" constraintName="VOCAB1_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CONTROLLED_VOCABULARY" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-63">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="KEYWORD_JOIN" baseTableSchemaName="APP" constraintName="DATASET5_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-64">
+        <addForeignKeyConstraint baseColumnNames="KEYWORD_ID" baseTableName="KEYWORD_JOIN" baseTableSchemaName="APP" constraintName="KEYWORD_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="KEYWORD" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-65">
+        <addForeignKeyConstraint baseColumnNames="CONTROLLED_VOCABULARY_ID" baseTableName="PROJECT" baseTableSchemaName="APP" constraintName="VOCAB3_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CONTROLLED_VOCABULARY" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-66">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="PROJECT_JOIN" baseTableSchemaName="APP" constraintName="DATASET8_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-67">
+        <addForeignKeyConstraint baseColumnNames="PROJECT_ID" baseTableName="PROJECT_JOIN" baseTableSchemaName="APP" constraintName="PROJECT_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="PROJECT" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-68">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="PROPERTY" baseTableSchemaName="APP" constraintName="DATASET3_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-69">
+        <addForeignKeyConstraint baseColumnNames="CONTROLLED_VOCABULARY_ID" baseTableName="PUBLISHER" baseTableSchemaName="APP" constraintName="VOCAB4_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="CONTROLLED_VOCABULARY" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-70">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="PUBLISHER_JOIN" baseTableSchemaName="APP" constraintName="DATASET9_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-71">
+        <addForeignKeyConstraint baseColumnNames="PUBLISHER_ID" baseTableName="PUBLISHER_JOIN" baseTableSchemaName="APP" constraintName="PUBLISHER_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="PUBLISHER" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-72">
+        <addForeignKeyConstraint baseColumnNames="ARCHIVE_ID" baseTableName="RENAME_MAPPING" baseTableSchemaName="APP" constraintName="ARCHIVE5_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="ARCHIVE_CONFIG" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-73">
+        <addForeignKeyConstraint baseColumnNames="SERVICE_TYPE_ID" baseTableName="SERVICE" baseTableSchemaName="APP" constraintName="SERVICETYPE_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="SERVICE_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-74">
+        <addForeignKeyConstraint baseColumnNames="GEOSPATIAL_COVERAGE_ID" baseTableName="SPATIAL_RANGE" baseTableSchemaName="APP" constraintName="GSCOVER1_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="GEOSPATIAL_COVERAGE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-75">
+        <addForeignKeyConstraint baseColumnNames="SPATIAL_RANGE_TYPE_ID" baseTableName="SPATIAL_RANGE" baseTableSchemaName="APP" constraintName="SRTYPE1_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="SPATIAL_RANGE_TYPE" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-76">
+        <addForeignKeyConstraint baseColumnNames="DATASET_ID" baseTableName="TIME_COVERAGE" baseTableSchemaName="APP" constraintName="DATASET11_FK" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATASET" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-77">
+        <addForeignKeyConstraint baseColumnNames="END_ID" baseTableName="TIME_COVERAGE" baseTableSchemaName="APP" constraintName="DTF3_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATE_TYPE_FORMATTED" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="rhayes (generated)" id="1370026349735-78">
+        <addForeignKeyConstraint baseColumnNames="START_ID" baseTableName="TIME_COVERAGE" baseTableSchemaName="APP" constraintName="DTF2_FK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID" referencedTableName="DATE_TYPE_FORMATTED" referencedTableSchemaName="APP" referencesUniqueColumn="false"/>
+    </changeSet>
+</databaseChangeLog>
