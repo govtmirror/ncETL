@@ -93,12 +93,14 @@
 	
 	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
 	
+	<!-- The workhorse that actually processes the data. -->
 	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="ok-chan"
 		ref="gribber" method="processFiles"
 	/>
 	
 	<int:channel id="ok-chan"/>
 	
+	<!-- Transformer because the addHistory method returns a non-null value.  -->
 	<int:transformer input-channel="ok-chan"  output-channel="nullChannel"
 		expression="headers.config.addHistory('header outcome')"
 	/>
