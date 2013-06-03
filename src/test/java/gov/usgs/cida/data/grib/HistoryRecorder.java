@@ -23,4 +23,8 @@ public class HistoryRecorder {
 		return vv;
 	}
 	
+	public EntityManager getEntityManager() {
+		return em;
+	}
+	
 }

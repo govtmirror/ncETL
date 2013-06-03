@@ -8,143 +8,143 @@
     ">
     
     <changeSet id="create-etl-history" author="rhayes">
-    	<createTable tableName="etl_history">
-    		<column name="id" type="integer" autoIncrement="true" >
+    	<createTable tableName="ETL_HISTORY">
+    		<column name="ID" type="integer" autoIncrement="true" >
     			<constraints primaryKey="true"/>
     		</column>
-    		<column name="archive_id" type="integer">
+    		<column name="ARCHIVE_ID" type="integer">
     		</column>
-    		<column name="ts" type="timestamp"/>
-    		<column name="outcome" type="varchar(255)" />
+    		<column name="TS" type="timestamp"/>
+    		<column name="OUTCOME" type="varchar(255)" />
     	</createTable>
     	<addForeignKeyConstraint constraintName="fkEtlHistory" 
-    		referencedTableName="archive_config" referencedColumnNames="id"
-    		baseTableName="etl_history" baseColumnNames="archive_id" 
+    		referencedTableName="ARCHIVE_CONFIG" referencedColumnNames="id"
+    		baseTableName="ETL_HISTORY" baseColumnNames="archive_id" 
     	/>
     </changeSet>
     
     <changeSet id="etl-history-trigger" author="rhayes" dbms="derby">
     	<sql>
-    		CREATE TRIGGER tg_set_time
-  			AFTER INSERT ON ETL_HISTORY
+    		CREATE TRIGGER TG_SET_TIME
+  			AFTER INSERT ON "ETL_HISTORY"
 			FOR EACH STATEMENT MODE DB2SQL
-  			UPDATE ETL_HISTORY 
+  			UPDATE "ETL_HISTORY" 
   			SET TS = CURRENT_TIMESTAMP
   			WHERE TS IS NULL;
     	</sql>
     	
     	<rollback>
-    		DROP TRIGGER tg_set_time;
+    		DROP TRIGGER TG_SET_TIME;
     	</rollback>
     </changeSet>
     
     <changeSet id="etl-history-trigger" author="rhayes" dbms="mysql">
     	<sql >
-    		CREATE TRIGGER tg_set_time
-  			BEFORE INSERT ON ETL_HISTORY
+    		CREATE TRIGGER TG_SET_TIME
+  			BEFORE INSERT ON "ETL_HISTORY"
 			FOR EACH ROW
   			SET NEW.TS = COALESCE(NEW.TS,CURRENT_TIMESTAMP)
     	</sql>
     	
     	<rollback>
-    		DROP TRIGGER tg_set_time;
+    		DROP TRIGGER TG_SET_TIME;
     	</rollback>
     </changeSet>
 
     <changeSet id="add-rfc-name" author="rhayes">
-    	<addColumn tableName="archive_config">
-    		<column name="name" type="char(4)"/>
+    	<addColumn tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" type="char(4)"/>
     	</addColumn>
     </changeSet>
     
     <changeSet id="rfc-names-and-notes" author="rhayes">
-    	<addColumn tableName="archive_config">
-    		<column name="notes" type="varchar(256)"/>
+    	<addColumn tableName="ARCHIVE_CONFIG">
+    		<column name="NOTES" type="varchar(256)"/>
     	</addColumn>
     
-    	<update tableName="archive_config">
-    		<column name="name" value="TSJU" />
-    		<column name="notes" value="Puerto Rico"/>
-    		<where>rfc_code = 105</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="TSJU" />
+    		<column name="NOTES" value="Puerto Rico"/>
+    		<where>RFC_CODE = 105</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KTUA" />
-    		<column name="notes" value="Arkansas"/>
-    		<where>rfc_code = 150</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KTUA" />
+    		<column name="NOTES" value="Arkansas"/>
+    		<where>RFC_CODE = 150</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KSTR" />
-    		<column name="notes" value="Colorado (mostly only 6hr data)"/>
-    		<where>rfc_code = 152</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KSTR" />
+    		<column name="NOTES" value="Colorado (mostly only 6hr data)"/>
+    		<where>RFC_CODE = 152</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KRSA" />
-    		<column name="notes" value="California (grouped in way difficult to work with)"/>
-    		<where>rfc_code = 153</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KRSA" />
+    		<column name="NOTES" value="California (grouped in way difficult to work with)"/>
+    		<where>RFC_CODE = 153</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KORN" />
-    		<column name="notes" value="Lower Mississippi"/>
-    		<where>rfc_code = 154</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KORN" />
+    		<column name="NOTES" value="Lower Mississippi"/>
+    		<where>RFC_CODE = 154</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KRHA" />
-    		<column name="notes" value="Mid Atlantic"/>
-    		<where>rfc_code = 155</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KRHA" />
+    		<column name="NOTES" value="Mid Atlantic"/>
+    		<where>RFC_CODE = 155</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KKRF" />
-    		<column name="notes" value="Missouri"/>
-    		<where>rfc_code = 156</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KKRF" />
+    		<column name="NOTES" value="Missouri"/>
+    		<where>RFC_CODE = 156</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KMSR" />
-    		<column name="notes" value="North Central"/>
-    		<where>rfc_code = 157</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KMSR" />
+    		<column name="NOTES" value="North Central"/>
+    		<where>RFC_CODE = 157</where>
     	</update>
     	
-    	<update tableName="archive_config">
-    		<column name="name" value="KTAR" />
-    		<column name="notes" value="North East (grid changed 2005-04-20)"/>
-    		<where>rfc_code = 158</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KTAR" />
+    		<column name="NOTES" value="North East (grid changed 2005-04-20)"/>
+    		<where>RFC_CODE = 158</where>
     	</update>
     	
-    	<update tableName="archive_config">
-    		<column name="name" value="KPTR" />
-    		<column name="notes" value="North West (mostly 6 hr data)"/>
-    		<where>rfc_code = 159</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KPTR" />
+    		<column name="NOTES" value="North West (mostly 6 hr data)"/>
+    		<where>RFC_CODE = 159</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KTIR" />
-    		<column name="notes" value="Ohio (grid changed 2003-05-21)"/>
-    		<where>rfc_code = 160</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KTIR" />
+    		<column name="NOTES" value="Ohio (grid changed 2003-05-21)"/>
+    		<where>RFC_CODE = 160</where>
     	</update>
 
-    	<update tableName="archive_config">
-    		<column name="name" value="KALR" />
-    		<column name="notes" value="South East"/>
-    		<where>rfc_code = 161</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KALR" />
+    		<column name="NOTES" value="South East"/>
+    		<where>RFC_CODE = 161</where>
     	</update>
     	
-    	<update tableName="archive_config">
-    		<column name="name" value="KFWR" />
-    		<column name="notes" value="Gulf of Mexico"/>
-    		<where>rfc_code = 162</where>
+    	<update tableName="ARCHIVE_CONFIG">
+    		<column name="NAME" value="KFWR" />
+    		<column name="NOTES" value="Gulf of Mexico"/>
+    		<where>RFC_CODE = 162</where>
     	</update>
 
-	<addNotNullConstraint tableName="archive_config" columnName="name" columnDataType="CHAR(4)"/>
+	<addNotNullConstraint tableName="ARCHIVE_CONFIG" columnName="NAME" columnDataType="CHAR(4)"/>
 		
 	<rollback>
-	  <dropColumn tableName="archive_config" columnName="name"/>
-	  <dropColumn tableName="archive_config" columnName="notes" />
+	  <dropColumn tableName="ARCHIVE_CONFIG" columnName="NAME"/>
+	  <dropColumn tableName="ARCHIVE_CONFIG" columnName="NOTES" />
 	</rollback>
 		
     </changeSet>

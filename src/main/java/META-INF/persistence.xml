@@ -9,11 +9,5 @@
 		<class>gov.usgs.cida.ncetl.jpa.EtlHistory</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		
-		<properties>
-			<property name="javax.persistence.jdbc.url" value="jdbc:derby:/home/rhayes/.ncetl/database/NCETL"/>
-			<property name="javax.persistence.jdbc.user" value=""/>
-			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
-		</properties>
 	</persistence-unit>
 </persistence>

@@ -26,25 +26,31 @@
       <property name=""
     </bean> -->
     
-    <bean id="em" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
   		<property name="dataSource" ref="dataSource"/>
+  		<property name="jpaVendorAdapter">
+        	<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            	<property name="showSql" value="true"/>
+            	<property name="generateDdl" value="false"/>
+            	<property name="databasePlatform" value="org.hibernate.dialect.MySQL5Dialect"/>
+        	</bean>
+    	</property>
 	</bean>
 	
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/ncETL"/>
-        <property name="username" value="GDP"/>
-        <property name="password" value="${secret}"/>
-    </bean>
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+   		<property name="entityManagerFactory" ref="emf" />
+	</bean>
+	
+	<import resource="jdbc-context.xml"/>
 	
 	<!-- Liquibase to upgrade the database; runs automatically on context init -->
 	<bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
      	<property name="dataSource" ref="dataSource" />
-     	<property name="changeLog" value="classpath:liquibase/changelog.xml" />
+     	<property name="changeLog" value="liquibase/changelog.xml" />
  	</bean>
  	
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
-		entity-manager-factory="em"
+		entity-manager-factory="emf"
 		jpa-query="select s from ArchivConfig s where s.rfcCode = 155 "
 		expect-single-result="false"
 		delete-after-poll="false"
@@ -89,29 +95,18 @@
 	
 	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="ok-chan"
 		ref="gribber" method="processFiles"
-		
 	/>
 	
 	<int:channel id="ok-chan"/>
 	
-	<int-jpa:outbound-channel-adapter entity-manager-factory="em" channel="ok-chan"
-		entity-class="gov.usgs.cida.ncetl.jpa.EtlHistory"
-		persist-mode="PERSIST"
-	>
-		<int-jpa:transactional />
-		
-		<int-jpa:parameter name="archiveConfig" expression="headers.config"/>
-		<int-jpa:parameter name="outcome" expression="payload" />
-	</int-jpa:outbound-channel-adapter>
-
-	<int-jpa:outbound-channel-adapter entity-manager-factory="em" channel="errorChannel"
-		entity-class="gov.usgs.cida.ncetl.jpa.EtlHistory"
-		persist-mode="PERSIST"
-	>
-		<int-jpa:transactional />
-		
-		<int-jpa:parameter name="archiveConfig" expression="headers.config"/>
-		<int-jpa:parameter name="outcome" expression="payload" />
-	</int-jpa:outbound-channel-adapter>
+	<int:transformer input-channel="ok-chan"  output-channel="nullChannel"
+		expression="headers.config.addHistory('header outcome')"
+	/>
 	
+	<int:channel id="errorChannel"/>
+	
+	<int:transformer  input-channel="errorChannel" output-channel="nullChannel"
+		expression="headers.config.addHistory('fail')"
+	/>
+		
 </beans>

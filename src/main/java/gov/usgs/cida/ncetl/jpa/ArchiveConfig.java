@@ -181,7 +181,7 @@ public class ArchiveConfig implements Serializable {
 	}
 	
 	//bi-directional many-to-one association to EtlHistory
-	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.MERGE,CascadeType.PERSIST})
+	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch=FetchType.LAZY)
 	@OrderBy("ts DESC")
 	public List<EtlHistory> getEtlHistories() {
 		return this.etlHistories;

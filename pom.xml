@@ -28,7 +28,8 @@
 		<jackson.version>1.9.11</jackson.version>
 		<junit.version>4.11</junit.version>
 		<log4j.version>1.2.17</log4j.version>
-        
+		<wombat.foo>x.y.x</wombat.foo>
+		<cglib.version>2.2.2</cglib.version>
     </properties>
     
     <licenses>
@@ -176,7 +177,11 @@
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
+		<dependency>
+        	<groupId>cglib</groupId>
+        	<artifactId>cglib-nodep</artifactId>
+        	<version>${cglib.version}</version>
+      	</dependency>
     
         <!-- ################## LOGGING -->
         <dependency>

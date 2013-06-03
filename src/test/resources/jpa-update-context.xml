@@ -5,6 +5,7 @@
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-file="http://www.springframework.org/schema/integration/file"
 	xmlns:int-jpa="http://www.springframework.org/schema/integration/jpa"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
@@ -12,34 +13,44 @@
 		http://www.springframework.org/schema/integration/file    http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
 		http://www.springframework.org/schema/integration/jpa     http://www.springframework.org/schema/integration/jpa/spring-integration-jpa.xsd
 		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx				  http://www.springframework.org/schema/tx/spring-tx.xsd		
 		">
 
 	<context:property-placeholder/>
 	<context:annotation-config/>
 	
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
   		<property name="dataSource" ref="dataSource"/>
+  		<property name="jpaVendorAdapter">
+        	<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            	<property name="showSql" value="true"/>
+            	<property name="generateDdl" value="false"/>
+            	<property name="databasePlatform" value="org.hibernate.dialect.MySQL5Dialect"/>
+        	</bean>
+    	</property>
 	</bean>
+	
+	<import resource="classpath:jdbc-context.xml"/>
+    
+	<!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  		<property name="dataSource" ref="dataSource"/>
+	</bean> -->
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+   		<property name="entityManagerFactory" ref="emf" />
+	</bean>
+	
+	<bean id="persistenceExceptionTranslationPostProcessor"
+      class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+      
+   <!--   <bean name="hibernateTxManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	</bean> -->
 	
 	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
       <property name="go" value="true"/>
-    </bean>
-		
-	<int:channel id="one-chan">
-		<int:interceptors>
-			<int:wire-tap channel="logger"/>
-		</int:interceptors>
-	</int:channel>
-	    
-    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-  		<property name="dataSource" ref="dataSource"/>
-	</bean>
-	
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/ncETL"/>
-        <property name="username" value="GDP"/>
-        <property name="password" value="${secret}"/>
     </bean>
 		
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
@@ -58,18 +69,37 @@
 		<!-- List<ArchiveConfig> -->
 	</int:channel>
 	
-	<int:splitter input-channel="config-list-chan" output-channel="config-chan"/>
+	<int:splitter input-channel="config-list-chan" output-channel="record-1-chan"/>
 	
-	<int:channel id="config-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
-		
-	<!-- <int:transformer id="recorder" input-channel="config-chan" output-channel="logger"
-		expression="payload.addHistory('hello')"
-	></int:transformer> -->
+	<int:publish-subscribe-channel id="record-1-chan">
+		<int:interceptors>
+			<int:wire-tap channel="logger"/>
+		</int:interceptors>
+	</int:publish-subscribe-channel>
 	
-	<int:transformer id="recorder" input-channel="config-chan" output-channel="logger">
+	<int:header-enricher id="payload-copy" input-channel="record-1-chan" output-channel="outcome-chan"
+	>
+		<int:header name="config" expression="payload"/>
+	</int:header-enricher>
+	
+	<int:channel id="outcome-chan"/>
+	<int:transformer input-channel="outcome-chan"  output-channel="nullChannel"
+		expression="headers.config.addHistory('header outcome')"
+	/>
+	
+	<int:transformer id="recorder-etl" input-channel="record-1-chan" output-channel="record-2-chan"
+		expression="payload.addHistory('etl expression goes here')"
+	></int:transformer>
+	
+	<int:channel id="record-2-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
+	
+	<int:transformer id="recorder-native" input-channel="record-2-chan" output-channel="logger">
 		<bean class="gov.usgs.cida.data.grib.HistoryRecorder"/>
 	</int:transformer>
 	
 	<int:logging-channel-adapter id="logger" logger-name="SISlog" log-full-message="false"/>
 	
+	<int:channel id="errorChannel">
+		<int:queue />
+	</int:channel>
 </beans>

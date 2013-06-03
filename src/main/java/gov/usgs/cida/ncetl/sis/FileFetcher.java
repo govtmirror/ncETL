@@ -51,18 +51,18 @@ public class FileFetcher {
 		return mb.build();
 	}
 
-	public String makeOutputFileName(int year, int month, int rfcCode) {
+	protected String makeOutputFileName(int year, int month, int rfcCode) {
 	    String ofn = "QPE." + year + "." + month + "." + rfcCode + ".nc";
 		return ofn;
 	}
 
-	public Date oneMonthAgo() {
+	protected Date oneMonthAgo() {
 		DateTime now = new DateTime();
 		DateTime lastRun = now.minusMonths(1);
 		return lastRun.toDate();
 	}
 	
-	public int daysInMonth(int year, int month) {
+	protected int daysInMonth(int year, int month) {
 		DateTime dt = new DateTime(year, month, 1, 12, 0);
     	dt = dt.dayOfMonth().withMaximumValue();
     	return dt.getDayOfMonth();
