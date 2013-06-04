@@ -53,7 +53,7 @@ public class EtlHistory implements Serializable {
 
 
 	//bi-directional many-to-one association to ArchiveConfig
-	@ManyToOne(cascade={CascadeType.MERGE,CascadeType.PERSIST})
+	@ManyToOne
 	@JoinColumn(name="ARCHIVE_ID")
 	public ArchiveConfig getArchiveConfig() {
 		return this.archiveConfig;
