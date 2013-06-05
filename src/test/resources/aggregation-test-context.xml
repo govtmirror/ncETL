@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		">
+
+	
+	<bean id="gribber" class="gov.usgs.cida.ncetl.sis.AggregationChecker"/>
+	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
+
+	<int:inbound-channel-adapter id="source" channel="lof-chan"
+		ref="gribber" method="generate" auto-startup="false"
+		>
+		<int:poller fixed-delay="1000000"/>
+	</int:inbound-channel-adapter>
+		
+	<int:channel id="lof-chan"/>
+	
+	<int:header-enricher input-channel="lof-chan" output-channel="lof-config-chan">
+		<int:header name="config" ref="gribber" method="getConfig"/>
+	</int:header-enricher>
+	
+	<int:channel id="lof-config-chan"/>
+	
+	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
+	<!--  also sets aggregation headers -->
+	<int:splitter id="lof-splitter" input-channel="lof-config-chan" output-channel="motherlode-chan"
+		ref="file-fetcher"
+	/>
+	
+	<int:channel id="motherlode-chan" datatype="java.io.File"/>
+		
+	<!--  assembles input files into list<file> according to aggregation headers -->
+	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
+		expire-groups-upon-completion="true"
+		
+	/>
+	
+	<int:channel id="grib-chan"/>
+	
+	<!-- The workhorse that actually processes the data. -->
+	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="nullChannel"
+		ref="gribber" 
+	/>
+	
+	<int:channel id="errorChannel">
+		<int:queue />
+	</int:channel>
+	
+	
+</beans>

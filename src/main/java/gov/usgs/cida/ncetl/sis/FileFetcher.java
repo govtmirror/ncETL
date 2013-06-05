@@ -94,7 +94,7 @@ public class FileFetcher {
 			List<File> payload,
 			@Header(value="config", required=true) ArchiveConfig cfg
 	) {
-		
+
 		List<Message<File>> value = new ArrayList<Message<File>>(payload.size());
 				
         Pattern pat = Pattern.compile(cfg.getFileRegex());
@@ -130,10 +130,12 @@ public class FileFetcher {
         	
         	String ofName = makeOutputFileName(year,month,cfg.getRfcCode());
         	mb.setHeader("outputFile", ofName);
+        	logger.debug("Set output file for {} to {}", f, ofName);
         	
-        	mb.setCorrelationId(ofName);
-        	mb.setSequenceNumber(day);
-        	mb.setSequenceSize(daysInMonth(year, month));
+        	//mb.setCorrelationId(ofName);
+        	//mb.setSequenceNumber(day);
+        	//mb.setSequenceSize(daysInMonth(year, month));
+        	mb.pushSequenceDetails(ofName, day, daysInMonth(year, month));
         	
         	value.add(mb.build());
         	
