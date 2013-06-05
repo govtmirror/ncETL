@@ -27,17 +27,21 @@
 	<int:channel id="lof-config-chan"/>
 	
 	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
-	<!--  also sets aggregation headers -->
+	<!--  also sets aggregation headers, so must set apply-sequence=false to prevent override -->
 	<int:splitter id="lof-splitter" input-channel="lof-config-chan" output-channel="motherlode-chan"
 		ref="file-fetcher"
+		apply-sequence="false"
 	/>
 	
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
-		
+	
+	<bean id="message-store" class="org.springframework.integration.store.SimpleMessageStore"/>
+	
 	<!--  assembles input files into list<file> according to aggregation headers -->
 	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
-		expire-groups-upon-completion="true"
-		
+		expire-groups-upon-completion="false"
+		send-partial-result-on-expiry="true"
+		message-store="message-store"
 	/>
 	
 	<int:channel id="grib-chan"/>

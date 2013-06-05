@@ -48,6 +48,7 @@ public class AggregationChecker {
 		value.setEtlHistories(etlHistories);
 		
 		value.setRfcCode(999);
+		value.setOutputDir("/tmp/grib");
 		
 		return value;
 	}
@@ -75,8 +76,11 @@ public class AggregationChecker {
 		throws Exception 
 	{
 		
+    	System.out.printf("Got chunk for %s,  size %d\n", filename, input.size());
+    	
     	String outputDir = cfg.getOutputDir();
-
+    	assertNotNull("output dir", outputDir);
+    	
     	assertNotNull("input file list", input);
     	assertEquals("config", this.cfg, config);
     	
@@ -103,17 +107,17 @@ public class AggregationChecker {
     public List<File> generate() {
     	List<File> value = new ArrayList<File>();
     	
-    	value.add(addExpectation("test_1999-12-31.txt","CPE.1999.12.999.nc"));
+    	value.add(addExpectation("test_1999-12-31.txt","QPE.1999.12.999.nc"));
     	
-    	value.add(new File("/tmp","test_2012-12-31.txt"));
-    	value.add(new File("/tmp","test_1999-08-31.txt"));
-    	value.add(new File("/tmp","test_1999-08-22.txt"));
-    	value.add(new File("/tmp","test_1999-08-11.txt"));
-    	value.add(new File("/tmp","test_1999-08-01.txt"));
-    	value.add(new File("/tmp","test_2012-12-01.txt"));
-    	value.add(new File("/tmp","test_2012-12-02.txt"));
-    	value.add(new File("/tmp","test_2012-12-03.txt"));
-    	value.add(new File("/tmp","test_2012-12-04.txt"));
+    	value.add(addExpectation("test_2012-12-31.txt","QPE.2012.12.999.nc"));
+    	value.add(addExpectation("test_1999-08-31.txt","QPE.1999.08.999.nc"));
+    	value.add(addExpectation("test_1999-08-22.txt","QPE.1999.08.999.nc"));
+    	value.add(addExpectation("test_1999-08-11.txt","QPE.1999.08.999.nc"));
+    	value.add(addExpectation("test_1999-08-01.txt","QPE.1999.08.999.nc"));
+    	value.add(addExpectation("test_2012-12-01.txt","QPE.2012.12.999.nc"));
+    	value.add(addExpectation("test_2012-12-02.txt","QPE.2012.12.999.nc"));
+    	value.add(addExpectation("test_2012-12-03.txt","QPE.2012.12.999.nc"));
+    	value.add(addExpectation("test_2012-12-04.txt","QPE.2012.12.999.nc"));
     	
     	return value;
     }

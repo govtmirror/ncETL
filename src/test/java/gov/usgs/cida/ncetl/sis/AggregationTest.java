@@ -8,6 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.integration.Message;
 import org.springframework.integration.channel.QueueChannel;
+import org.springframework.integration.store.MessageGroupStore;
 
 public class AggregationTest {
 
@@ -29,6 +30,9 @@ public class AggregationTest {
 
 			assertTrue("survived", true);
 
+			MessageGroupStore store = context.getBean("message-store", MessageGroupStore.class);
+			store.expireMessageGroups(0);
+			
 			context.stop();
 
 			QueueChannel errorChannel = context.getBean("errorChannel", QueueChannel.class);
