@@ -2,6 +2,7 @@ package gov.usgs.cida.ncetl.sis;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
+import gov.usgs.cida.ncetl.jpa.EtlHistory;
 
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
@@ -29,19 +31,37 @@ public class FileFetcher {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Transformer
-	public Message<List<File>> getConfig(ArchiveConfig cfg) {
+	public Message<List<File>> listInputFiles(ArchiveConfig cfg) {
 				
 		File inputDir = new File(cfg.getInputDir());
 		String fileRegex = cfg.getFileRegex();
 		
-		// TODO get last run time for this config, rather than assuming one month
-		Date lastRun = oneMonthAgo();
+		// get last run time for this config
+		Date lastRun = new Date(0L);  // the beginning of time, obviously.
+		List<EtlHistory> runHistory = cfg.getEtlHistories();
+		if ( ! runHistory.isEmpty()) {
+			lastRun = runHistory.get(0).getTs();
+		}
 		
-		AgeFileFilter ageFilter = new AgeFileFilter(lastRun);
+		AgeFileFilter ageFilter = new AgeFileFilter(lastRun,false);  // newer than cutoff
         Pattern rfcPattern = Pattern.compile(fileRegex);
+        // check for the expected three capturing groups
+        Matcher m = rfcPattern.matcher("nil");
+        if (m.groupCount() != 3) {
+        	throw new RuntimeException("Expected three capturing groups in " + fileRegex + ", got " + m.groupCount());
+        }
+        
         RegexFileFilter patternFilter = new RegexFileFilter(rfcPattern);
 		FileFilter filter = new AndFileFilter(ageFilter,patternFilter);
-        File[] listFiles = inputDir.listFiles(filter);	
+		
+		logger.info("Searching {} for files of pattern {} modified since {}",
+				new Object[] {inputDir.getAbsolutePath(), fileRegex, lastRun});
+        File[] listFiles = inputDir.listFiles(filter);
+        if (listFiles == null) {
+        	logger.warn("failed to list files in {}", inputDir);
+        	listFiles = new File[0];
+        }
+        logger.info("Found {} files", listFiles.length);
         
         List<File> payload = Arrays.asList(listFiles);
 		
@@ -53,6 +73,7 @@ public class FileFetcher {
 
 	protected String makeOutputFileName(int year, int month, int rfcCode) {
 	    String ofn = "QPE." + year + "." + month + "." + rfcCode + ".nc";
+	    ofn = MessageFormat.format("QPE.{0,number,00}.{1,number,00}.{2,number,000}.nc", year, month, rfcCode);
 		return ofn;
 	}
 
@@ -108,7 +129,7 @@ public class FileFetcher {
         	}
         	
         	String ofName = makeOutputFileName(year,month,cfg.getRfcCode());
-        	mb.setHeader("outputFile", makeOutputFileName(year,month,cfg.getRfcCode()));
+        	mb.setHeader("outputFile", ofName);
         	
         	mb.setCorrelationId(ofName);
         	mb.setSequenceNumber(day);

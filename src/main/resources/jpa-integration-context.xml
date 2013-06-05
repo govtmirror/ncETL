@@ -84,7 +84,7 @@
 	
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
 		
-	<!--  see http://static.springsource.org/spring-integration/reference/htmlsingle/#overview-endpoints-aggregator -->
+	<!--  assembles input files into list<file> according to aggregation headers -->
 	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
 		expire-groups-upon-completion="true"
 	/>
@@ -102,7 +102,7 @@
 	
 	<!-- Transformer because the addHistory method returns a non-null value.  -->
 	<int:transformer input-channel="ok-chan"  output-channel="nullChannel"
-		expression="headers.config.addHistory('header outcome')"
+		expression="headers.config.addHistory('ok')"
 	/>
 	
 	<int:channel id="errorChannel"/>
