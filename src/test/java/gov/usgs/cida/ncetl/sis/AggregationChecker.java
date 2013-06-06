@@ -29,6 +29,21 @@ public class AggregationChecker {
 		return cfg;
 	}
 
+	public enum TestCase {
+		VARIED_INCOMPLETE,
+		SINGLE_COMPLETE,
+		TWO_COMPLETE
+	}
+	private TestCase testCase = TestCase.VARIED_INCOMPLETE;
+	
+	public TestCase getTestCase() {
+		return testCase;
+	}
+
+	public void setTestCase(TestCase testCase) {
+		this.testCase = testCase;
+	}
+
 	private ArchiveConfig makeConfig(String dir, Date since, String fileRegex) {
 		ArchiveConfig value = new ArchiveConfig();
 		
@@ -104,20 +119,124 @@ public class AggregationChecker {
     	e.expectOfn(ofn);
     }
     
+    
     public List<File> generate() {
     	List<File> value = new ArrayList<File>();
     	
-    	value.add(addExpectation("test_1999-12-31.txt","QPE.1999.12.999.nc"));
+    	switch (testCase) {
+    	case VARIED_INCOMPLETE:
     	
-    	value.add(addExpectation("test_2012-12-31.txt","QPE.2012.12.999.nc"));
-    	value.add(addExpectation("test_1999-08-31.txt","QPE.1999.08.999.nc"));
-    	value.add(addExpectation("test_1999-08-22.txt","QPE.1999.08.999.nc"));
-    	value.add(addExpectation("test_1999-08-11.txt","QPE.1999.08.999.nc"));
-    	value.add(addExpectation("test_1999-08-01.txt","QPE.1999.08.999.nc"));
-    	value.add(addExpectation("test_2012-12-01.txt","QPE.2012.12.999.nc"));
-    	value.add(addExpectation("test_2012-12-02.txt","QPE.2012.12.999.nc"));
-    	value.add(addExpectation("test_2012-12-03.txt","QPE.2012.12.999.nc"));
-    	value.add(addExpectation("test_2012-12-04.txt","QPE.2012.12.999.nc"));
+	    	value.add(addExpectation("test_1999-12-31.txt","QPE.1999.12.999.nc"));
+	    	value.add(addExpectation("test_2012-12-31.txt","QPE.2012.12.999.nc"));
+	    	value.add(addExpectation("test_1999-08-31.txt","QPE.1999.08.999.nc"));
+	    	value.add(addExpectation("test_1999-08-22.txt","QPE.1999.08.999.nc"));
+	    	value.add(addExpectation("test_1999-08-11.txt","QPE.1999.08.999.nc"));
+	    	value.add(addExpectation("test_1999-08-01.txt","QPE.1999.08.999.nc"));
+	    	value.add(addExpectation("test_2012-12-01.txt","QPE.2012.12.999.nc"));
+	    	value.add(addExpectation("test_2012-12-02.txt","QPE.2012.12.999.nc"));
+	    	value.add(addExpectation("test_2012-12-03.txt","QPE.2012.12.999.nc"));
+	    	value.add(addExpectation("test_2012-12-04.txt","QPE.2012.12.999.nc"));
+	    	
+	    	break;    	
+	    	
+    	case SINGLE_COMPLETE:
+        	value.add(addExpectation("test_2000-02-29.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-01.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-02.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-03.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-04.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-05.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-06.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-07.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-08.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-09.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-10.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-11.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-12.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-13.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-14.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-15.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-16.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-17.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-18.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-19.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-20.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-21.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-22.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-23.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-24.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-25.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-26.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-27.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-28.txt","QPE.2000.02.999.nc"));
+        	
+        	break;
+        	
+    	case TWO_COMPLETE:
+        	value.add(addExpectation("test_2000-02-29.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-01.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-02.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-03.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-04.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-05.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-06.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-07.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-08.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-09.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-10.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-11.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-12.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-13.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-14.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-15.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-16.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-17.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-18.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-19.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-20.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-21.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-22.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-23.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-24.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-25.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-26.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-27.txt","QPE.2000.02.999.nc"));
+        	value.add(addExpectation("test_2000-02-28.txt","QPE.2000.02.999.nc"));
+        	
+        	value.add(addExpectation("test_2001-02-01.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-02.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-03.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-04.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-05.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-06.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-07.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-08.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-09.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-10.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-11.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-12.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-13.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-14.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-15.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-16.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-17.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-18.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-19.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-20.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-21.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-22.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-23.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-24.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-25.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-26.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-27.txt","QPE.2001.02.999.nc"));
+        	value.add(addExpectation("test_2001-02-28.txt","QPE.2001.02.999.nc"));
+
+        	break;
+    	}
+    	
+    	// FileFetcher does this, too
+    	Collections.sort(value);
     	
     	return value;
     }

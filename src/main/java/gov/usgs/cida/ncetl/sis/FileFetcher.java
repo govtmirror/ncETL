@@ -63,8 +63,13 @@ public class FileFetcher {
         }
         logger.info("Found {} files", listFiles.length);
         
+        Arrays.sort(listFiles);
+        
+        // this sort uses the natural order for files, which will result in ascending time order for files within the same
+        // directory as long as the file names differ only by date represented as yyyy-MM-dd format (as required for file
+        // name parsing).
         List<File> payload = Arrays.asList(listFiles);
-		
+        
 		MessageBuilder<List<File>> mb = MessageBuilder.withPayload(payload);
 		mb.setHeader("config", cfg);
 		

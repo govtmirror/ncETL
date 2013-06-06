@@ -9,11 +9,11 @@
 		">
 
 	
-	<bean id="gribber" class="gov.usgs.cida.ncetl.sis.AggregationChecker"/>
+	<bean id="aggregationChecker" class="gov.usgs.cida.ncetl.sis.AggregationChecker"/>
 	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
 
 	<int:inbound-channel-adapter id="source" channel="lof-chan"
-		ref="gribber" method="generate" auto-startup="false"
+		ref="aggregationChecker" method="generate" auto-startup="false"
 		>
 		<int:poller fixed-delay="1000000"/>
 	</int:inbound-channel-adapter>
@@ -21,7 +21,7 @@
 	<int:channel id="lof-chan"/>
 	
 	<int:header-enricher input-channel="lof-chan" output-channel="lof-config-chan">
-		<int:header name="config" ref="gribber" method="getConfig"/>
+		<int:header name="config" ref="aggregationChecker" method="getConfig"/>
 	</int:header-enricher>
 	
 	<int:channel id="lof-config-chan"/>
@@ -41,6 +41,7 @@
 	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
 		expire-groups-upon-completion="false"
 		send-partial-result-on-expiry="true"
+		
 		message-store="message-store"
 	/>
 	
@@ -48,7 +49,7 @@
 	
 	<!-- The workhorse that actually processes the data. -->
 	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="nullChannel"
-		ref="gribber" 
+		ref="aggregationChecker" 
 	/>
 	
 	<int:channel id="errorChannel">
