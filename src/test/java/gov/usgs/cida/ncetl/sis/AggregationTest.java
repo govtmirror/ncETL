@@ -14,11 +14,13 @@ public class AggregationTest {
 
 	private ConfigurableApplicationContext context;
 	private AggregationChecker aggregationChecker;
+	private Object gribAgg;
 	
 	@Before
 	public void init() {
 		context = new ClassPathXmlApplicationContext("aggregation-test-context.xml");
 		aggregationChecker = context.getBean("aggregationChecker", AggregationChecker.class);
+		gribAgg = context.getBean("grib-agg");
 	}
 	
 	@Test
@@ -33,9 +35,6 @@ public class AggregationTest {
 
 			assertTrue("survived", true);
 
-			MessageGroupStore store = context.getBean("message-store", MessageGroupStore.class);
-			store.expireMessageGroups(0);
-			
 			context.stop();
 
 			QueueChannel errorChannel = context.getBean("errorChannel", QueueChannel.class);
@@ -60,10 +59,6 @@ public class AggregationTest {
 
 			assertTrue("survived", true);
 
-			MessageGroupStore store = context.getBean("message-store", MessageGroupStore.class);
-			// the next should not be necessary, as the aggregator should notice that the group is complete and release it
-			store.expireMessageGroups(0);
-			
 			context.stop();
 
 			QueueChannel errorChannel = context.getBean("errorChannel", QueueChannel.class);
@@ -88,10 +83,6 @@ public class AggregationTest {
 
 			assertTrue("survived", true);
 
-			MessageGroupStore store = context.getBean("message-store", MessageGroupStore.class);
-			// the next should not be necessary, as the aggregator should notice that the group is complete and release it
-			store.expireMessageGroups(0);
-			
 			context.stop();
 
 			QueueChannel errorChannel = context.getBean("errorChannel", QueueChannel.class);

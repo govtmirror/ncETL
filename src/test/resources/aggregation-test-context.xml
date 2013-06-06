@@ -36,10 +36,14 @@
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
 	
 	<bean id="message-store" class="org.springframework.integration.store.SimpleMessageStore"/>
+	<bean id="reaper" class="org.springframework.integration.store.MessageGroupStoreReaper">
+		<property name="messageGroupStore" ref="message-store"/>
+		<property name="expireOnDestroy" value="true"/>
+	</bean>
 	
 	<!--  assembles input files into list<file> according to aggregation headers -->
 	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
-		expire-groups-upon-completion="false"
+		expire-groups-upon-completion="true"
 		send-partial-result-on-expiry="true"
 		
 		message-store="message-store"
