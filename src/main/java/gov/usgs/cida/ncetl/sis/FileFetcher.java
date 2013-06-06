@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -100,6 +101,8 @@ public class FileFetcher {
 			@Header(value="config", required=true) ArchiveConfig cfg
 	) {
 
+		Collections.sort(payload);
+		
 		List<Message<File>> value = new ArrayList<Message<File>>(payload.size());
 				
         Pattern pat = Pattern.compile(cfg.getFileRegex());

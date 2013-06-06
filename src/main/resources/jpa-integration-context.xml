@@ -63,30 +63,40 @@
 		<!-- List<ArchiveConfig> -->
 	</int:channel>
 	
-	<int:splitter input-channel="config-list-chan" output-channel="config-chan"/>
+	<int:splitter input-channel="config-list-chan" output-channel="work-chan"/>
 	
-	<int:channel id="config-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
+	<int:channel id="work-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
 	
 	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
 	
 	<!-- Uses ArchiveConfig to fetch list of files. ArchiveConfig is copied to header 'config' -->
-	<int:transformer input-channel="config-chan" output-channel="lof-chan"
+	<int:transformer input-channel="work-chan" output-channel="lof-chan"
 		ref="file-fetcher"
 	/>
 	
 	<int:channel id="lof-chan"/>
 	
 	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
-	<!--  also sets aggregation headers -->
+	<!--  also sets aggregation headers, so must set apply-sequence=false to prevent override -->
 	<int:splitter id="lof-splitter" input-channel="lof-chan" output-channel="motherlode-chan"
 		ref="file-fetcher"
+		apply-sequence="false"
 	/>
 	
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
 		
+	<bean id="message-store" class="org.springframework.integration.store.SimpleMessageStore"/>
+	<bean id="reaper" class="org.springframework.integration.store.MessageGroupStoreReaper">
+		<property name="messageGroupStore" ref="message-store"/>
+		<property name="expireOnDestroy" value="true"/>
+	</bean>
+		
 	<!--  assembles input files into list<file> according to aggregation headers -->
 	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
 		expire-groups-upon-completion="true"
+		send-partial-result-on-expiry="true"
+		
+		message-store="message-store"
 	/>
 	
 	<int:channel id="grib-chan"/>

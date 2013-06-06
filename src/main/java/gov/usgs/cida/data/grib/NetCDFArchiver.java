@@ -22,9 +22,9 @@ public class NetCDFArchiver {
     	
     	RollingNetCDFArchive rnca = new RollingNetCDFArchive(output);
     	try { 
-	    	rnca.setExcludeList("dim_excludes", cfg.getDim_excludes());
-	    	rnca.setExcludeList("var_excludes", cfg.getVar_excludes());
-	    	rnca.setExcludeList("xy_excludes", cfg.getXy_excludes());
+	    	rnca.setExcludeList(RollingNetCDFArchive.DIM, cfg.getDim_excludes());
+	    	rnca.setExcludeList(RollingNetCDFArchive.VAR, cfg.getVar_excludes());
+	    	rnca.setExcludeList(RollingNetCDFArchive.XY, cfg.getXy_excludes());
 	
 	    	rnca.setUnlimitedDimension(cfg.getUnlim_dim(), cfg.getUnlim_units());
 	    	
