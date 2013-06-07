@@ -49,6 +49,10 @@
      	<property name="changeLog" value="liquibase/changelog.xml" />
  	</bean>
  	
+ 	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
+      <property name="go" value="true"/>
+    </bean>
+ 	
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="emf"
 		jpa-query="select s from ArchivConfig s where s.rfcCode = 155 "
@@ -56,7 +60,7 @@
 		delete-after-poll="false"
 		auto-startup="false"
 		>
-			<int:poller fixed-rate="10000000"></int:poller>
+			<int:poller trigger="oneshot"/>
 	</int-jpa:inbound-channel-adapter>
 	
 	<int:channel id="config-list-chan">

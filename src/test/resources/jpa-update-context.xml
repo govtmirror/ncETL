@@ -55,7 +55,7 @@
 		
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="emf"
-		jpa-query="select s from ArchiveConfig s where rfcCode = 154 "
+		jpa-query="select s from ArchiveConfig s "
 		expect-single-result="false"
 		delete-after-poll="false"
 		auto-startup="false"
@@ -84,18 +84,17 @@
 	
 	<int:channel id="outcome-chan"/>
 	<int:transformer input-channel="outcome-chan"  output-channel="nullChannel"
-		expression="headers.config.addHistory('header outcome')"
+		expression="headers.config.addHistory('header outcome for ' + headers.config.name)"
 	/>
 	
 	<int:transformer id="recorder-etl" input-channel="record-1-chan" output-channel="record-2-chan"
-		expression="payload.addHistory('etl expression goes here')"
+		expression="payload.addHistory('etl expression goes here for ' + payload.name)"
 	></int:transformer>
 	
 	<int:channel id="record-2-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
 	
-	<int:transformer id="recorder-native" input-channel="record-2-chan" output-channel="logger">
-		<bean class="gov.usgs.cida.data.grib.HistoryRecorder"/>
-	</int:transformer>
+	<!--  This works fine -->
+	<int:aggregator id="post-record-agg" input-channel="record-2-chan" output-channel="logger"/>
 	
 	<int:logging-channel-adapter id="logger" logger-name="SISlog" log-full-message="false"/>
 	
