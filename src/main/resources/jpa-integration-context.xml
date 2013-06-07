@@ -16,10 +16,10 @@
 		http://www.springframework.org/schema/tx				  http://www.springframework.org/schema/tx/spring-tx.xsd		
 		">
 
-	<context:component-scan base-package="gov.usgs.cida.ncETLsis" />
+	<context:component-scan base-package="gov.usgs.cida.ncetl" />
 	<context:property-placeholder/>
 	<context:annotation-config/>
-	<tx:annotation-driven/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
 	
 	<!-- <bean id="em" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
       <property name="persistenceUnitName" value="ncETL"/>
@@ -41,6 +41,9 @@
    		<property name="entityManagerFactory" ref="emf" />
 	</bean>
 	
+	<bean id="persistenceExceptionTranslationPostProcessor"
+      class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	
 	<import resource="jdbc-context.xml"/>
 	
 	<!-- Liquibase to upgrade the database; runs automatically on context init -->
@@ -55,7 +58,7 @@
  	
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="emf"
-		jpa-query="select s from ArchivConfig s where s.rfcCode = 155 "
+		jpa-query="select s from ArchiveConfig s  "
 		expect-single-result="false"
 		delete-after-poll="false"
 		auto-startup="false"
@@ -115,14 +118,21 @@
 	<int:channel id="ok-chan"/>
 	
 	<!-- Transformer because the addHistory method returns a non-null value.  -->
-	<int:transformer input-channel="ok-chan"  output-channel="nullChannel"
-		expression="headers.config.addHistory('ok')"
+	<int:transformer input-channel="ok-chan"  output-channel="gather-chan"
+		expression="headers.config.addHistory('ok for ' + headers.config.name)"
 	/>
 	
 	<int:channel id="errorChannel"/>
 	
-	<int:transformer  input-channel="errorChannel" output-channel="nullChannel"
-		expression="headers.config.addHistory('fail')"
-	/>
+	<!-- Can't rely on header config being set on error channel -->
+	<int:bridge input-channel="errorChannel" output-channel="gather-chan">
+	</int:bridge>
 		
+	<int:channel id="gather-chan"/>
+	
+	<int:aggregator id="gather-agg" input-channel="gather-chan" output-channel="finis"/>
+	
+	<int:channel id="finis">
+		<int:queue/>
+	</int:channel>
 </beans>

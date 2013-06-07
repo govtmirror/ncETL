@@ -2,6 +2,9 @@ package gov.usgs.cida.data.grib;
 
 import static org.junit.Assert.*;
 
+import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
+import gov.usgs.cida.ncetl.jpa.RenameMapping;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,15 +70,15 @@ public class NetCDFArchiverTest {
         value.setDim_excludes(dimList);
         value.setVar_excludes(varList);
         
-        value.setUnlim_dim("time");
-        value.setUnlim_units("hours since 2000-01-01 00:00:00");
+        value.setUnlimitedDim("time");
+        value.setUnlimitedUnits("hours since 2000-01-01 00:00:00");
         
         Map<String, String> varMap = Maps.newHashMap();
         varMap.put("1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation","1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         varMap.put("Total_precipitation_surface_Mixed_intervals_Accumulation", "1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation");
         value.setRenames(varMap);
         
-        value.setOutput_dir(System.getProperty("java.io.tmpdir"));
+        value.setOutputDir(System.getProperty("java.io.tmpdir"));
         
 		return value;
 	}

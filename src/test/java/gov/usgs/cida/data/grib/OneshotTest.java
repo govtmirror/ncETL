@@ -132,7 +132,6 @@ public class OneshotTest implements ApplicationListener<ApplicationEvent>{
 			 assertNotNull("oneshot", oneshot);
 			 
 			 System.out.println("Starting");
-			 IntegrationMBeanExporter jmx = context.getBean("jmx", IntegrationMBeanExporter.class);
 			 
 			 PollableChannel queue = context.getBean("queue", PollableChannel.class);
 			 
@@ -142,6 +141,7 @@ public class OneshotTest implements ApplicationListener<ApplicationEvent>{
 			 
 			 Thread.sleep(5*1000);
 			 
+			 // Timeout is a safety measure; we expect to be notified by the queue
 			 long timeout = 30*1000;
 			 
 			 Message<?> msg = queue.receive(timeout);
@@ -158,8 +158,6 @@ public class OneshotTest implements ApplicationListener<ApplicationEvent>{
 			 context.close();
 		 }
 	}
-
-	private boolean useJmx = false;
 
 	@Test
 	public void testGo() throws Exception {

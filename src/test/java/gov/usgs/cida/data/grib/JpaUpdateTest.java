@@ -80,6 +80,7 @@ public class JpaUpdateTest {
 		TypedQuery<ArchiveConfig> q = em.createQuery("select s from ArchiveConfig s where rfcCode = 155 ", ArchiveConfig.class);
 				
 		ArchiveConfig arc = q.getSingleResult();
+		assertTrue("active", arc.isActive());
 		
 		arc.addHistory("steam heat");
 		

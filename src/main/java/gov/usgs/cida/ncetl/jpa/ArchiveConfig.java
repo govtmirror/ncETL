@@ -19,7 +19,13 @@ import java.util.Map;
 @Entity
 @Table(name="ARCHIVE_CONFIG")
 public class ArchiveConfig implements Serializable {
-    private static final String RFC_CODE_REPLACE = "{rfc_code}";
+    private static final String XY = "xy";
+
+	public static final String VAR = "var";
+
+	public static final String DIM = "dim";
+
+	private static final String RFC_CODE_REPLACE = "{rfc_code}";
 
 	private static final long serialVersionUID = 1L;
 	private int id;
@@ -34,7 +40,8 @@ public class ArchiveConfig implements Serializable {
 	private List<ExcludeMapping> excludeMappings;
 	private List<RenameMapping> renameMappings;
 	private List<EtlHistory> etlHistories;
-
+	private boolean active;
+	
 	public ArchiveConfig() {
 	}
 
@@ -130,10 +137,21 @@ public class ArchiveConfig implements Serializable {
 		this.unlimitedUnits = unlimitedUnits;
 	}
 
+	@Column(name="ACTIVE")
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 
 	//bi-directional many-to-one association to ExcludeMapping
 	@OneToMany(mappedBy="archiveConfig")
 	public List<ExcludeMapping> getExcludeMappings() {
+		if (excludeMappings == null) {
+			excludeMappings = new ArrayList<ExcludeMapping>();
+		}
 		return this.excludeMappings;
 	}
 
@@ -159,6 +177,9 @@ public class ArchiveConfig implements Serializable {
 	//bi-directional many-to-one association to RenameMapping
 	@OneToMany(mappedBy="archiveConfig")
 	public List<RenameMapping> getRenameMappings() {
+		if (renameMappings == null) {
+			renameMappings = new ArrayList<RenameMapping>();
+		}
 		return this.renameMappings;
 	}
 
@@ -181,7 +202,7 @@ public class ArchiveConfig implements Serializable {
 	}
 	
 	//bi-directional many-to-one association to EtlHistory
-	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch=FetchType.EAGER)
 	@OrderBy("ts DESC")
 	public List<EtlHistory> getEtlHistories() {
 		return this.etlHistories;
@@ -206,35 +227,59 @@ public class ArchiveConfig implements Serializable {
 	}
 
 	@Transient
-	public List<String> getDim_excludes() {
-		
-		return getExcludes("dim");
-	}
-
-	@Transient
 	private List<String> getExcludes(String type) {
 		List<String> xm = new ArrayList<String>();
 		
-		for (ExcludeMapping m : excludeMappings) {
+		for (ExcludeMapping m : getExcludeMappings()) {
 			if (m.getExcludeType().getType().equals(type)) {
 				xm.add(m.getExcludeText());
 			}
 		}
 		return xm;
 	}
+	@Transient
+	private void setExcludes(String type, List<String> xList) {
+		for (String txt : xList) {
+			ExcludeMapping xm = new ExcludeMapping();
+			// TODO Only for testing; persisting will fail, need to look up by type
+			// (or change JPA mapping to treat type as primary key, disallow inserts)
+			ExcludeType xt = new ExcludeType();
+			xt.setType(type);
+			xm.setExcludeType(xt);
+			xm.setExcludeText(txt);
+			
+			addExcludeMapping(xm);
+		}
+	}
 
+	@Transient
+	public List<String> getDim_excludes() {
+		
+		return getExcludes(DIM);
+	}
+	@Transient
+	public void setDim_excludes(List<String> xList) {
+		setExcludes(DIM, xList);
+	}
 
 	@Transient
 	public List<String> getVar_excludes() {
-		return getExcludes("var");
+		return getExcludes(VAR);
 	}
-
+	@Transient
+	public void setVar_excludes(List<String> xList) {
+		setExcludes(VAR, xList);
+	}
 
 	@Transient
 	public List<String> getXy_excludes() {
-		return getExcludes("xy");
+		return getExcludes(XY);
 	}
-	
+	@Transient
+	public void setXy_excludes(List<String> xList) {
+		setExcludes(XY, xList);
+	}
+
 	@Transient
 	public Map<String, String> getRenames() {
 		Map<String,String> renames = new HashMap<String,String>(renameMappings.size());
@@ -245,6 +290,17 @@ public class ArchiveConfig implements Serializable {
 		
 		return renames;
 	}
+	@Transient
+	public void setRenames(Map<String, String> varMap) {
+		for (Map.Entry<String, String> entry : varMap.entrySet()) {
+			RenameMapping rm = new RenameMapping();
+			rm.setFromName(entry.getKey());
+			rm.setToName(entry.getValue());
+			
+			addRenameMapping(rm);
+		}		
+	}
+
 
 	@Transient
 	public ArchiveConfig addHistory(String outcome) {
@@ -258,5 +314,6 @@ public class ArchiveConfig implements Serializable {
 		
 		return this;
 	}
+
 
 }

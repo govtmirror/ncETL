@@ -1,5 +1,7 @@
 package gov.usgs.cida.data.grib;
 
+import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
+
 import java.io.File;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class NetCDFArchiver {
 		throws Exception 
 	{
 		
-    	String outputDir = cfg.getOutput_dir();
+    	String outputDir = cfg.getOutputDir();
     	File output = new File(outputDir,filename);
     	
     	RollingNetCDFArchive rnca = new RollingNetCDFArchive(output);
@@ -26,7 +28,7 @@ public class NetCDFArchiver {
 	    	rnca.setExcludeList(RollingNetCDFArchive.VAR, cfg.getVar_excludes());
 	    	rnca.setExcludeList(RollingNetCDFArchive.XY, cfg.getXy_excludes());
 	
-	    	rnca.setUnlimitedDimension(cfg.getUnlim_dim(), cfg.getUnlim_units());
+	    	rnca.setUnlimitedDimension(cfg.getUnlimitedDim(), cfg.getUnlimitedUnits());
 	    	
 	    	rnca.setGridVariables(cfg.getRenames());
 	    	rnca.setGridMapping("Latitude_Longitude");
