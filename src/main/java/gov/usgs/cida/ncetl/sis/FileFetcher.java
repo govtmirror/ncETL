@@ -12,13 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
-import gov.usgs.cida.ncetl.jpa.EtlHistory;
-
-import org.apache.commons.io.filefilter.AgeFileFilter;
-import org.apache.commons.io.filefilter.AndFileFilter;
-import org.apache.commons.io.filefilter.DelegateFileFilter;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -28,7 +21,6 @@ import org.springframework.integration.annotation.Header;
 import org.springframework.integration.annotation.Splitter;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.support.MessageBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 class YearMonthFileFilter implements FileFilter {
     private Pattern rfcPattern;
@@ -69,43 +61,39 @@ class YearMonthFileFilter implements FileFilter {
 	}
 
 }
-// @Transactional
+
 public class FileFetcher {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private DateTime now = new DateTime();
 	
-	@Transformer
-	public Message<List<File>> listInputFiles(ArchiveConfig cfg) {
-				
-		File inputDir = new File(cfg.getInputDir());
+	public FileFilter fileFilterFor(ArchiveConfig cfg) {
 		String fileRegex = cfg.getFileRegex();
-		
-		// construct an age filter, since the beginning of the previous month
-		DateTime targetDate = startOfPreviousMonth();
-		// leave some slop in the cutoff date -- will be filtered out by pattern match filter
-		DateTime cutoffDate = targetDate.minusMonths(1);
-		
-		AgeFileFilter ageFilter = new AgeFileFilter(cutoffDate.toDate(),false);  // newer than cutoff
         final Pattern rfcPattern = Pattern.compile(fileRegex);
-        // check for the expected three capturing groups
+        
         Matcher m = rfcPattern.matcher("nil");
         if (m.groupCount() != 3) {
         	throw new RuntimeException("Expected three capturing groups in " + fileRegex + ", got " + m.groupCount());
         }
-        
-        RegexFileFilter patternFilter = new RegexFileFilter(rfcPattern);
-        AndFileFilter filter = new AndFileFilter(ageFilter,patternFilter);
-		
+
+		DateTime targetDate = startOfPreviousMonth();
 		final int targetMonth = targetDate.getMonthOfYear();
 		final int targetYear = targetDate.getYear();
 		
+		logger.info("Searching {} for files of pattern {} in month {}-{}",
+				new Object[] {cfg.getInputDir(), fileRegex, targetYear, targetMonth});
+
 		FileFilter monthFilter = new YearMonthFileFilter(rfcPattern, targetYear, targetMonth);
-		
-		filter.addFileFilter(new DelegateFileFilter(monthFilter));
-		
-		logger.info("Searching {} for files of pattern {} modified since {} in month {}-{}",
-				new Object[] {inputDir.getAbsolutePath(), fileRegex, cutoffDate, targetYear, targetMonth});
+
+		return monthFilter;
+	}
+	
+	@Transformer
+	public Message<List<File>> listInputFiles(ArchiveConfig cfg) {
+				
+		File inputDir = new File(cfg.getInputDir());
+        				
+		FileFilter monthFilter = fileFilterFor(cfg);
 		
         File[] listFiles = inputDir.listFiles( monthFilter );
         if (listFiles == null) {
@@ -114,11 +102,11 @@ public class FileFetcher {
         }
         logger.info("Found {} files", listFiles.length);
         
-        Arrays.sort(listFiles);
-        
         // this sort uses the natural order for files, which will result in ascending time order for files within the same
         // directory as long as the file names differ only by date represented as yyyy-MM-dd format (as required for file
         // name parsing).
+        Arrays.sort(listFiles);
+        
         List<File> payload = Arrays.asList(listFiles);
         
 		MessageBuilder<List<File>> mb = MessageBuilder.withPayload(payload);
