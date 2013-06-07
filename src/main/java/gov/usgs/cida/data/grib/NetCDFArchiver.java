@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.springframework.integration.annotation.Header;
 import org.springframework.integration.annotation.Transformer;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class NetCDFArchiver {
 	
     @Transformer

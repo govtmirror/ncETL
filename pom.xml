@@ -2,14 +2,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>gov.usgs.cida</groupId>
-    <artifactId>ncETL</artifactId>
-    <packaging>war</packaging>
+    <artifactId>ncETLcmd</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>ncETL</name>
-    <description>
-        Owner: JW
-        Coders: JW, IS, DS, AW, MH
-    </description>
+    <description>Owner: RH
+ Coders: JW, IS, DS, AW, MH,RH</description>
     <url>http://cida.usgs.gov</url>
     <inceptionYear>2011</inceptionYear>
     <organization>
@@ -427,6 +424,28 @@
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.0</version>
               </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>gov.usgs.cida.ncetl.Main</mainClass>
+						</manifest>
+					</archive>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
         <finalName>ncETL</finalName>
     </build>

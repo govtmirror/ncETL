@@ -63,9 +63,12 @@ public class FileFetcherTest {
 	}
 
 	@Test
-	public void testListInputFiles_noHistory() {
+	public void testListInputFiles_2001_02() {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, fileRegex);
+		
+		DateTime now = new DateTime(2001,3,7,8,42);
+		victim.setNow(now.toDate());
 		
 		Message<List<File>> result = victim.listInputFiles(cfg);
 		
@@ -73,10 +76,13 @@ public class FileFetcherTest {
 		assertEquals("file list size", 2, result.getPayload().size());
 	}
 
-	@Test(expected=RuntimeException.class)
-	public void testListInputFiles_regexValidation() {
+	@Test
+	public void testListInputFiles_1999_12() {
 		
-		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, "^sample_(\\d{4})-\\d{2}-(\\d{2})\\.txt$");
+		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, fileRegex);
+		
+		DateTime cutoff = new DateTime(2000,1,6,23,33);
+		victim.setNow(cutoff.toDate());
 		
 		Message<List<File>> result = victim.listInputFiles(cfg);
 		
@@ -85,10 +91,23 @@ public class FileFetcherTest {
 	}
 
 	@Test
-	public void testListInputFiles_withHistory() {
+	public void testListInputFiles_2001_01() {
 		
-		DateTime cutoff = new DateTime(2000,1,1,0,0);
-		ArchiveConfig cfg = makeConfig("src/test/resources/input", cutoff.toDate(), fileRegex);
+		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, fileRegex);
+		
+		DateTime cutoff = new DateTime(2000,2,6,23,33);
+		victim.setNow(cutoff.toDate());
+		
+		Message<List<File>> result = victim.listInputFiles(cfg);
+		
+		assertNotNull("result", result);
+		assertEquals("file list size", 0, result.getPayload().size());
+	}
+
+	@Test(expected=RuntimeException.class)
+	public void testListInputFiles_regexValidation() {
+		
+		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, "^sample_(\\d{4})-\\d{2}-(\\d{2})\\.txt$");
 		
 		Message<List<File>> result = victim.listInputFiles(cfg);
 		

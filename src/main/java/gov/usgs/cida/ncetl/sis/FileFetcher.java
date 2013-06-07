@@ -16,6 +16,8 @@ import gov.usgs.cida.ncetl.jpa.EtlHistory;
 
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.DelegateFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import org.joda.time.DateTime;
@@ -26,10 +28,52 @@ import org.springframework.integration.annotation.Header;
 import org.springframework.integration.annotation.Splitter;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
+class YearMonthFileFilter implements FileFilter {
+    private Pattern rfcPattern;
+    private int targetYear;
+    private int targetMonth;
+    
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
+	public YearMonthFileFilter(Pattern rfcPattern, int targetYear,
+			int targetMonth) {
+		super();
+		this.rfcPattern = rfcPattern;
+		this.targetYear = targetYear;
+		this.targetMonth = targetMonth;
+	}
+
+	@Override
+	public boolean accept(File pathname) {
+		logger.trace("checking {}", pathname.getName());
+
+		Matcher matcher = rfcPattern.matcher(pathname.getName());
+		
+		if ( ! matcher.matches()) {
+			logger.trace("no match with {}", rfcPattern);
+			return false;
+		}
+		
+		int y = Integer.parseInt(matcher.group(1));
+		int m = Integer.parseInt(matcher.group(2));
+		
+		logger.trace("checking y m {} {}", y, m);
+		
+		boolean v = (y == targetYear && m == targetMonth);
+		if (v) {
+			logger.trace("did not match {} {}", targetYear, targetMonth);
+		}
+		return v;
+	}
+
+}
+// @Transactional
 public class FileFetcher {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	private DateTime now = new DateTime();
 	
 	@Transformer
 	public Message<List<File>> listInputFiles(ArchiveConfig cfg) {
@@ -37,15 +81,13 @@ public class FileFetcher {
 		File inputDir = new File(cfg.getInputDir());
 		String fileRegex = cfg.getFileRegex();
 		
-		// get last run time for this config
-		Date lastRun = new Date(0L);  // the beginning of time, obviously.
-		List<EtlHistory> runHistory = cfg.getEtlHistories();
-		if ( ! runHistory.isEmpty()) {
-			lastRun = runHistory.get(0).getTs();
-		}
+		// construct an age filter, since the beginning of the previous month
+		DateTime targetDate = startOfPreviousMonth();
+		// leave some slop in the cutoff date -- will be filtered out by pattern match filter
+		DateTime cutoffDate = targetDate.minusMonths(1);
 		
-		AgeFileFilter ageFilter = new AgeFileFilter(lastRun,false);  // newer than cutoff
-        Pattern rfcPattern = Pattern.compile(fileRegex);
+		AgeFileFilter ageFilter = new AgeFileFilter(cutoffDate.toDate(),false);  // newer than cutoff
+        final Pattern rfcPattern = Pattern.compile(fileRegex);
         // check for the expected three capturing groups
         Matcher m = rfcPattern.matcher("nil");
         if (m.groupCount() != 3) {
@@ -53,11 +95,19 @@ public class FileFetcher {
         }
         
         RegexFileFilter patternFilter = new RegexFileFilter(rfcPattern);
-		FileFilter filter = new AndFileFilter(ageFilter,patternFilter);
+        AndFileFilter filter = new AndFileFilter(ageFilter,patternFilter);
 		
-		logger.info("Searching {} for files of pattern {} modified since {}",
-				new Object[] {inputDir.getAbsolutePath(), fileRegex, lastRun});
-        File[] listFiles = inputDir.listFiles(filter);
+		final int targetMonth = targetDate.getMonthOfYear();
+		final int targetYear = targetDate.getYear();
+		
+		FileFilter monthFilter = new YearMonthFileFilter(rfcPattern, targetYear, targetMonth);
+		
+		filter.addFileFilter(new DelegateFileFilter(monthFilter));
+		
+		logger.info("Searching {} for files of pattern {} modified since {} in month {}-{}",
+				new Object[] {inputDir.getAbsolutePath(), fileRegex, cutoffDate, targetYear, targetMonth});
+		
+        File[] listFiles = inputDir.listFiles( monthFilter );
         if (listFiles == null) {
         	logger.warn("failed to list files in {}", inputDir);
         	listFiles = new File[0];
@@ -84,9 +134,14 @@ public class FileFetcher {
 	}
 
 	protected Date oneMonthAgo() {
-		DateTime now = new DateTime();
 		DateTime lastRun = now.minusMonths(1);
 		return lastRun.toDate();
+	}
+	
+	protected DateTime startOfPreviousMonth() {
+		DateTime lastMonth = now.minusMonths(1);
+		DateTime firstOfMonth = lastMonth.withDayOfMonth(1).withTimeAtStartOfDay();
+		return firstOfMonth;
 	}
 	
 	protected int daysInMonth(int year, int month) {
@@ -140,9 +195,6 @@ public class FileFetcher {
         	mb.setHeader("outputFile", ofName);
         	logger.debug("Set output file for {} to {}", f, ofName);
         	
-        	//mb.setCorrelationId(ofName);
-        	//mb.setSequenceNumber(day);
-        	//mb.setSequenceSize(daysInMonth(year, month));
         	mb.pushSequenceDetails(ofName, day, daysInMonth(year, month));
         	
         	value.add(mb.build());
@@ -151,5 +203,10 @@ public class FileFetcher {
         
         return value;
 		
+	}
+	
+	// for testing
+	public void setNow(Date d) {
+		now = new DateTime(d);
 	}
 }

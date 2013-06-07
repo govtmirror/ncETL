@@ -7,9 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -19,7 +22,9 @@ import java.util.Map;
 @Entity
 @Table(name="ARCHIVE_CONFIG")
 public class ArchiveConfig implements Serializable {
-    private static final String XY = "xy";
+    private static final int MAX_HISTORY_SIZE = 64;
+
+	private static final String XY = "xy";
 
 	public static final String VAR = "var";
 
@@ -37,8 +42,8 @@ public class ArchiveConfig implements Serializable {
 	private int rfcCode;
 	private String unlimitedDim;
 	private String unlimitedUnits;
-	private List<ExcludeMapping> excludeMappings;
-	private List<RenameMapping> renameMappings;
+	private Set<ExcludeMapping> excludeMappings;
+	private Set<RenameMapping> renameMappings;
 	private List<EtlHistory> etlHistories;
 	private boolean active;
 	
@@ -138,7 +143,7 @@ public class ArchiveConfig implements Serializable {
 	}
 
 	@Column(name="ACTIVE")
-	public boolean isActive() {
+	public boolean getActive() {
 		return active;
 	}
 	public void setActive(boolean active) {
@@ -147,15 +152,15 @@ public class ArchiveConfig implements Serializable {
 
 
 	//bi-directional many-to-one association to ExcludeMapping
-	@OneToMany(mappedBy="archiveConfig")
-	public List<ExcludeMapping> getExcludeMappings() {
+	@OneToMany(mappedBy="archiveConfig",fetch=FetchType.EAGER)
+	public Set<ExcludeMapping> getExcludeMappings() {
 		if (excludeMappings == null) {
-			excludeMappings = new ArrayList<ExcludeMapping>();
+			excludeMappings = new TreeSet<ExcludeMapping>();
 		}
 		return this.excludeMappings;
 	}
 
-	public void setExcludeMappings(List<ExcludeMapping> excludeMappings) {
+	public void setExcludeMappings(Set<ExcludeMapping> excludeMappings) {
 		this.excludeMappings = excludeMappings;
 	}
 
@@ -175,15 +180,15 @@ public class ArchiveConfig implements Serializable {
 
 
 	//bi-directional many-to-one association to RenameMapping
-	@OneToMany(mappedBy="archiveConfig")
-	public List<RenameMapping> getRenameMappings() {
+	@OneToMany(mappedBy="archiveConfig",fetch=FetchType.EAGER)
+	public Set<RenameMapping> getRenameMappings() {
 		if (renameMappings == null) {
-			renameMappings = new ArrayList<RenameMapping>();
+			renameMappings = new TreeSet<RenameMapping>();
 		}
 		return this.renameMappings;
 	}
 
-	public void setRenameMappings(List<RenameMapping> renameMappings) {
+	public void setRenameMappings(Set<RenameMapping> renameMappings) {
 		this.renameMappings = renameMappings;
 	}
 
@@ -202,7 +207,7 @@ public class ArchiveConfig implements Serializable {
 	}
 	
 	//bi-directional many-to-one association to EtlHistory
-	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.MERGE,CascadeType.PERSIST},fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="archiveConfig",cascade={CascadeType.ALL},fetch=FetchType.EAGER)
 	@OrderBy("ts DESC")
 	public List<EtlHistory> getEtlHistories() {
 		return this.etlHistories;
@@ -216,6 +221,11 @@ public class ArchiveConfig implements Serializable {
 		getEtlHistories().add(etlHistory);
 		etlHistory.setArchiveConfig(this);
 
+		List<EtlHistory> hh = getEtlHistories();
+		if (hh.size() > MAX_HISTORY_SIZE) {
+			EtlHistory h = hh.get(hh.size()-1);
+			removeEtlHistory(h);
+		}
 		return etlHistory;
 	}
 

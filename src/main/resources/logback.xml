@@ -23,8 +23,14 @@
         </timeBasedFileNamingAndTriggeringPolicy>
 
     </appender>
-    <root level="TRACE">
+    
+    <root level="DEBUG">
         <appender-ref ref="stdout"/>
         <appender-ref ref="file"/>
     </root>
+    
+    <logger name="org.hibernate" level="INFO"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.persister" level="DEBUG"/>
+    
 </configuration>

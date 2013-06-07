@@ -7,7 +7,17 @@
     	http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
     ">
     
+    <include file="structure.xml" relativeToChangelogFile="true"/>
+
+    <include file="data.xml"  relativeToChangelogFile="true"/>
+    
     <changeSet id="create-etl-history" author="rhayes">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<tableExists tableName="ETL_HISTORY"/>
+    		</not>
+    	</preConditions>
+    	
     	<createTable tableName="ETL_HISTORY">
     		<column name="ID" type="integer" autoIncrement="true" >
     			<constraints primaryKey="true"/>
@@ -52,12 +62,22 @@
     </changeSet>
 
     <changeSet id="add-rfc-name" author="rhayes">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="ARCHIVE_CONFIG" columnName="NAME"/>
+    		</not>
+    	</preConditions>
     	<addColumn tableName="ARCHIVE_CONFIG">
     		<column name="NAME" type="char(4)"/>
     	</addColumn>
     </changeSet>
     
     <changeSet id="rfc-names-and-notes" author="rhayes">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="ARCHIVE_CONFIG" columnName="NOTES"/>
+    		</not>
+    	</preConditions>
     	<addColumn tableName="ARCHIVE_CONFIG">
     		<column name="NOTES" type="varchar(256)"/>
     	</addColumn>
@@ -140,16 +160,21 @@
     		<where>RFC_CODE = 162</where>
     	</update>
 
-	<addNotNullConstraint tableName="ARCHIVE_CONFIG" columnName="NAME" columnDataType="CHAR(4)"/>
+		<addNotNullConstraint tableName="ARCHIVE_CONFIG" columnName="NAME" columnDataType="CHAR(4)"/>
 		
-	<rollback>
-	  <dropColumn tableName="ARCHIVE_CONFIG" columnName="NAME"/>
-	  <dropColumn tableName="ARCHIVE_CONFIG" columnName="NOTES" />
-	</rollback>
+		<rollback>
+	  		<dropColumn tableName="ARCHIVE_CONFIG" columnName="NAME"/>
+	  		<dropColumn tableName="ARCHIVE_CONFIG" columnName="NOTES" />
+		</rollback>
 		
     </changeSet>
     
     <changeSet id="add_active_column" author="rhayes">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="ARCHIVE_CONFIG" columnName="ACTIVE"/>
+    		</not>
+    	</preConditions>
     	<addColumn tableName="ARCHIVE_CONFIG">
     		<column name="ACTIVE" type="INT(1)" defaultValue="1" >
     			<constraints nullable="false"/>

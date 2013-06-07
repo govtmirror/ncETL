@@ -52,18 +52,20 @@
      	<property name="changeLog" value="liquibase/changelog.xml" />
  	</bean>
  	
- 	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
+ 	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger" scope="prototype">
       <property name="go" value="true"/>
     </bean>
  	
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="emf"
-		jpa-query="select s from ArchiveConfig s  "
+		jpa-query="select s from ArchiveConfig s where s.active = TRUE "
 		expect-single-result="false"
 		delete-after-poll="false"
 		auto-startup="false"
 		>
-			<int:poller trigger="oneshot"/>
+			<int:poller trigger="oneshot">
+					<int:transactional propagation="REQUIRED" transaction-manager="transactionManager"/>
+			</int:poller>
 	</int-jpa:inbound-channel-adapter>
 	
 	<int:channel id="config-list-chan">
@@ -72,7 +74,16 @@
 	
 	<int:splitter input-channel="config-list-chan" output-channel="work-chan"/>
 	
-	<int:channel id="work-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig"/>
+	<int:channel id="work-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig">
+		<int:interceptors>
+			<int:wire-tap channel="record-start-chan"/>
+		</int:interceptors>
+	</int:channel>
+	
+	<int:channel id="record-start-chan"/>
+	<int:transformer input-channel="record-start-chan"  output-channel="nullChannel"
+		expression="payload.addHistory('start ' + payload.name)"
+	/>
 	
 	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
 	
@@ -95,39 +106,54 @@
 	<bean id="message-store" class="org.springframework.integration.store.SimpleMessageStore"/>
 	<bean id="reaper" class="org.springframework.integration.store.MessageGroupStoreReaper">
 		<property name="messageGroupStore" ref="message-store"/>
-		<property name="expireOnDestroy" value="true"/>
+		<property name="expireOnDestroy" value="false"/>
 	</bean>
 		
 	<!--  assembles input files into list<file> according to aggregation headers -->
+	<!--  only sends complete months -->
 	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
 		expire-groups-upon-completion="true"
-		send-partial-result-on-expiry="true"
+		send-partial-result-on-expiry="false"
 		
 		message-store="message-store"
 	/>
 	
-	<int:channel id="grib-chan"/>
+	<!-- make this a queue so preceding steps don't have to wait for the CDF processing -->
+	<int:channel id="grib-chan">
+		<int:queue/>
+	</int:channel>
 	
 	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
-	
+		
 	<!-- The workhorse that actually processes the data. -->
 	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="ok-chan"
 		ref="gribber" method="processFiles"
-	/>
+	>
+		<int:poller trigger="oneshot">
+			<int:transactional propagation="REQUIRED" transaction-manager="transactionManager"/>
+		</int:poller>
+	</int:transformer>
 	
 	<int:channel id="ok-chan"/>
 	
-	<!-- Transformer because the addHistory method returns a non-null value.  -->
+	<!-- Transformer rather than endpoint so we can forward to gather-chan for final aggregation  -->
 	<int:transformer input-channel="ok-chan"  output-channel="gather-chan"
 		expression="headers.config.addHistory('ok for ' + headers.config.name)"
 	/>
 	
+	<!--  Need to beef up error handling. -->
 	<int:channel id="errorChannel"/>
 	
 	<!-- Can't rely on header config being set on error channel -->
-	<int:bridge input-channel="errorChannel" output-channel="gather-chan">
-	</int:bridge>
-		
+	<int:recipient-list-router input-channel="errorChannel" default-output-channel="gather-chan">
+		<int:recipient channel="fail-chan" selector-expression="headers.config != null"/>
+	</int:recipient-list-router>
+	
+	<int:channel id="fail-chan"/>
+	<int:transformer input-channel="fail-chan"  output-channel="gather-chan"
+		expression="headers.config.addHistory('fail for ' + headers.config.name)"
+	/>
+	
 	<int:channel id="gather-chan"/>
 	
 	<int:aggregator id="gather-agg" input-channel="gather-chan" output-channel="finis"/>
