@@ -56,6 +56,7 @@
       <property name="go" value="true"/>
     </bean>
  	
+ 	<!-- Here beginneth the actual process flows -->
 	<int-jpa:inbound-channel-adapter id="config-fetcher" channel="config-list-chan"
 		entity-manager-factory="emf"
 		jpa-query="select s from ArchiveConfig s where s.active = TRUE "
@@ -72,7 +73,14 @@
 		<!-- List<ArchiveConfig> -->
 	</int:channel>
 	
-	<int:splitter input-channel="config-list-chan" output-channel="work-chan"/>
+	<int:splitter input-channel="config-list-chan" output-channel="config-chan"/>
+	
+	<int:channel id="config-chan"/>
+	
+	<int:header-enricher input-channel="config-chan" output-channel="work-chan">
+		<int:header name="config" expression="payload"/>
+		<int:header name="rfc" expression="payload.rfcCode"/>
+	</int:header-enricher>
 	
 	<int:channel id="work-chan" datatype="gov.usgs.cida.ncetl.jpa.ArchiveConfig">
 		<int:interceptors>
@@ -146,7 +154,7 @@
 	
 	<!-- Can't rely on header config being set on error channel -->
 	<int:recipient-list-router input-channel="errorChannel" default-output-channel="gather-chan">
-		<int:recipient channel="fail-chan" selector-expression="headers.config != null"/>
+		<int:recipient channel="fail-chan" selector-expression="headers.containsKey('config')"/>
 	</int:recipient-list-router>
 	
 	<int:channel id="fail-chan"/>
