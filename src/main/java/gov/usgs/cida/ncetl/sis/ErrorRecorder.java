@@ -1,10 +1,8 @@
 package gov.usgs.cida.ncetl.sis;
 
-import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +29,13 @@ public class ErrorRecorder {
 			return "?";
 		}
 		
-		TypedQuery<ArchiveConfig> q = em.createQuery("SELECT s FROM ArchiveConfig s WHERE s.rfc = ? ", ArchiveConfig.class);
-		q.setParameter(1, rfc);
+		Query direct = em.createNativeQuery("insert into ETL_HISTORY(ARCHIVE_ID, OUTCOME) " +
+		" values ((select ID from ARCHIVE_CONFIG where RFC_CODE = ?), ?)");
 		
-		ArchiveConfig cfg = q.getSingleResult();
-		cfg.addHistory(x.toString());
+		direct.setParameter(1, rfc);
+		direct.setParameter(2, x.toString());
+		
+		direct.executeUpdate();
 		
 		return x.toString();
 	}
