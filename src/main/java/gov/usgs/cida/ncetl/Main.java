@@ -36,6 +36,8 @@ public class Main {
 		 logger.info("Started context {}", context);
 
 		 PollableChannel finis = context.getBean("finis", PollableChannel.class);
+		 PollableChannel errQueue = context.getBean("error-queue-chan", PollableChannel.class);
+
 		 MessageGroupStore messageGroupStore = context.getBean("message-store",MessageGroupStore.class);
 
 		 // wait for a bit then kick the partial message groups along
@@ -44,6 +46,7 @@ public class Main {
 				 messageGroupStore.getMessageCountForAllMessageGroups(),
 				 messageGroupStore.getMessageGroupCount());
 		 messageGroupStore.expireMessageGroups(0);
+		 
 		 
 		 // Timeout is a safety measure; we expect to be notified by the aggregated queue, but this may fail if
 		 // there are no files found (no files -> no messages, sigh).
@@ -54,11 +57,21 @@ public class Main {
 		 Message<?> msg = finis.receive(timeout);
 		 logger.debug("Got final message {}", msg);
 		 
+		 int exitCode = 0;
+		 
+		 // check for errors
+		 msg = errQueue.receive(1 * SECOND);
+		 if (msg != null) {
+			 // error should already have been reported by the SiS error channel, but to be safe:
+			 logger.info("reporting error {}", msg);
+			 exitCode = 1;
+		 }
+
 		 // This triggers release of any remaining partial aggregation groups.
 		 logger.info("Stopping context {}", context);
 		 context.stop();
 		 
-		 System.exit(0);
+		 System.exit(exitCode);
 	}
 
 }

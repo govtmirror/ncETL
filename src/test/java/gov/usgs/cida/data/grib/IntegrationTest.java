@@ -64,24 +64,4 @@ public class IntegrationTest {
 		 }
 	}
 
-	@Test
-	public void testOneShot() throws InterruptedException {
-		 ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("oneshot-context.xml");
-		
-		 try {
-			 ArchiveConfigManager acm = context.getBean("archive-manager", ArchiveConfigManager.class);
-		 
-			 List<ArchiveConfig> ll = acm.all();
-			 
-			 for (ArchiveConfig a : ll) {
-				 System.out.printf("ArchiveConfig %d: rfc %d, input_dir %s, file_regex %s\n", 
-						 a.getId(), a.getRfcCode(), a.getInputDir(), a.getFileRegex());
-			 }
-			 
-			 assertFalse("",ll.isEmpty());
-		 } finally {
-			 context.close();
-		 }
-	}
-
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.integration.MessageHandlingException;
 import org.springframework.integration.annotation.Header;
 import org.springframework.integration.annotation.Transformer;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ErrorRecorder {
@@ -17,9 +18,10 @@ public class ErrorRecorder {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+		
 	@Transformer
-	@Transactional
+	// Transaction propagation REQUIRES_NEW so error will get recorded even though exception is thrown
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public String recordError(
 			MessageHandlingException x,
 			@Header(value="rfc", required=false) Integer rfc) {
@@ -27,8 +29,10 @@ public class ErrorRecorder {
 		if ( null == rfc) {
 			logger.warn("No rfc header");
 			return "?";
+		} else {
+			logger.info("Recording error for {}", rfc);
 		}
-		
+				
 		Query direct = em.createNativeQuery("insert into ETL_HISTORY(ARCHIVE_ID, OUTCOME) " +
 		" values ((select ID from ARCHIVE_CONFIG where RFC_CODE = ?), ?)");
 		

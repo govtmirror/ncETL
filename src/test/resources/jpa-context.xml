@@ -10,9 +10,22 @@
 		
 	<context:annotation-config/>
 	
-	<bean id="em" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
-      <property name="persistenceUnitName" value="ncETL"/>
-   </bean>
+	 <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+  		<property name="dataSource" ref="dataSource"/>
+  		<property name="jpaVendorAdapter">
+        	<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            	<property name="showSql" value="true"/>
+            	<property name="generateDdl" value="false"/>
+            	<property name="databasePlatform" value="org.hibernate.dialect.MySQL5Dialect"/>
+        	</bean>
+    	</property>
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+   		<property name="entityManagerFactory" ref="emf" />
+	</bean>
+	
+	<import resource="jdbc-context.xml"/>
 	
 	<bean id="archive-manager" class="gov.usgs.cida.ncetl.jpa.ArchiveConfigManager">
 	</bean>

@@ -20,7 +20,7 @@
 	<int:logging-channel-adapter id="logger" level="DEBUG"/>
 	
 	<bean id="config-enhancer" class="gov.usgs.cida.ncetl.sis.ConfigEnhancer">
-		<property name="archiveSpecManager" ref="archive-spec-fetcher"/>
+		<property name="configFetcher" ref="archive-spec-fetcher"/>
 	</bean>
 	
 	<int:inbound-channel-adapter expression="'hello'" channel="motherlode-chan">

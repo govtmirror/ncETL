@@ -138,7 +138,7 @@
 		ref="gribber" method="processFiles"
 	>
 		<int:poller trigger="oneshot">
-			<int:transactional propagation="REQUIRED" transaction-manager="transactionManager"/>
+			<int:transactional propagation="REQUIRES_NEW" transaction-manager="transactionManager"/>
 		</int:poller>
 	</int:transformer>
 	
@@ -149,20 +149,26 @@
 		expression="headers.config.addHistory('ok for ' + headers.config.name)"
 	/>
 	
-	<!--  Need to beef up error handling. -->
+	<!--  report on any error handling. -->
 	<int:channel id="errorChannel"/>
 	
-	<!-- Can't rely on header config being set on error channel -->
-	<int:recipient-list-router input-channel="errorChannel" default-output-channel="gather-chan">
-		<int:recipient channel="fail-chan" selector-expression="headers.containsKey('config')"/>
-	</int:recipient-list-router>
+	<int:transformer input-channel="errorChannel"  output-channel="gather-chan"
+	>
+		<!-- Use special bean so we can control the transaction  -->
+		<bean id="errorRecorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
+	</int:transformer>
 	
-	<int:channel id="fail-chan"/>
-	<int:transformer input-channel="fail-chan"  output-channel="gather-chan"
-		expression="headers.config.addHistory('fail for ' + headers.config.name)"
-	/>
+	<!-- Also log errors -->
+	<int:logging-channel-adapter channel="errorChannel" level="ERROR" logger-name="gov.usgs.cida.ncetl.SiS"></int:logging-channel-adapter>
 	
 	<int:channel id="gather-chan"/>
+	
+	<!--  And save errors in a queue so we can set the exit code to signal the invoker -->
+	<int:bridge input-channel="errorChannel" output-channel="error-queue-chan"/>
+	
+	<int:channel id="error-queue-chan">
+		<int:queue/>
+	</int:channel>
 	
 	<int:aggregator id="gather-agg" input-channel="gather-chan" output-channel="finis"/>
 	
