@@ -89,14 +89,14 @@
 	</int:channel>
 	
 	<int:channel id="record-start-chan"/>
-	<int:transformer input-channel="record-start-chan"  output-channel="nullChannel"
+	<int:transformer id="start-notator" input-channel="record-start-chan"  output-channel="nullChannel"
 		expression="payload.addHistory('start ' + payload.name)"
 	/>
 	
 	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
 	
 	<!-- Uses ArchiveConfig to fetch list of files. ArchiveConfig is copied to header 'config' -->
-	<int:transformer input-channel="work-chan" output-channel="lof-chan"
+	<int:transformer id="work-to-lof" input-channel="work-chan" output-channel="lof-chan"
 		ref="file-fetcher"
 	/>
 	
@@ -145,26 +145,26 @@
 	<int:channel id="ok-chan"/>
 	
 	<!-- Transformer rather than endpoint so we can forward to gather-chan for final aggregation  -->
-	<int:transformer input-channel="ok-chan"  output-channel="gather-chan"
+	<int:transformer id="ok-notator" input-channel="ok-chan"  output-channel="gather-chan"
 		expression="headers.config.addHistory('ok for ' + headers.config.name)"
 	/>
 	
 	<!--  report on any error handling. -->
 	<int:channel id="errorChannel"/>
 	
-	<int:transformer input-channel="errorChannel"  output-channel="gather-chan"
+	<int:transformer id="error-notator" input-channel="errorChannel"  output-channel="gather-chan"
 	>
 		<!-- Use special bean so we can control the transaction  -->
-		<bean id="errorRecorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
+		<bean id="error-recorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
 	</int:transformer>
 	
 	<!-- Also log errors -->
-	<int:logging-channel-adapter channel="errorChannel" level="ERROR" logger-name="gov.usgs.cida.ncetl.SiS"></int:logging-channel-adapter>
+	<int:logging-channel-adapter id="error-logger" channel="errorChannel" level="ERROR" logger-name="gov.usgs.cida.ncetl.SiS"></int:logging-channel-adapter>
 	
 	<int:channel id="gather-chan"/>
 	
 	<!--  And save errors in a queue so we can set the exit code to signal the invoker -->
-	<int:bridge input-channel="errorChannel" output-channel="error-queue-chan"/>
+	<int:bridge id="error-bridge" input-channel="errorChannel" output-channel="error-queue-chan"/>
 	
 	<int:channel id="error-queue-chan">
 		<int:queue/>
