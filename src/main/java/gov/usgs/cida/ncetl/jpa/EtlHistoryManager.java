@@ -34,4 +34,11 @@ public class EtlHistoryManager {
 		
 		logger.trace("insert result is {}", ct);
 	}
+	
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public void recordOk(ArchiveConfig cfg, String msg) {
+		cfg = em.merge(cfg);
+		cfg.addHistory(msg);
+		em.flush();
+	}
 }

@@ -1,6 +1,7 @@
 package gov.usgs.cida.ncetl.sis;
 
 import gov.usgs.cida.data.grib.ArchiveInfoI;
+import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
 import gov.usgs.cida.ncetl.jpa.EtlHistoryManager;
 
 import org.slf4j.Logger;
@@ -73,4 +74,10 @@ public class ErrorRecorder {
 		return mb.build();
 	}
 
+	@Transformer
+	public String recordOutcome(ArchiveConfig cfg, String outcome) {
+		manager.recordOk(cfg, outcome);
+		
+		return outcome;
+	}
 }

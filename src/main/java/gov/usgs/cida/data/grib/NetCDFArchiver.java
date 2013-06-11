@@ -5,13 +5,16 @@ import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
 import java.io.File;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.integration.annotation.Header;
 import org.springframework.integration.annotation.Transformer;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class NetCDFArchiver {
-	
+	private Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Transformer
 	public Object processFiles(
 			List<File> input,
@@ -23,7 +26,15 @@ public class NetCDFArchiver {
 		
     	String outputDir = cfg.getOutputDir();
     	File output = new File(outputDir,filename);
+    	
+    	if (output.exists()) {
+    		// NetCDF library is not reliable at overwriting existing files.
+    		logger.info("Removing extant output file {}", output);
+    		output.delete();
+    	}
     	int rfc = cfg.getRfcCode();
+    	
+    	logger.info("Writing aggregated data for {} to {}", cfg.getName(), output);
     	
     	RollingNetCDFArchive rnca = new RollingNetCDFArchive(output);
     	try { 
@@ -45,6 +56,8 @@ public class NetCDFArchiver {
 	    	
 	    	return output;
     	} catch (Exception x) {
+    		
+    		logger.warn("Problem in NetCDF", x);
     		
     		return new ArchiveException(x, rfc, cfg);
     		

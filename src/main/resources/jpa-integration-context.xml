@@ -164,7 +164,7 @@
 	
 	<!-- Transformer rather than endpoint so we can forward to gather-chan for final aggregation  -->
 	<int:transformer id="ok-notator" input-channel="ok-chan"  output-channel="gather-chan"
-		expression="headers.config.addHistory('ok for ' + headers.config.name)"
+		expression="@errorRecorder.recordOutcome(headers.config, 'wrote ' + payload + ' for ' + headers.config.name)"
 	/>
 	
 	<!--  record no-files outcome -->
@@ -176,9 +176,9 @@
 	<!--  report on any error handling. -->
 	<int:publish-subscribe-channel id="errorChannel"/>
 	
-	<bean id="error-recorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
+	<bean id="errorRecorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
 	<int:transformer id="error-notator" input-channel="errorChannel"  output-channel="nullChannel"
-		ref="error-recorder" method="recordError"
+		ref="errorRecorder" method="recordError"
 	/>
 	
 	<!-- Also log errors -->
