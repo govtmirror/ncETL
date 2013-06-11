@@ -1,46 +1,76 @@
 package gov.usgs.cida.ncetl.sis;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import gov.usgs.cida.data.grib.ArchiveInfoI;
+import gov.usgs.cida.ncetl.jpa.EtlHistoryManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.Message;
 import org.springframework.integration.MessageHandlingException;
+import org.springframework.integration.MessagingException;
 import org.springframework.integration.annotation.Header;
 import org.springframework.integration.annotation.Transformer;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.integration.support.MessageBuilder;
 
 public class ErrorRecorder {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	@PersistenceContext
-	private EntityManager em;
+	@Autowired
+	private EtlHistoryManager manager;
 		
 	@Transformer
-	// Transaction propagation REQUIRES_NEW so error will get recorded even though exception is thrown
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
-	public String recordError(
-			MessageHandlingException x,
+	public Message<String> recordError(
+			MessagingException me,
 			@Header(value="rfc", required=false) Integer rfc) {
 		
-		if ( null == rfc) {
-			logger.warn("No rfc header");
-			return "?";
+		MessageBuilder<String> mb =  MessageBuilder.withPayload(me.toString());
+
+		Message<?> oops = me.getFailedMessage();
+		mb.copyHeaders(oops.getHeaders());
+
+		if (rfc == null) {
+			if (oops.getHeaders().containsKey("rfc")) {
+				// slightly odd way to handle rfc whether it's Integer or String
+				rfc = Integer.getInteger(oops.getHeaders().get("rfc").toString());
+			}
+		}
+		
+		if (rfc == null) {
+			Throwable x = me.getCause();
+			if (x instanceof MessagingException) {
+				x = ((MessagingException)x).getCause();
+			}
+			if (x instanceof ArchiveInfoI) {
+				rfc = ((ArchiveInfoI)x).getRfcCode();
+			}
+		}
+
+		if (rfc == null) {
+			logger.warn("Could not find rfc to record output for {}", me);
 		} else {
-			logger.info("Recording error for {}", rfc);
+			logger.debug("Recording error outcome for {}", rfc);
+			mb.setHeader("rfc", rfc);
+			manager.recordError(me.toString(), rfc);
 		}
 				
-		Query direct = em.createNativeQuery("insert into ETL_HISTORY(ARCHIVE_ID, OUTCOME) " +
-		" values ((select ID from ARCHIVE_CONFIG where RFC_CODE = ?), ?)");
-		
-		direct.setParameter(1, rfc);
-		direct.setParameter(2, x.toString());
-		
-		direct.executeUpdate();
-		
-		return x.toString();
+		return mb.build();
 	}
+
+	@Transformer
+	public Message<String> recordError(
+			ArchiveInfoI ax) {
+		
+		MessageBuilder<String> mb =  MessageBuilder.withPayload(ax.toString());
+
+		int rfc = ax.getRfcCode();
+		mb.setHeader("rfc", rfc);
+
+		logger.debug("Recording error outcome for {}", rfc);
+		manager.recordError(ax.toString(), rfc);
+				
+		return mb.build();
+	}
+
 }

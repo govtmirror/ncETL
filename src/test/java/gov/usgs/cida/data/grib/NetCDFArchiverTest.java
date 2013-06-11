@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -91,7 +93,10 @@ public class NetCDFArchiverTest {
 		input.add(new File(testGribFile));
 		
 		String outputName = tmpNc.getName();
-		File output = victim.processFiles(input, outputName, cfg);
+		Object result = victim.processFiles(input, outputName, cfg);
+		assertThat(result, IsInstanceOf.instanceOf(File.class));
+		
+		File output = (File)result;
 		
 		assertTrue("output exists", output.exists());
 		

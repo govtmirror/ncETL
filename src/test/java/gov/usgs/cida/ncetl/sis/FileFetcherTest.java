@@ -3,6 +3,7 @@ package gov.usgs.cida.ncetl.sis;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,8 +52,8 @@ public class FileFetcherTest {
 		return value;
 	}
 	
-	@Test
-	public void testListInputFiles_noFiles() {
+	@Test(expected=FileNotFoundException.class)
+	public void testListInputFiles_noFiles() throws Exception {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/NOT", null, fileRegex);
 		
@@ -63,7 +64,7 @@ public class FileFetcherTest {
 	}
 
 	@Test
-	public void testListInputFiles_2001_02() {
+	public void testListInputFiles_2001_02() throws Exception {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, fileRegex);
 		
@@ -77,7 +78,7 @@ public class FileFetcherTest {
 	}
 
 	@Test
-	public void testListInputFiles_1999_12() {
+	public void testListInputFiles_1999_12() throws Exception {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, fileRegex);
 		
@@ -91,7 +92,7 @@ public class FileFetcherTest {
 	}
 
 	@Test
-	public void testListInputFiles_2001_01() {
+	public void testListInputFiles_2001_01() throws Exception {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, fileRegex);
 		
@@ -105,7 +106,7 @@ public class FileFetcherTest {
 	}
 
 	@Test(expected=RuntimeException.class)
-	public void testListInputFiles_regexValidation() {
+	public void testListInputFiles_regexValidation()  throws Exception {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/input", null, "^sample_(\\d{4})-\\d{2}-(\\d{2})\\.txt$");
 		

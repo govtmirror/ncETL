@@ -2,6 +2,8 @@ package gov.usgs.cida.ncetl.sis;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +91,7 @@ public class FileFetcher {
 	}
 	
 	@Transformer
-	public Message<List<File>> listInputFiles(ArchiveConfig cfg) {
+	public Message<List<File>> listInputFiles(ArchiveConfig cfg) throws IOException {
 				
 		File inputDir = new File(cfg.getInputDir());
         				

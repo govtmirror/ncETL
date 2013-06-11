@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class NetCDFArchiver {
 	
-    @Transformer
-	public File processFiles(
+	@Transformer
+	public Object processFiles(
 			List<File> input,
 			@Header(value="outputFile", required=true) String filename,
 			@Header(value="config", required=true) ArchiveConfig cfg
@@ -23,6 +23,7 @@ public class NetCDFArchiver {
 		
     	String outputDir = cfg.getOutputDir();
     	File output = new File(outputDir,filename);
+    	int rfc = cfg.getRfcCode();
     	
     	RollingNetCDFArchive rnca = new RollingNetCDFArchive(output);
     	try { 
@@ -43,7 +44,10 @@ public class NetCDFArchiver {
 	    	rnca.flush();
 	    	
 	    	return output;
-	    	
+    	} catch (Exception x) {
+    		
+    		return new ArchiveException(x, rfc, cfg);
+    		
     	} finally {
     		rnca.close();
     	}

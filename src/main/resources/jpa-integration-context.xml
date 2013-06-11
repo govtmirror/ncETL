@@ -102,21 +102,25 @@
 		ref="file-fetcher"
 	/>
 	
-	<int:channel id="lof-chan"/>
+	<int:channel id="lof-chan">
+		<!-- List<File> -->
+	</int:channel>
+	
+	<!--  check for case of no input found -->
+	<int:router input-channel="lof-chan" expression="(payload.empty) ? 'EMPTY' : 'FULL' ">
+    	<int:mapping value="EMPTY" channel="empty-lof-chan"/>
+    	<int:mapping value="FULL" channel="nonempty-lof-chan"/>
+	</int:router>
+	
+	<int:channel id="nonempty-lof-chan"/>
 	
 	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
 	<!--  also sets aggregation headers, so must set apply-sequence=false to prevent override -->
-	<int:splitter id="lof-splitter" input-channel="lof-chan" output-channel="listing-chan"
+	<int:splitter id="lof-splitter" input-channel="nonempty-lof-chan" output-channel="motherlode-chan"
 		ref="file-fetcher"
 		apply-sequence="false"
 	/>
-	
-	<int:channel id="listing-chan"/>
-	
-	<int:payload-type-router id="listing-router" input-channel="listing-chan" default-output-channel="errorChannel">
-		<int:mapping type="java.io.File" channel="motherlode-chan"/>
-	</int:payload-type-router>
-	
+		
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
 		
 	<bean id="message-store" class="org.springframework.integration.store.SimpleMessageStore"/>
@@ -161,6 +165,12 @@
 	<!-- Transformer rather than endpoint so we can forward to gather-chan for final aggregation  -->
 	<int:transformer id="ok-notator" input-channel="ok-chan"  output-channel="gather-chan"
 		expression="headers.config.addHistory('ok for ' + headers.config.name)"
+	/>
+	
+	<!--  record no-files outcome -->
+	<int:channel id="empty-lof-chan"/>
+	<int:transformer id="empty-notator" input-channel="empty-lof-chan" output-channel="nullChannel"
+			expression="headers.config.addHistory('no input for ' + headers.config.name)"
 	/>
 	
 	<!--  report on any error handling. -->

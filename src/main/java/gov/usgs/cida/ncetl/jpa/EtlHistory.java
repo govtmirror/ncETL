@@ -17,6 +17,8 @@ public class EtlHistory implements Serializable {
 	private String outcome;
 	private Timestamp ts;
 	private ArchiveConfig archiveConfig;
+	
+	public static final int COLUMN_SIZE = 255;
 
 	public EtlHistory() {
 	}
@@ -37,10 +39,16 @@ public class EtlHistory implements Serializable {
 		return this.outcome;
 	}
 
-	public void setOutcome(String outcome) {
-		this.outcome = outcome;
+	public static String trimOutcome(String outcome) {
+		if (outcome != null && outcome.length() > COLUMN_SIZE) {
+			outcome = outcome.substring(0, COLUMN_SIZE-1);
+		}
+		return outcome;
 	}
-
+	
+	public void setOutcome(String outcome) {
+		this.outcome = trimOutcome(outcome);
+	}
 
 	@Column(insertable=false, updatable=false)
 	public Timestamp getTs() {
