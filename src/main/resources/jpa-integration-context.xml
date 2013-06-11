@@ -44,6 +44,8 @@
 	<bean id="persistenceExceptionTranslationPostProcessor"
       class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 	
+	<bean id="etlHistoryManager" class="gov.usgs.cida.ncetl.jpa.EtlHistoryManager"/>
+	
 	<import resource="jdbc-context.xml"/>
 	
 	<!-- Liquibase to upgrade the database; runs automatically on context init -->
@@ -104,10 +106,16 @@
 	
 	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
 	<!--  also sets aggregation headers, so must set apply-sequence=false to prevent override -->
-	<int:splitter id="lof-splitter" input-channel="lof-chan" output-channel="motherlode-chan"
+	<int:splitter id="lof-splitter" input-channel="lof-chan" output-channel="listing-chan"
 		ref="file-fetcher"
 		apply-sequence="false"
 	/>
+	
+	<int:channel id="listing-chan"/>
+	
+	<int:payload-type-router id="listing-router" input-channel="listing-chan" default-output-channel="errorChannel">
+		<int:mapping type="java.io.File" channel="motherlode-chan"/>
+	</int:payload-type-router>
 	
 	<int:channel id="motherlode-chan" datatype="java.io.File"/>
 		
@@ -134,7 +142,7 @@
 	<bean id="gribber" class="gov.usgs.cida.data.grib.NetCDFArchiver"/>
 		
 	<!-- The workhorse that actually processes the data. -->
-	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="ok-chan"
+	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="choice-chan"
 		ref="gribber" method="processFiles"
 	>
 		<int:poller trigger="oneshot">
@@ -142,6 +150,12 @@
 		</int:poller>
 	</int:transformer>
 	
+	<int:channel id="choice-chan"/>
+	
+	<int:payload-type-router id="choice-router" input-channel="choice-chan" default-output-channel="errorChannel">
+		<int:mapping type="java.io.File" channel="ok-chan"/>
+		<int:mapping type="gov.usgs.cida.data.grib.ArchiveException" channel="errorChannel"/>
+	</int:payload-type-router>
 	<int:channel id="ok-chan"/>
 	
 	<!-- Transformer rather than endpoint so we can forward to gather-chan for final aggregation  -->
@@ -150,13 +164,12 @@
 	/>
 	
 	<!--  report on any error handling. -->
-	<int:channel id="errorChannel"/>
+	<int:publish-subscribe-channel id="errorChannel"/>
 	
-	<int:transformer id="error-notator" input-channel="errorChannel"  output-channel="gather-chan"
-	>
-		<!-- Use special bean so we can control the transaction  -->
-		<bean id="error-recorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
-	</int:transformer>
+	<bean id="error-recorder" class="gov.usgs.cida.ncetl.sis.ErrorRecorder"/>
+	<int:transformer id="error-notator" input-channel="errorChannel"  output-channel="nullChannel"
+		ref="error-recorder" method="recordError"
+	/>
 	
 	<!-- Also log errors -->
 	<int:logging-channel-adapter id="error-logger" channel="errorChannel" level="ERROR" logger-name="gov.usgs.cida.ncetl.SiS"></int:logging-channel-adapter>
