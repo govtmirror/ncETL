@@ -1,0 +1,1255 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="rhayes" id="populate-archive-config">
+    	<preConditions onFail="MARK_RAN">
+    		<sqlCheck expectedResult="0">SELECT COUNT(*) FROM ARCHIVE_CONFIG</sqlCheck>
+    	</preConditions>
+    
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="1"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.157"/>
+            <column name="RFC_CODE" valueNumeric="157"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KMSR"/>
+            <column name="NOTES" value="North Central"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="2"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="153"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KRSA"/>
+            <column name="NOTES" value="California (grouped in way difficult to work with)"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="4"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="105"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="TSJU"/>
+            <column name="NOTES" value="Puerto Rico"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="5"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="150"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KTUA"/>
+            <column name="NOTES" value="Arkansas"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="6"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="154"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KORN"/>
+            <column name="NOTES" value="Lower Mississippi"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="7"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.155"/>
+            <column name="RFC_CODE" valueNumeric="155"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KRHA"/>
+            <column name="NOTES" value="Mid Atlantic"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="8"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.156"/>
+            <column name="RFC_CODE" valueNumeric="156"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KKRF"/>
+            <column name="NOTES" value="Missouri"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="9"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="158"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KTAR"/>
+            <column name="NOTES" value="North East (grid changed 2005-04-20)"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="10"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="159"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KPTR"/>
+            <column name="NOTES" value="North West (mostly 6 hr data)"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="11"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="160"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KTIR"/>
+            <column name="NOTES" value="Ohio (grid changed 2003-05-21)"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="12"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="161"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KALR"/>
+            <column name="NOTES" value="South East"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="13"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="162"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KFWR"/>
+            <column name="NOTES" value="Gulf of Mexico"/>
+        </insert>
+        <insert tableName="ARCHIVE_CONFIG">
+            <column name="ID" valueNumeric="14"/>
+            <column name="INPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/src"/>
+            <column name="OUTPUT_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/out"/>
+            <column name="COMPLETE_DIR" value="/mnt/gdp-thredds-data-00/qpe/rearchive/complete"/>
+            <column name="FILE_REGEX" value="QPE.(\\d{4})(\\d{2})\\d{2}.009.{rfc_code}"/>
+            <column name="RFC_CODE" valueNumeric="152"/>
+            <column name="UNLIMITED_DIM" value="time"/>
+            <column name="UNLIMITED_UNITS" value="hours since 2000-01-01 00:00:00"/>
+            <column name="NAME" value="KSTR"/>
+            <column name="NOTES" value="Colorado (mostly only 6hr data)"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="rhayes" id="populate-exclude-type">
+    	<preConditions onFail="MARK_RAN">
+    		<sqlCheck expectedResult="0">SELECT COUNT(*) FROM EXCLUDE_TYPE</sqlCheck>
+    	</preConditions>
+        <insert tableName="EXCLUDE_TYPE">
+            <column name="ID" valueNumeric="1"/>
+            <column name="TYPE" value="dim"/>
+        </insert>
+        <insert tableName="EXCLUDE_TYPE">
+            <column name="ID" valueNumeric="2"/>
+            <column name="TYPE" value="var"/>
+        </insert>
+        <insert tableName="EXCLUDE_TYPE">
+            <column name="ID" valueNumeric="3"/>
+            <column name="TYPE" value="xy"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="rhayes" id="populate-exclude-mapping">
+    	<preConditions onFail="MARK_RAN">
+    		<sqlCheck expectedResult="0">SELECT COUNT(*) FROM EXCLUDE_MAPPING</sqlCheck>
+    	</preConditions>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="1"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="2"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="3"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="4"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="5"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="6"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="7"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="8"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="9"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="10"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="11"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="12"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="13"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="14"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="15"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="16"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="17"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="18"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="19"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="20"/>
+            <column name="ARCHIVE_ID" valueNumeric="4"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="21"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="22"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="23"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="25"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="26"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="27"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="28"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="29"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="30"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="31"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="32"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="33"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="34"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="35"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="36"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="37"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="38"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="39"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="40"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="41"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="42"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="43"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="44"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="45"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="46"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="47"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="48"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="49"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="50"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="51"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="52"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="53"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="54"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="55"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="56"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="57"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="58"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="59"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="60"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="61"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="62"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="64"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="65"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="66"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="67"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="68"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="69"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="70"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="71"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="72"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="73"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="74"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="75"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="76"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="77"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="78"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="79"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="80"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="81"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="82"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="83"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="84"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="85"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="86"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="87"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="88"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="89"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="90"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="91"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="92"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="93"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="94"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="95"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="96"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="97"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="98"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="99"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="100"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="101"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="102"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="103"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="104"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="105"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="106"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="107"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="108"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="109"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="110"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="111"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="112"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="113"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="114"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="115"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="116"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="117"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="118"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="119"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="120"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="121"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="122"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="123"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="124"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="125"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="126"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="127"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="128"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="129"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="130"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="131"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="132"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="133"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="134"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="135"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="1"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="136"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="137"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="138"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="time1_bounds"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="139"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="140"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="141"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_6_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="142"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="2"/>
+            <column name="EXCLUDE_TEXT" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="143"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="PolarStereographic_Projection"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="144"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="x"/>
+        </insert>
+        <insert tableName="EXCLUDE_MAPPING">
+            <column name="ID" valueNumeric="145"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="EXCLUDE_TYPE_ID" valueNumeric="3"/>
+            <column name="EXCLUDE_TEXT" value="y"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="rhayes" id="populate-rename-mapping">
+    	<preConditions onFail="MARK_RAN">
+    		<sqlCheck expectedResult="0">SELECT COUNT(*) FROM RENAME_MAPPING</sqlCheck>
+    	</preConditions>
+    	
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="1"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="2"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="3"/>
+            <column name="ARCHIVE_ID" valueNumeric="5"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="7"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="8"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="9"/>
+            <column name="ARCHIVE_ID" valueNumeric="1"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="10"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="11"/>
+            <column name="ARCHIVE_ID" valueNumeric="6"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="12"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="13"/>
+            <column name="ARCHIVE_ID" valueNumeric="7"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="14"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="15"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="16"/>
+            <column name="ARCHIVE_ID" valueNumeric="8"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="17"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="18"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="20"/>
+            <column name="ARCHIVE_ID" valueNumeric="9"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="21"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="22"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="23"/>
+            <column name="ARCHIVE_ID" valueNumeric="10"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="24"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="25"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="26"/>
+            <column name="ARCHIVE_ID" valueNumeric="11"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="27"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="28"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="29"/>
+            <column name="ARCHIVE_ID" valueNumeric="12"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="30"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="31"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="32"/>
+            <column name="ARCHIVE_ID" valueNumeric="13"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="33"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="34"/>
+            <column name="ARCHIVE_ID" valueNumeric="2"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="35"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="36"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="FROM_NAME" value="Total_precipitation_surface_Mixed_intervals_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+        <insert tableName="RENAME_MAPPING">
+            <column name="ID" valueNumeric="37"/>
+            <column name="ARCHIVE_ID" valueNumeric="14"/>
+            <column name="FROM_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+            <column name="TO_NAME" value="1-hour_Quantitative_Precip_Estimate_surface_1_Hour_Accumulation"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

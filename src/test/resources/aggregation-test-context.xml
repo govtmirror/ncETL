@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		">
+
+	
+	<bean id="aggregationChecker" class="gov.usgs.cida.ncetl.sis.AggregationChecker"/>
+	<bean id="file-fetcher" class="gov.usgs.cida.ncetl.sis.FileFetcher"/>
+
+	<int:inbound-channel-adapter id="source" channel="lof-chan"
+		ref="aggregationChecker" method="generate" auto-startup="false"
+		>
+		<int:poller fixed-delay="1000000"/>
+	</int:inbound-channel-adapter>
+		
+	<int:channel id="lof-chan"/>
+	
+	<int:header-enricher input-channel="lof-chan" output-channel="lof-config-chan">
+		<int:header name="config" ref="aggregationChecker" method="getConfig"/>
+	</int:header-enricher>
+	
+	<int:channel id="lof-config-chan"/>
+	
+	<!-- splits list of files to one message per file, with headers year month rfc outputFile -->
+	<!--  also sets aggregation headers, so must set apply-sequence=false to prevent override -->
+	<int:splitter id="lof-splitter" input-channel="lof-config-chan" output-channel="motherlode-chan"
+		ref="file-fetcher"
+		apply-sequence="false"
+	/>
+	
+	<int:channel id="motherlode-chan" datatype="java.io.File"/>
+	
+	<bean id="message-store" class="org.springframework.integration.store.SimpleMessageStore"/>
+	<bean id="reaper" class="org.springframework.integration.store.MessageGroupStoreReaper">
+		<property name="messageGroupStore" ref="message-store"/>
+		<property name="expireOnDestroy" value="true"/>
+	</bean>
+	
+	<!--  assembles input files into list<file> according to aggregation headers -->
+	<int:aggregator id="grib-agg" input-channel="motherlode-chan" output-channel="grib-chan" 
+		expire-groups-upon-completion="true"
+		send-partial-result-on-expiry="true"
+		
+		message-store="message-store"
+	/>
+	
+	<int:channel id="grib-chan"/>
+	
+	<!-- The workhorse that actually processes the data. -->
+	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="nullChannel"
+		ref="aggregationChecker" 
+	/>
+	
+	<int:channel id="errorChannel">
+		<int:queue />
+	</int:channel>
+	
+	
+</beans>

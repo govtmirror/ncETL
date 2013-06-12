@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="rhayes" id="ARCHIVE_CONFIG">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="ARCHIVE_CONFIG" />
+			</not>
+		</preConditions>
+		
+		<createTable tableName="ARCHIVE_CONFIG">
+			<column autoIncrement="true" name="ID" type="INT">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="SQL130311202651270" />
+			</column>
+			<column name="INPUT_DIR" type="VARCHAR(256)" />
+			<column name="OUTPUT_DIR" type="VARCHAR(256)" />
+			<column name="COMPLETE_DIR" type="VARCHAR(256)" />
+			<column name="FILE_REGEX" type="VARCHAR(256)" />
+			<column name="RFC_CODE" type="INT" />
+			<column name="UNLIMITED_DIM" type="VARCHAR(256)" />
+			<column name="UNLIMITED_UNITS" type="VARCHAR(256)" />
+			<column name="INSERTED" type="TIMESTAMP" />
+			<column name="UPDATED" type="TIMESTAMP" />
+			<column name="NAME" type="CHAR(4)">
+				<constraints nullable="false" />
+			</column>
+			<column name="NOTES" type="VARCHAR(256)" />
+		</createTable>
+		
+		<createIndex tableName="ARCHIVE_CONFIG" indexName="IX_ARCHIVE_NAME" unique="true">
+			<column name="NAME" ></column>
+		</createIndex>
+	</changeSet>
+
+	<changeSet author="rhayes" id="ETL_HISTORY">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="ETL_HISTORY" />
+			</not>
+		</preConditions>
+		
+		<createTable tableName="ETL_HISTORY">
+			<column autoIncrement="true" name="ID" type="INT">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="PK_ETL_HISTORY" />
+			</column>
+			<column name="ARCHIVE_ID" type="INT" />
+			<column name="TS" type="TIMESTAMP" />
+			<column name="OUTCOME" type="VARCHAR(255)" />
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="FKETLHISTORY"
+			baseColumnNames="ARCHIVE_ID" baseTableName="ETL_HISTORY"
+			referencedColumnNames="ID" referencedTableName="ARCHIVE_CONFIG"
+			onDelete="NO ACTION" onUpdate="NO ACTION" />
+
+	</changeSet>
+
+	<changeSet author="rhayes" id="EXCLUDE_TYPE">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="EXCLUDE_TYPE" />
+			</not>
+		</preConditions>
+		
+		<createTable tableName="EXCLUDE_TYPE">
+			<column name="ID" type="INT">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="SQL130311202651290" />
+			</column>
+			<column name="TYPE" type="VARCHAR(8)" />
+		</createTable>
+	</changeSet>
+
+	<changeSet author="rhayes" id="EXCLUDE_MAPPING">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="EXCLUDE_MAPPING" />
+			</not>
+		</preConditions>
+		
+		<createTable tableName="EXCLUDE_MAPPING">
+			<column autoIncrement="true" name="ID" type="INT">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="SQL130311202651320" />
+			</column>
+			<column name="ARCHIVE_ID" type="INT" />
+			<column name="EXCLUDE_TYPE_ID" type="INT" />
+			<column name="EXCLUDE_TEXT" type="VARCHAR(256)" />
+			<column name="INSERTED" type="TIMESTAMP" />
+			<column name="UPDATED" type="TIMESTAMP" />
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="ARCHIVE2_FK"
+			baseColumnNames="ARCHIVE_ID" baseTableName="EXCLUDE_MAPPING"
+			referencedColumnNames="ID" referencedTableName="ARCHIVE_CONFIG"
+			onDelete="CASCADE" onUpdate="NO ACTION" />
+			
+		<addForeignKeyConstraint constraintName="EXCLUDE_TYPE_FK"
+			baseColumnNames="EXCLUDE_TYPE_ID" baseTableName="EXCLUDE_MAPPING"
+			referencedColumnNames="ID" referencedTableName="EXCLUDE_TYPE"
+			onDelete="CASCADE" onUpdate="NO ACTION" />
+
+
+	</changeSet>
+
+	<changeSet author="rhayes" id="RENAME_MAPPING">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="RENAME_MAPPING" />
+			</not>
+		</preConditions>
+		
+		<createTable tableName="RENAME_MAPPING">
+			<column autoIncrement="true" name="ID" type="INT">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="SQL130311202651470" />
+			</column>
+			<column name="ARCHIVE_ID" type="INT" />
+			<column name="FROM_NAME" type="VARCHAR(256)" />
+			<column name="TO_NAME" type="VARCHAR(256)" />
+			<column name="INSERTED" type="TIMESTAMP" />
+			<column name="UPDATED" type="TIMESTAMP" />
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="ARCHIVE5_FK"
+			baseColumnNames="ARCHIVE_ID" baseTableName="RENAME_MAPPING"
+			referencedColumnNames="ID" referencedTableName="ARCHIVE_CONFIG"
+			onDelete="CASCADE" onUpdate="NO ACTION" />
+
+	</changeSet>
+
+</databaseChangeLog>

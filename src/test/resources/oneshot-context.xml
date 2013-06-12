@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jmx="http://www.springframework.org/schema/integration/jmx"
+	
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration         http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans               http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context             http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/integration/jmx     http://www.springframework.org/schema/integration/jmx/spring-integration-jmx.xsd
+		">
+			
+	<int-jmx:mbean-export id="jmx"  default-domain="gov.usgs.cida" server="mbeanServer"/>
+
+	<bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+    	<property name="locateExistingServerIfPossible" value="true"/>
+	</bean>
+			
+	<bean id="oneshot" class="gov.usgs.cida.ncetl.sis.LatchTrigger">
+      <property name="go" value="true"/>
+    </bean>
+	
+	<int:inbound-channel-adapter id="source" channel="one-chan"
+		auto-startup="false"
+		expression="'hello'"
+	>
+		<int:poller trigger="oneshot" max-messages-per-poll="3"/>
+	</int:inbound-channel-adapter>
+	
+	<int:channel id="one-chan">
+		<int:interceptors>
+			<int:wire-tap channel="logger"/>
+		</int:interceptors>
+	</int:channel>
+	
+	<bean id="counter" class="java.util.concurrent.atomic.AtomicInteger"></bean>
+	
+	<int:transformer id="destination" input-channel="one-chan" output-channel="count-chan"
+		ref="counter" method="incrementAndGet"
+	/>
+	
+	<int:channel id="count-chan">
+		<int:interceptors>
+			<int:wire-tap channel="logger"/>
+		</int:interceptors>
+	</int:channel>
+	
+	<int:aggregator id="count-to-3" input-channel="count-chan" output-channel="queue"
+		correlation-strategy-expression="'all-one'"
+		release-strategy-expression="size() >= 3"
+		/>
+
+	<int:channel id="queue">
+		<int:queue />
+	</int:channel>
+	
+	<int:logging-channel-adapter id="logger" logger-name="SISlog" log-full-message="true"/>
+</beans>
