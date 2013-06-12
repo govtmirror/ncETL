@@ -64,4 +64,44 @@ public class ExcludeMapping implements Serializable {
 		this.excludeType = excludeType;
 	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((excludeText == null) ? 0 : excludeText.hashCode());
+		result = prime * result
+				+ ((excludeType == null) ? 0 : excludeType.hashCode());
+		result = prime * result + id;
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		
+		ExcludeMapping other = (ExcludeMapping) obj;
+		if (id != 0 && id == other.id) {
+			return true;
+		}
+		if (excludeType == null) {
+			if (other.excludeType != null)
+				return false;
+		} else if (!excludeType.equals(other.excludeType))
+			return false;
+		if (excludeText == null) {
+			if (other.excludeText != null)
+				return false;
+		} else if (!excludeText.equals(other.excludeText))
+			return false;
+		return true;
+	}
+
 }

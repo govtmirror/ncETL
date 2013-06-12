@@ -52,7 +52,7 @@ public class FileFetcherTest {
 		return value;
 	}
 	
-	@Test(expected=FileNotFoundException.class)
+	@Test
 	public void testListInputFiles_noFiles() throws Exception {
 		
 		ArchiveConfig cfg = makeConfig("src/test/resources/NOT", null, fileRegex);
