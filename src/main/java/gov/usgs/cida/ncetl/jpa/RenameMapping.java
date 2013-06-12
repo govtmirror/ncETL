@@ -62,4 +62,43 @@ public class RenameMapping implements Serializable {
 		this.archiveConfig = archiveConfig;
 	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((fromName == null) ? 0 : fromName.hashCode());
+		result = prime * result + id;
+		result = prime * result + ((toName == null) ? 0 : toName.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RenameMapping other = (RenameMapping) obj;
+		if (id != 0 && id == other.id) {
+			return true;
+		}
+		if (fromName == null) {
+			if (other.fromName != null)
+				return false;
+		} else if (!fromName.equals(other.fromName))
+			return false;
+		if (toName == null) {
+			if (other.toName != null)
+				return false;
+		} else if (!toName.equals(other.toName))
+			return false;
+		return true;
+	}
+
+	
 }

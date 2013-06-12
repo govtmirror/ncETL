@@ -7,12 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 
 /**
@@ -155,7 +154,7 @@ public class ArchiveConfig implements Serializable {
 	@OneToMany(mappedBy="archiveConfig",fetch=FetchType.EAGER)
 	public Set<ExcludeMapping> getExcludeMappings() {
 		if (excludeMappings == null) {
-			excludeMappings = new TreeSet<ExcludeMapping>();
+			excludeMappings = new HashSet<ExcludeMapping>();
 		}
 		return this.excludeMappings;
 	}
@@ -183,7 +182,7 @@ public class ArchiveConfig implements Serializable {
 	@OneToMany(mappedBy="archiveConfig",fetch=FetchType.EAGER)
 	public Set<RenameMapping> getRenameMappings() {
 		if (renameMappings == null) {
-			renameMappings = new TreeSet<RenameMapping>();
+			renameMappings = new HashSet<RenameMapping>();
 		}
 		return this.renameMappings;
 	}

@@ -17,6 +17,12 @@
 			<property name="username" value=""/>
 			<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
 		</bean>
+		
+		<bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+			<property name="properties">
+				<value>emf.jpaVendorAdapter.databasePlatform=org.hibernate.dialect.DerbyTenSevenDialect</value>
+			</property>
+		</bean>		
 	</beans>
 	
 	<beans profile="mysql default">
@@ -25,7 +31,7 @@
         	<property name="url" value="jdbc:mysql://localhost:3306/ncETL"/>
         	<property name="username" value="GDP"/>
         	<property name="password" value="${secret}"/>
-    	</bean>
+    	</bean>    	
     </beans>
     
 </beans>

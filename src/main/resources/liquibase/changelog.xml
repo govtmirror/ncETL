@@ -34,6 +34,10 @@
     </changeSet>
     
     <changeSet id="etl-history-trigger" author="rhayes" dbms="derby">
+    	<preConditions onFail="MARK_RAN">
+    		<sqlCheck expectedResult="0">SELECT COUNT(*) CT FROM SYS.SYSTRIGGERS WHERE TRIGGERNAME = 'TG_SET_TIME'</sqlCheck>
+    	</preConditions>
+    		
     	<sql>
     		CREATE TRIGGER TG_SET_TIME
   			AFTER INSERT ON "ETL_HISTORY"
@@ -169,7 +173,7 @@
 		
     </changeSet>
     
-    <changeSet id="add_active_column" author="rhayes">
+    <changeSet id="add_active_column" author="rhayes" dbms="mysql">
     	<preConditions onFail="MARK_RAN">
     		<not>
     			<columnExists tableName="ARCHIVE_CONFIG" columnName="ACTIVE"/>
@@ -177,6 +181,18 @@
     	</preConditions>
     	<addColumn tableName="ARCHIVE_CONFIG">
     		<column name="ACTIVE" type="INT(1)" defaultValue="1" >
+    			<constraints nullable="false"/>
+    		</column>
+    	</addColumn>
+    </changeSet>
+    <changeSet id="add_active_column" author="rhayes" dbms="derby">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="ARCHIVE_CONFIG" columnName="ACTIVE"/>
+    		</not>
+    	</preConditions>
+    	<addColumn tableName="ARCHIVE_CONFIG">
+    		<column name="ACTIVE" type="SMALLINT" defaultValueNumeric="1" >
     			<constraints nullable="false"/>
     		</column>
     	</addColumn>
