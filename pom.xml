@@ -375,28 +375,16 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.0.3</version>
-                <configuration>
-                    <container>
-                        <containerId>${cargo.containerId}</containerId>
-                        <type>remote</type>
-                    </container>
-                    <configuration>
-                        <type>runtime</type>
-                        <properties>
-                            <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
-                        </properties>
-                    </configuration>
-                </configuration>
+          			<archive>
+            			<manifest>
+              				<mainClass>gov.usgs.cida.ncetl.Main</mainClass>
+              				<addClasspath>true</addClasspath>
+              				<classpathPrefix>lib/</classpathPrefix>
+            			</manifest>
+         			</archive>
+       			</configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -419,33 +407,34 @@
                     <connectionType>developerConnection</connectionType>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
-              </plugin>
+            <!-- 
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>gov.usgs.cida.ncetl.Main</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.1</version>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
+						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>shade</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<transformers>
+                		<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  			<resource>META-INF/spring.handlers</resource>
+                		</transformer>
+                		<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  			<resource>META-INF/spring.schemas</resource>
+                		</transformer>
+                		<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  			<mainClass>gov.usgs.cida.ncetl.Main</mainClass>
+                		</transformer>
+              		</transformers>
+				</configuration>
 			</plugin>
+			 -->
         </plugins>
         <finalName>ncETL</finalName>
     </build>
