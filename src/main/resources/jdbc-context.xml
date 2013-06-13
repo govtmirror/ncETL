@@ -13,7 +13,7 @@
 	
 	<beans profile="derby">
 	  	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-			<property name="url" value="jdbc:derby:/home/rhayes/.ncetl/database/NCETL"/>
+			<property name="url" value="jdbc:derby:${user.home}/.ncetl/database/NCETL;create=true"/>
 			<property name="username" value=""/>
 			<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
 		</bean>
