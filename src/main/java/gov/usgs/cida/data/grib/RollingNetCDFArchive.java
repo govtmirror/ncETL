@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.Flushable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
@@ -105,18 +106,28 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
         
         Dimension unlimitedDim = null;
         List<String> dimExcludes = excludes.get(DIM);
+        if (dimExcludes == null) {
+        	dimExcludes = Collections.emptyList();
+        }
         for (Dimension dim : srcNc.getDimensions()) {
             if (unlimited.equals(dim.getName())) {
+            	log.debug("Unlimited is {}", dim.makeFullName());
+            	if (unlimitedDim != null) {
+            		log.warn("Replacing unlimited {} with {}", unlimitedDim.makeFullName(), dim.makeFullName());
+            	}
                 unlimitedDim = dim;
             }
-            else if (dimExcludes != null && dimExcludes.contains(dim.getName())) {
+            else if (dimExcludes.contains(dim.getName())) {
+            	log.debug("excluding {}", dim.makeFullName());
                 // hold this one out
             }
             else {
+            	log.debug("addimg dim {} len {}", dim.makeFullName(), dim.getLength());
                 netcdf.addDimension(null, dim.getName(), dim.getLength());
             }
         }
         if (unlimitedDim != null) {
+        	log.debug("defaulting unlimited to {}", unlimited);
             netcdf.addUnlimitedDimension(unlimited);
         }
         
@@ -287,7 +298,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
             for (String varname : gridVariables.keySet()) {
                 GridDatatype grid = dataset.findGridDatatype(varname);
                 if (grid == null) {
-                    log.debug("target variable not found, skipping this file");
+                    log.debug("target variable {} not found, skipping this variable from {}", varname, gribOrSomething);
                     continue;
                 }
                 GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -328,6 +339,7 @@ public class RollingNetCDFArchive implements Closeable, Flushable {
                     netcdf.write(netcdf.findVariable(unlimited), new int[]{writeIndex + unlimitedLength}, timeArray);
                     writeIndex++;
                 }
+                log.debug("squished variable {} along {} from {}", new Object[] {varname, appendingTimeAxis.getFullName(), gribOrSomething});
             }
         }
         finally {
