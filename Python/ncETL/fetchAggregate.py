@@ -44,7 +44,7 @@ def fetchAggregate(rfc, month, destDir = None):
         'var':varName,
         'time_start':time_start,
         'time_end':time_end,
-        'addLatLon':"true"
+        # 'addLatLon':"true"
     }
     r = requests.get(url, params=params, stream=True)
 
