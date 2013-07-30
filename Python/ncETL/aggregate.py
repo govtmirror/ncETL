@@ -11,6 +11,7 @@ import glob
 import os
 import argparse
 import logging
+import sys
 
 def fetchThenClean(d, rfc, basedir, dryrun=False):
     logging.info("Aggregating month %s for RFC %s", d.strftime('%Y-%m'), rfc.upper())
@@ -76,7 +77,8 @@ if __name__ == '__main__':
         fetchAggregate.thredds = thredds
         
     logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',filename='aggregate.log', level=logging.INFO)
-
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+    
     aggregate(month,**optargs)
   
     
