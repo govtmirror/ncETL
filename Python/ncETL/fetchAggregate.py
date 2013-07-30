@@ -4,20 +4,28 @@ import datetime
 import sys
 import xml.etree.ElementTree as ET
 import os
+import logging
 
 thredds = 'http://igsarm-cida-thredds1.er.usgs.gov:8081/qa/thredds'
 
 def discoverMetadata(rfc):
     url = '%s/ncss/grid/qpe/realtime/%s/best/dataset.xml' % (thredds,rfc.lower())
     
-    resp = requests.get(url)
+    logging.debug("Getting metadata from %s", url)
     
-    dataset = ET.fromstring(resp.text)
+    try:
+        resp = requests.get(url)
+        resp.raise_for_status()
+        
+        dataset = ET.fromstring(resp.text)
     
-    grid = dataset.find(".//gridSet/grid")
+        grid = dataset.find(".//gridSet/grid")
     
-    num = grid.find("attribute[@name='Grib1_Subcenter']").get("value")
-    varName = grid.get("name")
+        num = grid.find("attribute[@name='Grib1_Subcenter']").get("value")
+        varName = grid.get("name")
+    except:
+        logging.warn("Problem with metadata from %s", url)
+        raise
     # Could extract a lot more meta-data here, like time bounds
     
     return (varName,num)
@@ -40,14 +48,16 @@ def fetchAggregate(rfc, month, destDir = None):
     }
     r = requests.get(url, params=params, stream=True)
 
-    if r.status_code != 200:
-        raise Exception("Response code " + str(r.status_code))
+    logging.debug("Got response for %s", r.url)
+    
+    r.raise_for_status()
     
     filename = "QPE.%04d.%02d.%s.nc" % (dt.year, dt.month, rfcId)
     if destDir:
         filename = os.path.join(destDir,filename)
         
     with open(filename, 'wb') as fp:
+        logging.info("Copying from %s to %s", r.url, fp)
         shutil.copyfileobj(r.raw, fp)
     
     return filename
