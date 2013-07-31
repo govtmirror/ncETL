@@ -1,6 +1,7 @@
 import requests
 import shutil
 import datetime
+from dateutil.relativedelta import relativedelta
 import sys
 import xml.etree.ElementTree as ET
 import os
@@ -21,22 +22,26 @@ def discoverMetadata(rfc):
     
         grid = dataset.find(".//gridSet/grid")
     
-        num = grid.find("attribute[@name='Grib1_Subcenter']").get("value")
+        idNum = grid.find("attribute[@name='Grib1_Subcenter']").get("value")
         varName = grid.get("name")
     except:
         logging.warn("Problem with metadata from %s", url)
         raise
     # Could extract a lot more meta-data here, like time bounds
     
-    return (varName,num)
+    return (varName,idNum)
     
 def fetchAggregate(rfc, month, destDir = None):
     '''
     Fetch the NetCDF file that has the aggregated rainfall data for the River Forecasting Center and month specified.
     '''
-    dt = datetime.datetime.strptime(month, '%Y-%m')
-    time_start = dt.strftime('%Y-%m-01')
-    time_end = "%04d-%02d-01" % (dt.year, dt.month + 1)
+    
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
+    dstart = datetime.datetime.strptime(month, '%Y-%m')
+    time_start = dstart.strftime('%Y-%m-01')
+    dend = dstart + relativedelta(months=1) + relativedelta(hours=-1)
+    time_end = dend.strftime("%Y-%m-%dT%H:%M")
 
     url='%s/ncss/grid/qpe/realtime/%s/best' % (thredds,rfc.lower())
     varName, rfcId = discoverMetadata(rfc)
@@ -48,11 +53,14 @@ def fetchAggregate(rfc, month, destDir = None):
     }
     r = requests.get(url, params=params, stream=True)
 
-    logging.debug("Got response for %s", r.url)
+    logging.info("Got response for %s", r.url)
     
+    if not r.ok:
+        logging.error("Error:\n%s", r.text)
+        
     r.raise_for_status()
     
-    filename = "QPE.%04d.%02d.%s.nc" % (dt.year, dt.month, rfcId)
+    filename = "QPE.%04d.%02d.%s.nc" % (dstart.year, dstart.month, rfcId)
     if destDir:
         filename = os.path.join(destDir,filename)
         
