@@ -11,6 +11,7 @@ import os
 import argparse
 import logging
 import sys
+import requests
 
 basedir='/mnt/thredds-data-00/rfc_qpe'
 
@@ -22,9 +23,12 @@ def fetch(d, rfc, basedir, dryrun=False):
         agg = "Would fetch aggregate %s for %s to %s" % (rfc, d.strftime('%Y-%m'), destDir)
         logging.info(agg)
     else: 
-        agg = fetchAggregate.fetchAggregate(rfc, d.strftime('%Y-%m'), destDir=destDir)
-        logging.info("Wrote aggregate as %s", agg)
-
+        try:
+            agg = fetchAggregate.fetchAggregate(rfc, d.strftime('%Y-%m'), destDir=destDir)
+            logging.info("Wrote aggregate as %s", agg)
+        except requests.exceptions.RequestException as e:
+            logging.warn("Failed to fetch for %s because %s", rfc, e)
+            agg = e
     return agg
 
 def aggregate(d, basedir=basedir, rfc='all', dryrun=False):
@@ -62,7 +66,8 @@ if __name__ == '__main__':
     
     loglevel = optargs.pop('loglevel')
     numeric_level = getattr(logging, loglevel.upper(), logging.INFO)
-    logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',filename='aggregate.log', level=numeric_level)
+    logfile = month.strftime('aggregate_%Y-%m.log')
+    logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s',filename=logfile, level=numeric_level)
     
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     

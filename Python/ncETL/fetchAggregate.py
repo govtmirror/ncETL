@@ -78,7 +78,11 @@ if __name__ == "__main__":
         rfcs = ['tsju','ktua','kstr','krsa','korn','krha','kkrf','kmsr','ktar','kptr','ktir','kalr','kfwr']
         for rfc in rfcs:
             print rfc.upper()
-            print fetchAggregate(rfc,sys.argv[2])
+            try:
+                print fetchAggregate(rfc,sys.argv[2])
+            except requests.exceptions.RequestException as e:
+                print "Problem fetching for {0}: {1}".format(rfc,e)
+                
     else:
         print fetchAggregate(sys.argv[1],sys.argv[2])
 
