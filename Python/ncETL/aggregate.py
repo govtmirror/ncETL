@@ -32,10 +32,6 @@ def fetch(d, rfc, basedir, dryrun=False):
     return agg
 
 def aggregate(d, basedir=basedir, rfc='all', dryrun=False):
-    # get one month's aggregation
-    if not d:
-        d = date.today() + relativedelta(months=-1)
-    
     if rfc == 'all':
         rfcs = ['tsju','ktua','kstr','krsa','korn','krha','kkrf','kmsr','ktar','kptr','ktir','kalr','kfwr']
     else:
@@ -60,6 +56,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     optargs = vars(args)
     month = optargs.pop("month")
+    # compute default month
+    if not month:
+        month = date.today() + relativedelta(months=-1)
+
     thredds = optargs.pop("thredds")
     if thredds:
         fetchAggregate.thredds = thredds
