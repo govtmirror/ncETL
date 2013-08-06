@@ -58,7 +58,7 @@ if __name__ == '__main__':
     month = optargs.pop("month")
     # compute default month
     if not month:
-        month = date.today() + relativedelta(months=-1)
+        month = date.today() + relativedelta(months=-2)
 
     thredds = optargs.pop("thredds")
     if thredds:
