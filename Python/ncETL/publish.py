@@ -61,13 +61,20 @@ def publish(fn, basedir=basedir, dryrun=False):
     
     saveGribs(rfc, d, dryrun=dryrun, basedir=basedir)
 
+def _remove(path, dryrun=False):
+    if dryrun:
+        logging.info("Would remove %s", path)
+    else:
+        os.remove(path)
+        logging.info("Removed %s", path)
+ 
 def saveGribs(rfc,d, dryrun=False, basedir=basedir):
     
     # move the input grib files to a safe place
     gribDest = os.path.join(basedir,'archive/grib_files/')
 
     gribGlob = os.path.join(basedir,'realtime/files/%s/NPVU_RFC_%s_NWS_*_%s??.grib1' % (rfc.upper(),rfc.upper(),d.strftime('%Y%m')))
-    logging.debug("Looking for files in %s", gribGlob)
+    logging.debug("Looking for files matching %s", gribGlob)
 
     for grib in glob.glob(gribGlob):
         fname = os.path.basename(grib)
@@ -78,7 +85,19 @@ def saveGribs(rfc,d, dryrun=False, basedir=basedir):
             os.rename(grib,fdest)
         
             logging.info("Renamed %s to %s",grib,fdest)
-        
+            
+    # remove the THREDDS artifacts: .ncx and .gbx9 files
+    ncxGlob = os.path.join(basedir,'realtime/files/%s/NPVU_RFC_%s_NWS_*_%s??.grib1.ncx' % (rfc.upper(),rfc.upper(),d.strftime('%Y%m')))
+    logging.debug("Looking for files matching %s", ncxGlob)
+    for ncx in glob.glob(ncxGlob):
+        _remove(ncx,dryrun)
+            
+    gbx9Glob = os.path.join(basedir,'realtime/files/%s/NPVU_RFC_%s_NWS_*_%s??.grib1.gbx9' % (rfc.upper(),rfc.upper(),d.strftime('%Y%m')))
+    logging.debug("Looking for files matching %s", gbx9Glob)
+    for gbx9 in glob.glob(gbx9Glob):
+        _remove(gbx9,dryrun)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Publish an aggregate NetCDF file.')
     parser.add_argument('--basedir', default=argparse.SUPPRESS, help="Base directory for THREDDS files")
