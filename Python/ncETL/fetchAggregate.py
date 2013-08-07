@@ -30,7 +30,13 @@ def discoverMetadata(rfc):
     # Could extract a lot more meta-data here, like time bounds
     
     return (varName,idNum)
-    
+
+def makeArchiveName(dstart,rfcId,destDir = None):
+    filename = "QPE.%04d.%02d.%s.nc" % (dstart.year, dstart.month, rfcId)
+    if destDir:
+        filename = os.path.join(destDir,filename)
+    return filename
+
 def fetchAggregate(rfc, month, destDir = None):
     '''
     Fetch the NetCDF file that has the aggregated rainfall data for the River Forecasting Center and month specified.
@@ -60,9 +66,7 @@ def fetchAggregate(rfc, month, destDir = None):
         
     r.raise_for_status()
     
-    filename = "QPE.%04d.%02d.%s.nc" % (dstart.year, dstart.month, rfcId)
-    if destDir:
-        filename = os.path.join(destDir,filename)
+    filename = makeArchiveName(dstart, rfcId, destDir)
         
     with open(filename, 'wb') as fp:
         logging.info("Copying from %s to %s", r.url, fp)

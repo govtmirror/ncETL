@@ -19,16 +19,19 @@ def fetch(d, rfc, basedir, dryrun=False):
     logging.info("Aggregating month %s for RFC %s", d.strftime('%Y-%m'), rfc.upper())
     
     destDir = os.path.join(basedir,'archive/all_rfc/harvest')
-    if dryrun:
-        agg = "Would fetch aggregate %s for %s to %s" % (rfc, d.strftime('%Y-%m'), destDir)
-        logging.info(agg)
-    else: 
-        try:
+    try:
+        if dryrun:
+            _varName, rfcId = fetchAggregate.discoverMetadata(rfc)
+            filename = fetchAggregate.makeArchiveName(d, rfcId, destDir)
+            agg = "Would fetch aggregate %s for %s to %s" % (rfc, d.strftime('%Y-%m'), filename)
+            logging.info(agg)
+        else: 
             agg = fetchAggregate.fetchAggregate(rfc, d.strftime('%Y-%m'), destDir=destDir)
             logging.info("Wrote aggregate as %s", agg)
-        except requests.exceptions.RequestException as e:
-            logging.warn("Failed to fetch for %s because %s", rfc, e)
-            agg = e
+    except requests.exceptions.RequestException as e:
+        logging.warn("Failed to fetch for %s because %s", rfc, e)
+        agg = e
+        
     return agg
 
 def aggregate(d, basedir=basedir, rfc='all', dryrun=False):
