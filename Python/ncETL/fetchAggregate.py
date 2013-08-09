@@ -7,10 +7,15 @@ import xml.etree.ElementTree as ET
 import os
 import logging
 
-thredds = 'http://igsarm-cida-thredds1.er.usgs.gov:8081/qa/thredds'
+# test: thredds = 'http://igsarm-cida-thredds1.er.usgs.gov:8081/qa/thredds'
+thredds = 'http://cida.usgs.gov/thredds/rfc_qpe'
+
+def _makeURL(rfc):
+    url = '%s/ncss/grid/fixed/qpe/realtime/%s' % (thredds,rfc.lower())
+    return url
 
 def discoverMetadata(rfc):
-    url = '%s/ncss/grid/qpe/realtime/%s/best/dataset.xml' % (thredds,rfc.lower())
+    url = _makeURL(rfc)+'/dataset.xml'
     
     logging.debug("Getting metadata from %s", url)
     
@@ -49,7 +54,7 @@ def fetchAggregate(rfc, month, destDir = None):
     dend = dstart + relativedelta(months=1) + relativedelta(hours=-1)
     time_end = dend.strftime("%Y-%m-%dT%H:%M")
 
-    url='%s/ncss/grid/qpe/realtime/%s/best' % (thredds,rfc.lower())
+    url= _makeURL(rfc)
     varName, rfcId = discoverMetadata(rfc)
     params = {
         'var':varName,
