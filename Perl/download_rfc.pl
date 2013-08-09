@@ -6,7 +6,8 @@ use warnings;
 use Cwd;
 use File::stat;
 
-my $dir = "/mnt/gdp-thredds-data-00/qpe/archive/motherlode";
+# my $dir = "/mnt/gdp-thredds-data-00/qpe/archive/motherlode";
+my $dir = "/mnt/thredds-data-00/rfc_qpe/realtime/files";
 my $file_type = "grib1";
 my $time_offset = 3600;
 my $index_prefix = "http://motherlode.ucar.edu/cgi-bin/ldm/genweb?native/grid/NPVU/RFC/";
@@ -18,10 +19,10 @@ my @rfcs = ("KALR", "KFWR", "KKRF", "KMSR", "KNES", "KORN",
 chdir $dir;
 
 foreach my $rfc (@rfcs) {
-	mkdir "$dir/$rfc" unless(-e "$dir/$rfc");
+	mkdir "$dir/$rfc" or die unless(-e "$dir/$rfc");
 	my $url = $index_prefix . $rfc;
 	`wget -O tmp.html $url`;
-	open(FILE, "<tmp.html");
+	open(FILE, "<tmp.html") or die;
 
 	while (my $line = <FILE>) {
 		if ($line =~ m/A HREF="([^"]*)".*modified\s+(.*)$/) {
