@@ -149,7 +149,7 @@
 	<int:transformer id="grib-writer" input-channel="grib-chan" output-channel="choice-chan"
 		ref="gribber" method="processFiles"
 	>
-		<int:poller trigger="oneshot">
+		<int:poller fixed-rate="10000">
 			<int:transactional propagation="REQUIRES_NEW" transaction-manager="transactionManager"/>
 		</int:poller>
 	</int:transformer>
