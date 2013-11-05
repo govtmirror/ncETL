@@ -51,7 +51,7 @@ def publish(fn, basedir=basedir, dryrun=False):
     
     logging.info("Publishing aggregated data for %s for RFC %s", d.strftime('%Y-%m'), rfc.upper())
     
-    destDir = os.path.join(basedir,'archive/all_rfc')
+    destDir = os.path.join(basedir,'archive/fixed_time')
     dest = os.path.join(destDir,fnBase)
     if dryrun:
         logging.info("Would move %s to %s",fn,dest)
