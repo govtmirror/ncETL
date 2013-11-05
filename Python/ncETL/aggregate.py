@@ -28,6 +28,8 @@ def fetch(d, rfc, basedir, dryrun=False):
         else: 
             agg = fetchAggregate.fetchAggregate(rfc, d.strftime('%Y-%m'), destDir=destDir)
             logging.info("Wrote aggregate as %s", agg)
+            os.system("ncks -O --fix_rec_dmn "+agg+" "+agg)
+            logging.info("Fixed time dimension of %s with 'ncks -O --fix_rec_dmn'", agg)
     except requests.exceptions.RequestException as e:
         logging.warn("Failed to fetch for %s because %s", rfc, e)
         agg = e
