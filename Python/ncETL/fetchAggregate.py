@@ -21,6 +21,10 @@ def discoverMetadata(rfc):
     
     try:
         resp = requests.get(url)
+        # This works around an issue where the first call fails with 500 but subsequent calls work
+        if resp.status_code == 500:
+            resp = requests.get(url)
+            
         resp.raise_for_status()
         
         dataset = ET.fromstring(resp.text)
@@ -63,6 +67,9 @@ def fetchAggregate(rfc, month, destDir = None):
         # 'addLatLon':"true"
     }
     r = requests.get(url, params=params, stream=True)
+    # This works around an issue where the first call fails with 500 but subsequent calls work
+    if r.status_code == 500:
+        r = requests.get(url, params=params, stream=True)
 
     logging.info("Got response for %s", r.url)
     
