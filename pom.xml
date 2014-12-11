@@ -313,7 +313,7 @@
         <dependency>
             <groupId>gov.usgs.cida</groupId>
             <artifactId>jdbc-spec-library</artifactId>
-            <version>0.5.8</version>
+            <version>0.5.12</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
