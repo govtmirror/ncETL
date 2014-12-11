@@ -3,7 +3,6 @@ package gov.usgs.cida.data.grib;
 import static org.junit.Assert.*;
 
 import java.util.Map;
-import java.util.Properties;
 
 import gov.usgs.cida.ncetl.jpa.ArchiveConfig;
 
@@ -12,17 +11,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 
-import org.hibernate.ejb.HibernateEntityManagerFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.integration.Message;
-import org.springframework.integration.MessageChannel;
-import org.springframework.integration.channel.ChannelInterceptor;
 import org.springframework.integration.channel.QueueChannel;
-import org.springframework.integration.channel.interceptor.ChannelInterceptorAdapter;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 public class JpaUpdateTest {
 
@@ -44,6 +39,7 @@ public class JpaUpdateTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testStart() throws Exception {
 		
@@ -69,6 +65,7 @@ public class JpaUpdateTest {
 		 }
 	}
 	
+	@Ignore
 	@Test
 	public void updateConnected() throws Exception {
 		EntityManagerFactory emf = context.getBean("emf", EntityManagerFactory.class);
@@ -87,6 +84,7 @@ public class JpaUpdateTest {
 		t.commit();
 	}
 
+	@Ignore
 	@Test
 	public void updateDetached() throws Exception {
 		EntityManagerFactory emf = context.getBean("emf", EntityManagerFactory.class);
