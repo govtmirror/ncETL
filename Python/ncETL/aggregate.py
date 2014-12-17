@@ -13,7 +13,7 @@ import logging
 import sys
 import requests
 
-basedir='/mnt/thredds-data-00/rfc_qpe'
+basedir='/mnt/thredds-optimized/rfc_qpe'
 
 def fetch(d, rfc, basedir, dryrun=False):
     logging.info("Aggregating month %s for RFC %s", d.strftime('%Y-%m'), rfc.upper())
